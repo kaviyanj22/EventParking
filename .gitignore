@@ -1,3 +1,12 @@
+<<<<<<< HEAD
 .vs/
 obj/
+bin/
+=======
+bin/
+obj/
+.vs/
+*.user
+*.suo
+>>>>>>> origin/Devlop
 bin/
