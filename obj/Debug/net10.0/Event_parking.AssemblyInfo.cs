@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Event_parking")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f2fd0da4d24b3e06799e94578320eb99ced8b4c2")]
 [assembly: System.Reflection.AssemblyProductAttribute("Event_parking")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Event_parking")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
