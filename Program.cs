@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 // ======================================
@@ -24,7 +23,6 @@ builder.Services.AddControllers();
 // ======================================
 
 builder.Services.AddEndpointsApiExplorer();
-
 builder.Services.AddSwaggerGen();
 
 // ======================================
@@ -55,7 +53,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(
 // ======================================
 
 builder.Services.Configure<JwtSettings>(
-    builder.Configuration.GetSection( 
+    builder.Configuration.GetSection(
         JwtSettings.SectionName
     )
 );
@@ -102,16 +100,13 @@ builder.Services
         options =>
         {
             options.DefaultAuthenticateScheme =
-                JwtBearerDefaults
-                    .AuthenticationScheme;
+                JwtBearerDefaults.AuthenticationScheme;
 
             options.DefaultChallengeScheme =
-                JwtBearerDefaults
-                    .AuthenticationScheme;
+                JwtBearerDefaults.AuthenticationScheme;
 
             options.DefaultScheme =
-                JwtBearerDefaults
-                    .AuthenticationScheme;
+                JwtBearerDefaults.AuthenticationScheme;
         }
     )
     .AddJwtBearer(
@@ -125,18 +120,12 @@ builder.Services
                 new TokenValidationParameters
                 {
                     ValidateIssuer = true,
-
                     ValidateAudience = true,
-
                     ValidateLifetime = true,
-
                     ValidateIssuerSigningKey = true,
 
-                    ValidIssuer =
-                        jwtSettings.Issuer,
-
-                    ValidAudience =
-                        jwtSettings.Audience,
+                    ValidIssuer = jwtSettings.Issuer,
+                    ValidAudience = jwtSettings.Audience,
 
                     IssuerSigningKey =
                         new SymmetricSecurityKey(
@@ -157,9 +146,10 @@ builder.Services
 builder.Services.AddAuthorization();
 
 // ======================================
-// REPOSITORY DEPENDENCY INJECTION
+// REPOSITORIES
 // ======================================
 
+// Member 1
 builder.Services.AddScoped<
     ICustomerRepository,
     CustomerRepository
@@ -170,10 +160,27 @@ builder.Services.AddScoped<
     VehicleRepository
 >();
 
+// Thenusaan
+builder.Services.AddScoped<
+    ICategoryRepository,
+    CategoryRepository
+>();
+
+builder.Services.AddScoped<
+    IVenueRepository,
+    VenueRepository
+>();
+
+builder.Services.AddScoped<
+    IEventRepository,
+    EventRepository
+>();
+
 // ======================================
-// SERVICE DEPENDENCY INJECTION
+// SERVICES
 // ======================================
 
+// Member 1
 builder.Services.AddScoped<
     IAuthService,
     AuthService
@@ -194,12 +201,27 @@ builder.Services.AddScoped<
     EmailService
 >();
 
+// Thenusaan
+builder.Services.AddScoped<
+    ICategoryService,
+    CategoryService
+>();
+
+builder.Services.AddScoped<
+    IVenueService,
+    VenueService
+>();
+
+builder.Services.AddScoped<
+    IEventService,
+    EventService
+>();
+
 // ======================================
 // HELPERS
 // ======================================
 
 builder.Services.AddScoped<PasswordHelper>();
-
 builder.Services.AddScoped<JwtHelper>();
 
 // ======================================

@@ -1,5 +1,6 @@
 using Event_parking.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace Event_parking.Data
 {
@@ -11,9 +12,23 @@ namespace Event_parking.Data
         {
         }
 
+        // ============================
+        // MEMBER 1 TABLES
+        // ============================
+
         public DbSet<Customer> Customers { get; set; }
 
         public DbSet<Vehicle> Vehicles { get; set; }
+
+        // ============================
+        // MEMBER 2 TABLES
+        // ============================
+
+        public DbSet<Venue> Venues { get; set; }
+
+        public DbSet<EventCategory> EventCategories { get; set; }
+
+        public DbSet<Event> Events { get; set; }
 
         protected override void OnModelCreating(
             ModelBuilder modelBuilder)
