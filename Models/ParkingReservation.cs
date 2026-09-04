@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Event_parking.Models
 {
@@ -13,13 +14,22 @@ namespace Event_parking.Models
         [Required]
         public int ParkingSlotId { get; set; }
 
-        public DateTime ReservedAt { get; set; } = DateTime.UtcNow;
+        [Required]
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal FeeAtReservation { get; set; }
+
+        public DateTime ReservedAt { get; set; }
+            = DateTime.UtcNow;
 
         public DateTime? ReleasedAt { get; set; }
 
-        public bool IsActive { get; set; } = true;
+        public bool IsActive { get; set; }
+            = true;
 
-        // Navigation Properties
+        // ======================================
+        // NAVIGATION PROPERTIES
+        // ======================================
+
         public Booking? Booking { get; set; }
 
         public ParkingSlot? ParkingSlot { get; set; }

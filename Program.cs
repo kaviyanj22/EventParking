@@ -1,4 +1,5 @@
 using System.Text;
+using Event_parking.BackgroundServices;
 using Event_parking.Configurations;
 using Event_parking.Data;
 using Event_parking.Helpers;
@@ -23,6 +24,7 @@ builder.Services.AddControllers();
 // ======================================
 
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen();
 
 // ======================================
@@ -61,6 +63,13 @@ builder.Services.Configure<JwtSettings>(
 builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection(
         EmailSettings.SectionName
+    )
+);
+
+// Member 4
+builder.Services.Configure<BookingSettings>(
+    builder.Configuration.GetSection(
+        BookingSettings.SectionName
     )
 );
 
@@ -186,6 +195,22 @@ builder.Services.AddScoped<
     ParkingRepository
 >();
 
+// Member 4
+builder.Services.AddScoped<
+    IBookingRepository,
+    BookingRepository
+>();
+
+builder.Services.AddScoped<
+    IPaymentRepository,
+    PaymentRepository
+>();
+
+builder.Services.AddScoped<
+    INotificationRepository,
+    NotificationRepository
+>();
+
 // ======================================
 // SERVICES
 // ======================================
@@ -238,12 +263,42 @@ builder.Services.AddScoped<
     ParkingService
 >();
 
+// Member 4
+builder.Services.AddScoped<
+    IBookingService,
+    BookingService
+>();
+
+builder.Services.AddScoped<
+    IPaymentService,
+    PaymentService
+>();
+
+builder.Services.AddScoped<
+    INotificationService,
+    NotificationService
+>();
+
 // ======================================
 // HELPERS
 // ======================================
 
 builder.Services.AddScoped<PasswordHelper>();
+
 builder.Services.AddScoped<JwtHelper>();
+
+// Member 4
+builder.Services.AddScoped<
+    BookingNumberGenerator
+>();
+
+// ======================================
+// MEMBER 4 BACKGROUND SERVICE
+// ======================================
+
+builder.Services.AddHostedService<
+    BookingExpiryService
+>();
 
 // ======================================
 // CORS
