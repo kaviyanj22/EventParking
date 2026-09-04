@@ -113,7 +113,6 @@ builder.Services
         options =>
         {
             options.SaveToken = true;
-
             options.RequireHttpsMetadata = false;
 
             options.TokenValidationParameters =
@@ -176,6 +175,17 @@ builder.Services.AddScoped<
     EventRepository
 >();
 
+// Member 3 - Castro
+builder.Services.AddScoped<
+    ISeatRepository,
+    SeatRepository
+>();
+
+builder.Services.AddScoped<
+    IParkingRepository,
+    ParkingRepository
+>();
+
 // ======================================
 // SERVICES
 // ======================================
@@ -215,6 +225,17 @@ builder.Services.AddScoped<
 builder.Services.AddScoped<
     IEventService,
     EventService
+>();
+
+// Member 3 - Castro
+builder.Services.AddScoped<
+    ISeatService,
+    SeatService
+>();
+
+builder.Services.AddScoped<
+    IParkingService,
+    ParkingService
 >();
 
 // ======================================

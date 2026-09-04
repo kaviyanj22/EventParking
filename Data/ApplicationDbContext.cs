@@ -28,7 +28,15 @@ namespace Event_parking.Data
 
         public DbSet<EventCategory> EventCategories { get; set; }
 
+
         public DbSet<Event> Events { get; set; }
+
+        public DbSet<Seat> Seats { get; set; }
+
+        public DbSet<ParkingSlot> ParkingSlots { get; set; }
+
+        public DbSet<ParkingReservation> ParkingReservations { get; set; }
+
 
         protected override void OnModelCreating(
             ModelBuilder modelBuilder)
