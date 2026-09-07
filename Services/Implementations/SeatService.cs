@@ -8,10 +8,17 @@ namespace Event_parking.Services.Implementations
     public class SeatService : ISeatService
     {
         private readonly ISeatRepository _seatRepository;
+        private readonly ISeatSectionRepository _seatSectionRepository;
+        private readonly IEventRepository _eventRepository;
 
-        public SeatService(ISeatRepository seatRepository)
+        public SeatService(
+            ISeatRepository seatRepository,
+            ISeatSectionRepository seatSectionRepository,
+            IEventRepository eventRepository)
         {
             _seatRepository = seatRepository;
+            _seatSectionRepository = seatSectionRepository;
+            _eventRepository = eventRepository;
         }
 
         // ==========================================
@@ -21,7 +28,8 @@ namespace Event_parking.Services.Implementations
             GetSeatsByEventIdAsync(int eventId)
         {
             var seats =
-                await _seatRepository.GetSeatsByEventIdAsync(eventId);
+                await _seatRepository
+                    .GetSeatsByEventIdAsync(eventId);
 
             return seats.Select(MapToResponseDto);
         }
@@ -30,12 +38,16 @@ namespace Event_parking.Services.Implementations
         // GET SINGLE SEAT
         // ==========================================
         public async Task<SeatResponseDto?>
-            GetSeatByIdAsync(int eventId, int seatId)
+            GetSeatByIdAsync(
+                int eventId,
+                int seatId)
         {
             var seat =
-                await _seatRepository.GetSeatByIdAsync(seatId);
+                await _seatRepository
+                    .GetSeatByIdAsync(seatId);
 
-            if (seat == null || seat.EventId != eventId)
+            if (seat == null ||
+                seat.EventId != eventId)
             {
                 return null;
             }
@@ -51,9 +63,9 @@ namespace Event_parking.Services.Implementations
                 int eventId,
                 SeatMapCreateDto dto)
         {
-            // Check event
-            var eventExists =
-                await _seatRepository.EventExistsAsync(eventId);
+            bool eventExists =
+                await _seatRepository
+                    .EventExistsAsync(eventId);
 
             if (!eventExists)
             {
@@ -63,7 +75,23 @@ namespace Event_parking.Services.Implementations
                 );
             }
 
-            if (dto.Seats == null || dto.Seats.Count == 0)
+            // ======================================
+            // ACTIVE BOOKING SAFEGUARD
+            // ======================================
+            bool hasActiveBookings =
+                await _eventRepository
+                    .HasActiveBookingsAsync(eventId);
+
+            if (hasActiveBookings)
+            {
+                return (
+                    false,
+                    "Seat layout cannot be changed because this event has active bookings."
+                );
+            }
+
+            if (dto.Seats == null ||
+                dto.Seats.Count == 0)
             {
                 return (
                     false,
@@ -71,11 +99,10 @@ namespace Event_parking.Services.Implementations
                 );
             }
 
-            // Get event capacity
-            var eventCapacity =
-                await _seatRepository.GetEventCapacityAsync(eventId);
+            int eventCapacity =
+                await _seatRepository
+                    .GetEventCapacityAsync(eventId);
 
-            // Seat count must equal event capacity
             if (dto.Seats.Count != eventCapacity)
             {
                 return (
@@ -86,9 +113,9 @@ namespace Event_parking.Services.Implementations
                 );
             }
 
-            // Do not generate another map if seats already exist
             var existingSeats =
-                await _seatRepository.GetSeatsByEventIdAsync(eventId);
+                await _seatRepository
+                    .GetSeatsByEventIdAsync(eventId);
 
             if (existingSeats.Any())
             {
@@ -98,43 +125,128 @@ namespace Event_parking.Services.Implementations
                 );
             }
 
-            // Check duplicate seat numbers inside request
-            var duplicateSeatNumbers = dto.Seats
-                .GroupBy(
-                    s => s.SeatNumber.Trim(),
-                    StringComparer.OrdinalIgnoreCase
-                )
-                .Where(g => g.Count() > 1)
-                .Select(g => g.Key)
-                .ToList();
+            var duplicateSeatNumbers =
+                dto.Seats
+                    .GroupBy(
+                        seat => seat.SeatNumber.Trim(),
+                        StringComparer.OrdinalIgnoreCase
+                    )
+                    .Where(group => group.Count() > 1)
+                    .Select(group => group.Key)
+                    .ToList();
 
             if (duplicateSeatNumbers.Any())
             {
                 return (
                     false,
                     "Duplicate seat numbers are not allowed: " +
-                    string.Join(", ", duplicateSeatNumbers)
+                    string.Join(
+                        ", ",
+                        duplicateSeatNumbers
+                    )
                 );
             }
 
-            var seats = dto.Seats.Select(dtoSeat =>
-                new Seat
+            // ======================================
+            // VALIDATE SEAT SECTIONS
+            // ======================================
+            Dictionary<int, SeatSection>
+                sectionDictionary = new();
+
+            List<int> sectionIds =
+                dto.Seats
+                    .Where(seat =>
+                        seat.SeatSectionId.HasValue)
+                    .Select(seat =>
+                        seat.SeatSectionId!.Value)
+                    .Distinct()
+                    .ToList();
+
+            foreach (int sectionId in sectionIds)
+            {
+                SeatSection? section =
+                    await _seatSectionRepository
+                        .GetByIdAsync(
+                            eventId,
+                            sectionId
+                        );
+
+                if (section == null)
                 {
-                    EventId = eventId,
-                    SeatNumber = dtoSeat.SeatNumber.Trim(),
-                    RowName = dtoSeat.RowName?.Trim(),
-                    ColumnNumber = dtoSeat.ColumnNumber,
-                    SeatType = dtoSeat.SeatType?.Trim(),
-                    Price = dtoSeat.Price,
-                    Status = "Available",
-                    CreatedAt = DateTime.UtcNow
+                    return (
+                        false,
+                        $"Seat section {sectionId} does not belong to this event."
+                    );
                 }
-            ).ToList();
 
-            await _seatRepository.AddSeatsAsync(seats);
+                sectionDictionary[sectionId] =
+                    section;
+            }
 
-            var saved =
-                await _seatRepository.SaveChangesAsync();
+            List<Seat> seats =
+                dto.Seats
+                    .Select(dtoSeat =>
+                    {
+                        Seat seat = new Seat
+                        {
+                            EventId =
+                                eventId,
+
+                            SeatSectionId =
+                                dtoSeat.SeatSectionId,
+
+                            SeatNumber =
+                                dtoSeat.SeatNumber.Trim(),
+
+                            RowName =
+                                string.IsNullOrWhiteSpace(
+                                    dtoSeat.RowName)
+                                    ? null
+                                    : dtoSeat.RowName.Trim(),
+
+                            ColumnNumber =
+                                dtoSeat.ColumnNumber,
+
+                            PositionX =
+                                dtoSeat.PositionX,
+
+                            PositionY =
+                                dtoSeat.PositionY,
+
+                            SeatType =
+                                string.IsNullOrWhiteSpace(
+                                    dtoSeat.SeatType)
+                                    ? null
+                                    : dtoSeat.SeatType.Trim(),
+
+                            Price =
+                                dtoSeat.Price,
+
+                            Status =
+                                "Available",
+
+                            CreatedAt =
+                                DateTime.UtcNow
+                        };
+
+                        if (dtoSeat.SeatSectionId.HasValue)
+                        {
+                            seat.SeatSection =
+                                sectionDictionary[
+                                    dtoSeat.SeatSectionId.Value
+                                ];
+                        }
+
+                        return seat;
+                    })
+                    .ToList();
+
+            await _seatRepository
+                .AddSeatsAsync(seats);
+
+            bool saved =
+                await _seatRepository
+                    .SaveChangesAsync();
 
             if (!saved)
             {
@@ -161,8 +273,9 @@ namespace Event_parking.Services.Implementations
                 int eventId,
                 SeatCreateDto dto)
         {
-            var eventExists =
-                await _seatRepository.EventExistsAsync(eventId);
+            bool eventExists =
+                await _seatRepository
+                    .EventExistsAsync(eventId);
 
             if (!eventExists)
             {
@@ -173,7 +286,24 @@ namespace Event_parking.Services.Implementations
                 );
             }
 
-            if (string.IsNullOrWhiteSpace(dto.SeatNumber))
+            // ======================================
+            // ACTIVE BOOKING SAFEGUARD
+            // ======================================
+            bool hasActiveBookings =
+                await _eventRepository
+                    .HasActiveBookingsAsync(eventId);
+
+            if (hasActiveBookings)
+            {
+                return (
+                    false,
+                    "Seat layout cannot be changed because this event has active bookings.",
+                    null
+                );
+            }
+
+            if (string.IsNullOrWhiteSpace(
+                    dto.SeatNumber))
             {
                 return (
                     false,
@@ -182,11 +312,12 @@ namespace Event_parking.Services.Implementations
                 );
             }
 
-            var seatNumberExists =
-                await _seatRepository.SeatNumberExistsAsync(
-                    eventId,
-                    dto.SeatNumber.Trim()
-                );
+            bool seatNumberExists =
+                await _seatRepository
+                    .SeatNumberExistsAsync(
+                        eventId,
+                        dto.SeatNumber.Trim()
+                    );
 
             if (seatNumberExists)
             {
@@ -197,14 +328,37 @@ namespace Event_parking.Services.Implementations
                 );
             }
 
-            // Prevent seat count going above event capacity
-            var eventCapacity =
-                await _seatRepository.GetEventCapacityAsync(eventId);
+            SeatSection? seatSection = null;
+
+            if (dto.SeatSectionId.HasValue)
+            {
+                seatSection =
+                    await _seatSectionRepository
+                        .GetByIdAsync(
+                            eventId,
+                            dto.SeatSectionId.Value
+                        );
+
+                if (seatSection == null)
+                {
+                    return (
+                        false,
+                        "Selected seat section does not belong to this event.",
+                        null
+                    );
+                }
+            }
+
+            int eventCapacity =
+                await _seatRepository
+                    .GetEventCapacityAsync(eventId);
 
             var existingSeats =
-                await _seatRepository.GetSeatsByEventIdAsync(eventId);
+                await _seatRepository
+                    .GetSeatsByEventIdAsync(eventId);
 
-            if (existingSeats.Count() >= eventCapacity)
+            if (existingSeats.Count() >=
+                eventCapacity)
             {
                 return (
                     false,
@@ -214,22 +368,57 @@ namespace Event_parking.Services.Implementations
                 );
             }
 
-            var seat = new Seat
+            Seat seat = new Seat
             {
-                EventId = eventId,
-                SeatNumber = dto.SeatNumber.Trim(),
-                RowName = dto.RowName?.Trim(),
-                ColumnNumber = dto.ColumnNumber,
-                SeatType = dto.SeatType?.Trim(),
-                Price = dto.Price,
-                Status = "Available",
-                CreatedAt = DateTime.UtcNow
+                EventId =
+                    eventId,
+
+                SeatSectionId =
+                    dto.SeatSectionId,
+
+                SeatSection =
+                    seatSection,
+
+                SeatNumber =
+                    dto.SeatNumber.Trim(),
+
+                RowName =
+                    string.IsNullOrWhiteSpace(
+                        dto.RowName)
+                        ? null
+                        : dto.RowName.Trim(),
+
+                ColumnNumber =
+                    dto.ColumnNumber,
+
+                PositionX =
+                    dto.PositionX,
+
+                PositionY =
+                    dto.PositionY,
+
+                SeatType =
+                    string.IsNullOrWhiteSpace(
+                        dto.SeatType)
+                        ? null
+                        : dto.SeatType.Trim(),
+
+                Price =
+                    dto.Price,
+
+                Status =
+                    "Available",
+
+                CreatedAt =
+                    DateTime.UtcNow
             };
 
-            await _seatRepository.AddSeatAsync(seat);
+            await _seatRepository
+                .AddSeatAsync(seat);
 
-            var saved =
-                await _seatRepository.SaveChangesAsync();
+            bool saved =
+                await _seatRepository
+                    .SaveChangesAsync();
 
             if (!saved)
             {
@@ -256,10 +445,12 @@ namespace Event_parking.Services.Implementations
                 int seatId,
                 SeatUpdateDto dto)
         {
-            var seat =
-                await _seatRepository.GetSeatByIdAsync(seatId);
+            Seat? seat =
+                await _seatRepository
+                    .GetSeatByIdAsync(seatId);
 
-            if (seat == null || seat.EventId != eventId)
+            if (seat == null ||
+                seat.EventId != eventId)
             {
                 return (
                     false,
@@ -267,7 +458,23 @@ namespace Event_parking.Services.Implementations
                 );
             }
 
-            if (string.IsNullOrWhiteSpace(dto.SeatNumber))
+            // ======================================
+            // ACTIVE BOOKING SAFEGUARD
+            // ======================================
+            bool eventHasActiveBookings =
+                await _eventRepository
+                    .HasActiveBookingsAsync(eventId);
+
+            if (eventHasActiveBookings)
+            {
+                return (
+                    false,
+                    "Seat layout cannot be changed because this event has active bookings."
+                );
+            }
+
+            if (string.IsNullOrWhiteSpace(
+                    dto.SeatNumber))
             {
                 return (
                     false,
@@ -275,10 +482,10 @@ namespace Event_parking.Services.Implementations
                 );
             }
 
-            var hasActiveBooking =
-                await _seatRepository.HasActiveBookingAsync(seatId);
+            bool hasActiveBooking =
+                await _seatRepository
+                    .HasActiveBookingAsync(seatId);
 
-            // BRD: booked seat cannot be renumbered
             if (hasActiveBooking &&
                 !string.Equals(
                     seat.SeatNumber,
@@ -291,12 +498,13 @@ namespace Event_parking.Services.Implementations
                 );
             }
 
-            var duplicateSeat =
-                await _seatRepository.SeatNumberExistsAsync(
-                    eventId,
-                    dto.SeatNumber.Trim(),
-                    seatId
-                );
+            bool duplicateSeat =
+                await _seatRepository
+                    .SeatNumberExistsAsync(
+                        eventId,
+                        dto.SeatNumber.Trim(),
+                        seatId
+                    );
 
             if (duplicateSeat)
             {
@@ -306,7 +514,26 @@ namespace Event_parking.Services.Implementations
                 );
             }
 
-            // Do not allow booked seat to be manually made Available
+            SeatSection? seatSection = null;
+
+            if (dto.SeatSectionId.HasValue)
+            {
+                seatSection =
+                    await _seatSectionRepository
+                        .GetByIdAsync(
+                            eventId,
+                            dto.SeatSectionId.Value
+                        );
+
+                if (seatSection == null)
+                {
+                    return (
+                        false,
+                        "Selected seat section does not belong to this event."
+                    );
+                }
+            }
+
             if (hasActiveBooking &&
                 string.Equals(
                     dto.Status,
@@ -327,18 +554,53 @@ namespace Event_parking.Services.Implementations
                 );
             }
 
-            seat.SeatNumber = dto.SeatNumber.Trim();
-            seat.RowName = dto.RowName?.Trim();
-            seat.ColumnNumber = dto.ColumnNumber;
-            seat.SeatType = dto.SeatType?.Trim();
-            seat.Price = dto.Price;
-            seat.Status = NormalizeStatus(dto.Status);
-            seat.UpdatedAt = DateTime.UtcNow;
+            seat.SeatSectionId =
+                dto.SeatSectionId;
 
-            _seatRepository.UpdateSeat(seat);
+            seat.SeatSection =
+                seatSection;
 
-            var saved =
-                await _seatRepository.SaveChangesAsync();
+            seat.SeatNumber =
+                dto.SeatNumber.Trim();
+
+            seat.RowName =
+                string.IsNullOrWhiteSpace(
+                    dto.RowName)
+                    ? null
+                    : dto.RowName.Trim();
+
+            seat.ColumnNumber =
+                dto.ColumnNumber;
+
+            seat.PositionX =
+                dto.PositionX;
+
+            seat.PositionY =
+                dto.PositionY;
+
+            seat.SeatType =
+                string.IsNullOrWhiteSpace(
+                    dto.SeatType)
+                    ? null
+                    : dto.SeatType.Trim();
+
+            seat.Price =
+                dto.Price;
+
+            seat.Status =
+                NormalizeStatus(
+                    dto.Status
+                );
+
+            seat.UpdatedAt =
+                DateTime.UtcNow;
+
+            _seatRepository
+                .UpdateSeat(seat);
+
+            bool saved =
+                await _seatRepository
+                    .SaveChangesAsync();
 
             if (!saved)
             {
@@ -362,10 +624,12 @@ namespace Event_parking.Services.Implementations
                 int eventId,
                 int seatId)
         {
-            var seat =
-                await _seatRepository.GetSeatByIdAsync(seatId);
+            Seat? seat =
+                await _seatRepository
+                    .GetSeatByIdAsync(seatId);
 
-            if (seat == null || seat.EventId != eventId)
+            if (seat == null ||
+                seat.EventId != eventId)
             {
                 return (
                     false,
@@ -373,8 +637,24 @@ namespace Event_parking.Services.Implementations
                 );
             }
 
-            var hasActiveBooking =
-                await _seatRepository.HasActiveBookingAsync(seatId);
+            // ======================================
+            // ACTIVE BOOKING SAFEGUARD
+            // ======================================
+            bool eventHasActiveBookings =
+                await _eventRepository
+                    .HasActiveBookingsAsync(eventId);
+
+            if (eventHasActiveBookings)
+            {
+                return (
+                    false,
+                    "Seat layout cannot be changed because this event has active bookings."
+                );
+            }
+
+            bool hasActiveBooking =
+                await _seatRepository
+                    .HasActiveBookingAsync(seatId);
 
             if (hasActiveBooking)
             {
@@ -384,10 +664,12 @@ namespace Event_parking.Services.Implementations
                 );
             }
 
-            _seatRepository.DeleteSeat(seat);
+            _seatRepository
+                .DeleteSeat(seat);
 
-            var saved =
-                await _seatRepository.SaveChangesAsync();
+            bool saved =
+                await _seatRepository
+                    .SaveChangesAsync();
 
             if (!saved)
             {
@@ -406,26 +688,55 @@ namespace Event_parking.Services.Implementations
         // ==========================================
         // MAPPING
         // ==========================================
-        private static SeatResponseDto MapToResponseDto(
-            Seat seat)
+        private static SeatResponseDto
+            MapToResponseDto(
+                Seat seat)
         {
             return new SeatResponseDto
             {
-                SeatId = seat.SeatId,
-                EventId = seat.EventId,
-                SeatNumber = seat.SeatNumber,
-                RowName = seat.RowName,
-                ColumnNumber = seat.ColumnNumber,
-                SeatType = seat.SeatType,
-                Price = seat.Price,
-                Status = seat.Status
+                SeatId =
+                    seat.SeatId,
+
+                EventId =
+                    seat.EventId,
+
+                SeatSectionId =
+                    seat.SeatSectionId,
+
+                SectionName =
+                    seat.SeatSection?.SectionName,
+
+                SeatNumber =
+                    seat.SeatNumber,
+
+                RowName =
+                    seat.RowName,
+
+                ColumnNumber =
+                    seat.ColumnNumber,
+
+                PositionX =
+                    seat.PositionX,
+
+                PositionY =
+                    seat.PositionY,
+
+                SeatType =
+                    seat.SeatType,
+
+                Price =
+                    seat.Price,
+
+                Status =
+                    seat.Status
             };
         }
 
         // ==========================================
         // STATUS VALIDATION
         // ==========================================
-        private static bool IsValidStatus(string status)
+        private static bool IsValidStatus(
+            string status)
         {
             return string.Equals(
                        status,
@@ -438,7 +749,8 @@ namespace Event_parking.Services.Implementations
                        StringComparison.OrdinalIgnoreCase);
         }
 
-        private static string NormalizeStatus(string status)
+        private static string NormalizeStatus(
+            string status)
         {
             if (string.Equals(
                     status,

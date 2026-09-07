@@ -15,19 +15,26 @@ namespace Event_parking.Repositories.Implementations
         }
 
         public async Task<IEnumerable<Seat>> GetSeatsByEventIdAsync(
-            int eventId)
+    int eventId)
         {
             return await _context.Seats
-                .Where(s => s.EventId == eventId)
-                .OrderBy(s => s.RowName)
-                .ThenBy(s => s.ColumnNumber)
+                .Include(seat => seat.SeatSection)
+                .Where(seat => seat.EventId == eventId)
+                .OrderBy(seat => seat.SeatSection != null
+                    ? seat.SeatSection.DisplayOrder
+                    : int.MaxValue)
+                .ThenBy(seat => seat.RowName)
+                .ThenBy(seat => seat.ColumnNumber)
                 .ToListAsync();
         }
 
         public async Task<Seat?> GetSeatByIdAsync(int seatId)
         {
             return await _context.Seats
-                .FirstOrDefaultAsync(s => s.SeatId == seatId);
+                .Include(seat => seat.SeatSection)
+                .FirstOrDefaultAsync(
+                    seat => seat.SeatId == seatId
+                );
         }
 
         public async Task<bool> EventExistsAsync(int eventId)

@@ -1,5 +1,6 @@
 using Event_parking.DTOs.Venue;
 using Event_parking.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Event_parking.Controllers
@@ -10,25 +11,38 @@ namespace Event_parking.Controllers
     {
         private readonly IVenueService _venueService;
 
-        public VenueController(IVenueService venueService)
+        public VenueController(
+            IVenueService venueService)
         {
             _venueService = venueService;
         }
 
-        // GET: api/venues
+        // ==========================================
+        // GET ALL VENUES
+        // PUBLIC
+        // ==========================================
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var venues = await _venueService.GetAllAsync();
+            var venues =
+                await _venueService.GetAllAsync();
 
             return Ok(venues);
         }
 
-        // GET: api/venues/5
+        // ==========================================
+        // GET VENUE BY ID
+        // PUBLIC
+        // ==========================================
+
         [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetById(
+            int id)
         {
-            var venue = await _venueService.GetByIdAsync(id);
+            var venue =
+                await _venueService
+                    .GetByIdAsync(id);
 
             if (venue == null)
             {
@@ -41,9 +55,18 @@ namespace Event_parking.Controllers
             return Ok(venue);
         }
 
+        // ==========================================
+        // CHECK VENUE AVAILABILITY
+        // PUBLIC
+        // ==========================================
         // GET:
-        // api/venues/available?date=2026-12-20
-        // &startTime=18:00:00&endTime=22:00:00
+        // api/venues/available
+        // ?date=2026-12-20
+        // &startTime=18:00:00
+        // &endTime=22:00:00
+        // &venueId=1
+        // ==========================================
+
         [HttpGet("available")]
         public async Task<IActionResult> GetAvailable(
             [FromQuery] DateTime date,
@@ -56,11 +79,13 @@ namespace Event_parking.Controllers
                 if (venueId.HasValue)
                 {
                     var isAvailable =
-                        await _venueService.IsAvailableAsync(
-                            venueId.Value,
-                            date,
-                            startTime,
-                            endTime);
+                        await _venueService
+                            .IsAvailableAsync(
+                                venueId.Value,
+                                date,
+                                startTime,
+                                endTime
+                            );
 
                     return Ok(new
                     {
@@ -73,10 +98,12 @@ namespace Event_parking.Controllers
                 }
 
                 var venues =
-                    await _venueService.GetAvailableVenuesAsync(
-                        date,
-                        startTime,
-                        endTime);
+                    await _venueService
+                        .GetAvailableVenuesAsync(
+                            date,
+                            startTime,
+                            endTime
+                        );
 
                 return Ok(venues);
             }
@@ -96,30 +123,47 @@ namespace Event_parking.Controllers
             }
         }
 
-        // POST: api/venues
+        // ==========================================
+        // CREATE VENUE
+        // ADMIN ONLY
+        // ==========================================
+
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Create(
             [FromBody] VenueCreateDto createDto)
         {
             var venue =
-                await _venueService.CreateAsync(createDto);
+                await _venueService
+                    .CreateAsync(createDto);
 
             return CreatedAtAction(
                 nameof(GetById),
-                new { id = venue.VenueId },
-                venue);
+                new
+                {
+                    id = venue.VenueId
+                },
+                venue
+            );
         }
 
-        // PUT: api/venues/5
+        // ==========================================
+        // UPDATE VENUE
+        // ADMIN ONLY
+        // ==========================================
+
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(
             int id,
             [FromBody] VenueUpdateDto updateDto)
         {
             var venue =
-                await _venueService.UpdateAsync(
-                    id,
-                    updateDto);
+                await _venueService
+                    .UpdateAsync(
+                        id,
+                        updateDto
+                    );
 
             if (venue == null)
             {
@@ -132,20 +176,28 @@ namespace Event_parking.Controllers
             return Ok(venue);
         }
 
-        // DELETE: api/venues/5
+        // ==========================================
+        // DELETE VENUE
+        // ADMIN ONLY
+        // ==========================================
+
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(
+            int id)
         {
             try
             {
                 var deleted =
-                    await _venueService.DeleteAsync(id);
+                    await _venueService
+                        .DeleteAsync(id);
 
                 if (!deleted)
                 {
                     return NotFound(new
                     {
-                        message = "Venue not found."
+                        message =
+                            "Venue not found."
                     });
                 }
 

@@ -1,5 +1,6 @@
 using Event_parking.DTOs.Category;
 using Event_parking.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Event_parking.Controllers
@@ -8,56 +9,81 @@ namespace Event_parking.Controllers
     [ApiController]
     public class CategoryController : ControllerBase
     {
-        private readonly ICategoryService _categoryService;
+        private readonly ICategoryService
+            _categoryService;
 
         public CategoryController(
             ICategoryService categoryService)
         {
-            _categoryService = categoryService;
+            _categoryService =
+                categoryService;
         }
 
-        // GET: api/categories
+        // ==========================================
+        // GET ALL CATEGORIES
+        // PUBLIC
+        // ==========================================
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var categories =
-                await _categoryService.GetAllAsync();
+                await _categoryService
+                    .GetAllAsync();
 
             return Ok(categories);
         }
 
-        // GET: api/categories/5
+        // ==========================================
+        // GET CATEGORY BY ID
+        // PUBLIC
+        // ==========================================
+
         [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetById(
+            int id)
         {
             var category =
-                await _categoryService.GetByIdAsync(id);
+                await _categoryService
+                    .GetByIdAsync(id);
 
             if (category == null)
             {
                 return NotFound(new
                 {
-                    message = "Category not found."
+                    message =
+                        "Category not found."
                 });
             }
 
             return Ok(category);
         }
 
-        // POST: api/categories
+        // ==========================================
+        // CREATE CATEGORY
+        // ADMIN ONLY
+        // ==========================================
+
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Create(
-            [FromBody] CategoryCreateDto createDto)
+            [FromBody]
+            CategoryCreateDto createDto)
         {
             try
             {
                 var category =
-                    await _categoryService.CreateAsync(createDto);
+                    await _categoryService
+                        .CreateAsync(createDto);
 
                 return CreatedAtAction(
                     nameof(GetById),
-                    new { id = category.CategoryId },
-                    category);
+                    new
+                    {
+                        id = category.CategoryId
+                    },
+                    category
+                );
             }
             catch (InvalidOperationException ex)
             {
@@ -68,24 +94,33 @@ namespace Event_parking.Controllers
             }
         }
 
-        // PUT: api/categories/5
+        // ==========================================
+        // UPDATE CATEGORY
+        // ADMIN ONLY
+        // ==========================================
+
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(
             int id,
-            [FromBody] CategoryUpdateDto updateDto)
+            [FromBody]
+            CategoryUpdateDto updateDto)
         {
             try
             {
                 var category =
-                    await _categoryService.UpdateAsync(
-                        id,
-                        updateDto);
+                    await _categoryService
+                        .UpdateAsync(
+                            id,
+                            updateDto
+                        );
 
                 if (category == null)
                 {
                     return NotFound(new
                     {
-                        message = "Category not found."
+                        message =
+                            "Category not found."
                     });
                 }
 
@@ -100,20 +135,28 @@ namespace Event_parking.Controllers
             }
         }
 
-        // DELETE: api/categories/5
+        // ==========================================
+        // DELETE CATEGORY
+        // ADMIN ONLY
+        // ==========================================
+
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(
+            int id)
         {
             try
             {
                 var deleted =
-                    await _categoryService.DeleteAsync(id);
+                    await _categoryService
+                        .DeleteAsync(id);
 
                 if (!deleted)
                 {
                     return NotFound(new
                     {
-                        message = "Category not found."
+                        message =
+                            "Category not found."
                     });
                 }
 

@@ -12,12 +12,14 @@ namespace Event_parking.Controllers
     [Authorize]
     public class PaymentController : ControllerBase
     {
-        private readonly IPaymentService _paymentService;
+        private readonly IPaymentService
+            _paymentService;
 
         public PaymentController(
             IPaymentService paymentService)
         {
-            _paymentService = paymentService;
+            _paymentService =
+                paymentService;
         }
 
         // ======================================
@@ -28,28 +30,45 @@ namespace Event_parking.Controllers
         {
             string? customerId =
                 User.FindFirstValue(
-                    ClaimTypes.NameIdentifier);
+                    ClaimTypes.NameIdentifier
+                );
 
-            if (string.IsNullOrWhiteSpace(customerId) ||
+            if (
+                string.IsNullOrWhiteSpace(customerId)
+                ||
                 !int.TryParse(
                     customerId,
-                    out int parsedCustomerId))
+                    out int parsedCustomerId
+                )
+            )
             {
                 throw new UnauthorizedAccessException(
-                    "Invalid authentication token.");
+                    "Invalid authentication token."
+                );
             }
 
             return parsedCustomerId;
         }
 
         // ======================================
+        // GET PAYMENT SUMMARY
         // GET /api/bookings/{id}/payment
+        //
+        // Works BEFORE and AFTER payment.
+        // Returns:
+        // Seat Total
+        // Parking Fee
+        // Total Amount
+        // Booking Status
+        // Payment Status
+        // Hold Expiry
+        // Remaining Seconds
         // ======================================
 
         [HttpGet("bookings/{id:int}/payment")]
         [Authorize(Roles = "Customer,Admin")]
         public async Task<IActionResult>
-            GetPaymentByBooking(
+            GetPaymentSummary(
                 int id)
         {
             int customerId =
@@ -58,22 +77,26 @@ namespace Event_parking.Controllers
             bool isAdmin =
                 User.IsInRole("Admin");
 
-            ServiceResult<PaymentResponseDto> result =
+            ServiceResult<PaymentSummaryDto> result =
                 await _paymentService
-                    .GetPaymentByBookingIdAsync(
+                    .GetPaymentSummaryAsync(
                         id,
                         customerId,
-                        isAdmin);
+                        isAdmin
+                    );
 
             if (!result.Success)
             {
-                return MapPaymentError(result);
+                return MapPaymentSummaryError(
+                    result
+                );
             }
 
             return Ok(result);
         }
 
         // ======================================
+        // POST PAYMENT
         // POST /api/bookings/{id}/payment
         // CUSTOMER ONLY
         // ======================================
@@ -91,23 +114,51 @@ namespace Event_parking.Controllers
                 await _paymentService
                     .CreatePaymentAsync(
                         id,
-                        customerId);
+                        customerId
+                    );
 
             if (!result.Success)
             {
-                return MapPaymentError(result);
+                return MapPaymentError(
+                    result
+                );
             }
 
             return StatusCode(
                 StatusCodes.Status201Created,
-                result);
+                result
+            );
         }
 
+
+
         // ======================================
+        // GET ALL PAYMENTS
+        // GET /api/payments
+        // ADMIN ONLY
+        // ======================================
+
+        [HttpGet("payments")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult>
+            GetAllPayments()
+        {
+            ServiceResult<List<PaymentHistoryDto>> result =
+                await _paymentService
+                    .GetAllPaymentsAsync();
+
+            return Ok(result);
+        }
+
+
+        // ======================================
+        // CUSTOMER PAYMENT HISTORY
         // GET /api/payments/customer/{customerId}
         // ======================================
 
-        [HttpGet("payments/customer/{customerId:int}")]
+        [HttpGet(
+            "payments/customer/{customerId:int}"
+        )]
         [Authorize(Roles = "Customer,Admin")]
         public async Task<IActionResult>
             GetCustomerPayments(
@@ -119,28 +170,38 @@ namespace Event_parking.Controllers
             bool isAdmin =
                 User.IsInRole("Admin");
 
-            if (!isAdmin &&
-                currentCustomerId != customerId)
+            if (
+                !isAdmin
+                &&
+                currentCustomerId != customerId
+            )
             {
                 return StatusCode(
                     StatusCodes.Status403Forbidden,
                     ServiceResult<object>.Fail(
-                        "You are not authorized to access these payments."));
+                        "You are not authorized to access these payments."
+                    )
+                );
             }
 
-            ServiceResult<List<PaymentHistoryDto>> result =
-                await _paymentService
-                    .GetCustomerPaymentsAsync(
-                        customerId);
+            ServiceResult<
+                List<PaymentHistoryDto>> result =
+                    await _paymentService
+                        .GetCustomerPaymentsAsync(
+                            customerId
+                        );
 
             return Ok(result);
         }
 
         // ======================================
+        // GET RECEIPT
         // GET /api/payments/{id}/receipt
         // ======================================
 
-        [HttpGet("payments/{id:int}/receipt")]
+        [HttpGet(
+            "payments/{id:int}/receipt"
+        )]
         [Authorize(Roles = "Customer,Admin")]
         public async Task<IActionResult>
             GetReceipt(
@@ -157,22 +218,30 @@ namespace Event_parking.Controllers
                     .GetReceiptAsync(
                         id,
                         customerId,
-                        isAdmin);
+                        isAdmin
+                    );
 
             if (!result.Success)
             {
-                if (result.Message.Contains(
-                    "not authorized",
-                    StringComparison.OrdinalIgnoreCase))
+                if (
+                    result.Message.Contains(
+                        "not authorized",
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                )
                 {
                     return StatusCode(
                         StatusCodes.Status403Forbidden,
-                        result);
+                        result
+                    );
                 }
 
-                if (result.Message.Contains(
-                    "not found",
-                    StringComparison.OrdinalIgnoreCase))
+                if (
+                    result.Message.Contains(
+                        "not found",
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                )
                 {
                     return NotFound(result);
                 }
@@ -184,31 +253,77 @@ namespace Event_parking.Controllers
         }
 
         // ======================================
-        // COMMON PAYMENT ERROR RESPONSE
+        // PAYMENT SUMMARY ERROR RESPONSE
         // ======================================
 
-        private IActionResult MapPaymentError(
-            ServiceResult<PaymentResponseDto> result)
+        private IActionResult
+            MapPaymentSummaryError(
+                ServiceResult<PaymentSummaryDto>
+                    result)
         {
-            if (result.Message.Contains(
-                "not authorized",
-                StringComparison.OrdinalIgnoreCase))
+            if (
+                result.Message.Contains(
+                    "not authorized",
+                    StringComparison.OrdinalIgnoreCase
+                )
+            )
             {
                 return StatusCode(
                     StatusCodes.Status403Forbidden,
-                    result);
+                    result
+                );
             }
 
-            if (result.Message.Contains(
+            if (
+                result.Message.Contains(
                     "not found",
-                    StringComparison.OrdinalIgnoreCase))
+                    StringComparison.OrdinalIgnoreCase
+                )
+            )
             {
                 return NotFound(result);
             }
 
-            if (result.Message.Contains(
+            return BadRequest(result);
+        }
+
+        // ======================================
+        // PAYMENT ERROR RESPONSE
+        // ======================================
+
+        private IActionResult MapPaymentError(
+            ServiceResult<PaymentResponseDto>
+                result)
+        {
+            if (
+                result.Message.Contains(
+                    "not authorized",
+                    StringComparison.OrdinalIgnoreCase
+                )
+            )
+            {
+                return StatusCode(
+                    StatusCodes.Status403Forbidden,
+                    result
+                );
+            }
+
+            if (
+                result.Message.Contains(
+                    "not found",
+                    StringComparison.OrdinalIgnoreCase
+                )
+            )
+            {
+                return NotFound(result);
+            }
+
+            if (
+                result.Message.Contains(
                     "already exists",
-                    StringComparison.OrdinalIgnoreCase))
+                    StringComparison.OrdinalIgnoreCase
+                )
+            )
             {
                 return Conflict(result);
             }

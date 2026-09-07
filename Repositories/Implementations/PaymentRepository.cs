@@ -122,6 +122,32 @@ namespace Event_parking.Repositories.Implementations
                 .ToListAsync();
         }
 
+
+        // ======================================
+        // GET ALL PAYMENTS
+        // ADMIN
+        // ======================================
+
+        public async Task<List<Payment>>
+            GetAllPaymentsAsync()
+        {
+            return await _context.Payments
+
+                .Include(payment =>
+                    payment.Customer)
+
+                .Include(payment =>
+                    payment.Booking)
+                    .ThenInclude(booking =>
+                        booking!.Event)
+
+                .OrderByDescending(payment =>
+                    payment.PaidAt)
+
+                .ToListAsync();
+        }
+
+
         // ======================================
         // ADD PAYMENT
         // ======================================

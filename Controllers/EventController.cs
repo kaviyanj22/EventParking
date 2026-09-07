@@ -1,5 +1,6 @@
 using Event_parking.DTOs.Event;
 using Event_parking.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Event_parking.Controllers
@@ -10,31 +11,47 @@ namespace Event_parking.Controllers
     {
         private readonly IEventService _eventService;
 
-        public EventController(IEventService eventService)
+        public EventController(
+            IEventService eventService)
         {
             _eventService = eventService;
         }
 
+        // ==========================================
+        // GET ALL EVENTS
+        // PUBLIC
+        // ==========================================
         // GET: api/events
         // GET: api/events?name=Music
         // GET: api/events?date=2026-12-20
         // GET: api/events?venueId=1&categoryId=2
+        // ==========================================
+
         [HttpGet]
         public async Task<IActionResult> GetAll(
             [FromQuery] EventFilterDto filter)
         {
             var events =
-                await _eventService.GetAllAsync(filter);
+                await _eventService
+                    .GetAllAsync(filter);
 
             return Ok(events);
         }
 
+        // ==========================================
+        // GET EVENT BY ID
+        // PUBLIC
+        // ==========================================
         // GET: api/events/5
+        // ==========================================
+
         [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetById(
+            int id)
         {
             var eventResult =
-                await _eventService.GetByIdAsync(id);
+                await _eventService
+                    .GetByIdAsync(id);
 
             if (eventResult == null)
             {
@@ -47,7 +64,14 @@ namespace Event_parking.Controllers
             return Ok(eventResult);
         }
 
+        // ==========================================
+        // CREATE EVENT
+        // ADMIN ONLY
+        // ==========================================
         // POST: api/events
+        // ==========================================
+
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Create(
             [FromBody] EventCreateDto createDto)
@@ -55,12 +79,17 @@ namespace Event_parking.Controllers
             try
             {
                 var eventResult =
-                    await _eventService.CreateAsync(createDto);
+                    await _eventService
+                        .CreateAsync(createDto);
 
                 return CreatedAtAction(
                     nameof(GetById),
-                    new { id = eventResult.EventId },
-                    eventResult);
+                    new
+                    {
+                        id = eventResult.EventId
+                    },
+                    eventResult
+                );
             }
             catch (KeyNotFoundException ex)
             {
@@ -85,7 +114,14 @@ namespace Event_parking.Controllers
             }
         }
 
+        // ==========================================
+        // UPDATE EVENT
+        // ADMIN ONLY
+        // ==========================================
         // PUT: api/events/5
+        // ==========================================
+
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(
             int id,
@@ -94,15 +130,18 @@ namespace Event_parking.Controllers
             try
             {
                 var eventResult =
-                    await _eventService.UpdateAsync(
-                        id,
-                        updateDto);
+                    await _eventService
+                        .UpdateAsync(
+                            id,
+                            updateDto
+                        );
 
                 if (eventResult == null)
                 {
                     return NotFound(new
                     {
-                        message = "Event not found."
+                        message =
+                            "Event not found."
                     });
                 }
 
@@ -131,20 +170,30 @@ namespace Event_parking.Controllers
             }
         }
 
+        // ==========================================
+        // DELETE EVENT
+        // ADMIN ONLY
+        // ==========================================
         // DELETE: api/events/5
+        // ==========================================
+
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(
+            int id)
         {
             try
             {
                 var deleted =
-                    await _eventService.DeleteAsync(id);
+                    await _eventService
+                        .DeleteAsync(id);
 
                 if (!deleted)
                 {
                     return NotFound(new
                     {
-                        message = "Event not found."
+                        message =
+                            "Event not found."
                     });
                 }
 

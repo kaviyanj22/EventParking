@@ -66,10 +66,6 @@ namespace Event_parking.Services.Implementations
 
             try
             {
-                // ======================================
-                // CUSTOMER CHECK
-                // ======================================
-
                 Customer? customer =
                     await _bookingRepository
                         .GetCustomerByIdAsync(
@@ -99,10 +95,6 @@ namespace Event_parking.Services.Implementations
                             "Please verify your email before creating a booking.");
                 }
 
-                // ======================================
-                // EVENT CHECK
-                // ======================================
-
                 Event? eventItem =
                     await _bookingRepository
                         .GetEventByIdAsync(
@@ -114,10 +106,6 @@ namespace Event_parking.Services.Implementations
                         .Fail(
                             "Event was not found.");
                 }
-
-                // ======================================
-                // GET SELECTED SEATS
-                // ======================================
 
                 List<int> requestedSeatIds =
                     dto.SeatIds
@@ -137,10 +125,6 @@ namespace Event_parking.Services.Implementations
                         .Fail(
                             "One or more selected seats do not exist for this event.");
                 }
-
-                // ======================================
-                // CHECK EACH SEAT
-                // ======================================
 
                 foreach (Seat seat in seats)
                 {
@@ -166,10 +150,6 @@ namespace Event_parking.Services.Implementations
                                 $"Seat {seat.SeatNumber} has already been booked.");
                     }
                 }
-
-                // ======================================
-                // OPTIONAL PARKING CHECK
-                // ======================================
 
                 ParkingSlot? parkingSlot = null;
 
@@ -218,10 +198,6 @@ namespace Event_parking.Services.Implementations
                     }
                 }
 
-                // ======================================
-                // BOOKING NUMBER
-                // ======================================
-
                 string bookingNumber;
 
                 do
@@ -234,10 +210,6 @@ namespace Event_parking.Services.Implementations
                     .BookingNumberExistsAsync(
                         bookingNumber));
 
-                // ======================================
-                // HOLD TIME
-                // ======================================
-
                 int holdMinutes =
                     _bookingSettings.HoldMinutes > 0
                         ? _bookingSettings.HoldMinutes
@@ -245,14 +217,6 @@ namespace Event_parking.Services.Implementations
 
                 DateTime utcNow =
                     DateTime.UtcNow;
-
-                DateTime holdExpiresAt =
-                    utcNow.AddMinutes(
-                        holdMinutes);
-
-                // ======================================
-                // CREATE BOOKING
-                // ======================================
 
                 Booking booking =
                     new Booking
@@ -270,15 +234,12 @@ namespace Event_parking.Services.Implementations
                             "Pending",
 
                         HoldExpiresAt =
-                            holdExpiresAt,
+                            utcNow.AddMinutes(
+                                holdMinutes),
 
                         CreatedAt =
                             utcNow
                     };
-
-                // ======================================
-                // ADD SEATS TO BOOKING
-                // ======================================
 
                 foreach (Seat seat in seats)
                 {
@@ -308,17 +269,12 @@ namespace Event_parking.Services.Implementations
                     booking.BookingSeats
                         .Add(bookingSeat);
 
-                    // Member 3 seat states
                     seat.Status =
                         "Booked";
 
                     seat.UpdatedAt =
                         utcNow;
                 }
-
-                // ======================================
-                // OPTIONAL PARKING RESERVATION
-                // ======================================
 
                 if (parkingSlot != null)
                 {
@@ -348,10 +304,6 @@ namespace Event_parking.Services.Implementations
                         utcNow;
                 }
 
-                // ======================================
-                // SAVE BOOKING
-                // ======================================
-
                 await _bookingRepository
                     .AddBookingAsync(
                         booking);
@@ -362,18 +314,16 @@ namespace Event_parking.Services.Implementations
 
                 if (!saved)
                 {
-                    await transaction.RollbackAsync();
+                    await transaction
+                        .RollbackAsync();
 
                     return ServiceResult<BookingResponseDto>
                         .Fail(
                             "Failed to create booking.");
                 }
 
-                await transaction.CommitAsync();
-
-                // ======================================
-                // GET COMPLETE BOOKING
-                // ======================================
+                await transaction
+                    .CommitAsync();
 
                 Booking? createdBooking =
                     await _bookingRepository
@@ -387,18 +337,621 @@ namespace Event_parking.Services.Implementations
                             "Booking was created but could not be retrieved.");
                 }
 
-                return ServiceResult<BookingResponseDto>.Ok(
-                    MapToBookingResponseDto(
-                        createdBooking),
-                    "Booking created successfully.");
+                return ServiceResult<BookingResponseDto>
+                    .Ok(
+                        MapToBookingResponseDto(
+                            createdBooking),
+                        "Booking created successfully.");
             }
             catch
             {
-                await transaction.RollbackAsync();
+                await transaction
+                    .RollbackAsync();
 
                 return ServiceResult<BookingResponseDto>
                     .Fail(
                         "An error occurred while creating the booking.");
+            }
+        }
+
+        // ======================================
+        // ADD SEATS TO EXISTING BOOKING
+        // ======================================
+
+        public async Task<ServiceResult<BookingResponseDto>>
+            AddSeatsAsync(
+                int bookingId,
+                int customerId,
+                BookingAddSeatsDto dto)
+        {
+            if (dto.SeatIds == null ||
+                dto.SeatIds.Count == 0)
+            {
+                return ServiceResult<BookingResponseDto>
+                    .Fail(
+                        "At least one seat must be selected.");
+            }
+
+            if (dto.SeatIds.Any(id => id <= 0))
+            {
+                return ServiceResult<BookingResponseDto>
+                    .Fail(
+                        "One or more selected seat IDs are invalid.");
+            }
+
+            if (dto.SeatIds.Count !=
+                dto.SeatIds.Distinct().Count())
+            {
+                return ServiceResult<BookingResponseDto>
+                    .Fail(
+                        "The same seat cannot be selected more than once.");
+            }
+
+            await using var transaction =
+                await _bookingRepository
+                    .BeginTransactionAsync();
+
+            try
+            {
+                Booking? booking =
+                    await _bookingRepository
+                        .GetBookingWithDetailsAsync(
+                            bookingId);
+
+                if (booking == null)
+                {
+                    return ServiceResult<BookingResponseDto>
+                        .Fail(
+                            "Booking was not found.");
+                }
+
+                if (booking.CustomerId !=
+                    customerId)
+                {
+                    return ServiceResult<BookingResponseDto>
+                        .Fail(
+                            "You are not authorized to modify this booking.");
+                }
+
+                if (!string.Equals(
+                    booking.Status,
+                    "Pending",
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    return ServiceResult<BookingResponseDto>
+                        .Fail(
+                            "Seats can only be added to a pending booking.");
+                }
+
+                DateTime utcNow =
+                    DateTime.UtcNow;
+
+                if (booking.HoldExpiresAt.HasValue &&
+                    booking.HoldExpiresAt.Value <= utcNow)
+                {
+                    return ServiceResult<BookingResponseDto>
+                        .Fail(
+                            "Booking hold has expired.");
+                }
+
+                Event? eventItem =
+                    await _bookingRepository
+                        .GetEventByIdAsync(
+                            booking.EventId);
+
+                if (eventItem == null)
+                {
+                    return ServiceResult<BookingResponseDto>
+                        .Fail(
+                            "Event was not found.");
+                }
+
+                List<int> requestedSeatIds =
+                    dto.SeatIds
+                        .Distinct()
+                        .ToList();
+
+                List<Seat> seats =
+                    await _bookingRepository
+                        .GetSeatsByIdsAsync(
+                            booking.EventId,
+                            requestedSeatIds);
+
+                if (seats.Count !=
+                    requestedSeatIds.Count)
+                {
+                    return ServiceResult<BookingResponseDto>
+                        .Fail(
+                            "One or more selected seats do not exist for this event.");
+                }
+
+                foreach (Seat seat in seats)
+                {
+                    bool alreadyInBooking =
+                        booking.BookingSeats
+                            .Any(bookingSeat =>
+                                bookingSeat.SeatId ==
+                                    seat.SeatId
+                                &&
+                                bookingSeat.IsActive);
+
+                    if (alreadyInBooking)
+                    {
+                        return ServiceResult<BookingResponseDto>
+                            .Fail(
+                                $"Seat {seat.SeatNumber} is already part of this booking.");
+                    }
+
+                    if (!string.Equals(
+                        seat.Status,
+                        "Available",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        return ServiceResult<BookingResponseDto>
+                            .Fail(
+                                $"Seat {seat.SeatNumber} is not available.");
+                    }
+
+                    bool hasActiveBooking =
+                        await _bookingRepository
+                            .HasActiveBookingSeatAsync(
+                                seat.SeatId);
+
+                    if (hasActiveBooking)
+                    {
+                        return ServiceResult<BookingResponseDto>
+                            .Fail(
+                                $"Seat {seat.SeatNumber} has already been booked.");
+                    }
+                }
+
+                foreach (Seat seat in seats)
+                {
+                    decimal bookingPrice =
+                        seat.Price
+                        ?? eventItem.TicketPrice;
+
+                    BookingSeat bookingSeat =
+                        new BookingSeat
+                        {
+                            BookingId =
+                                booking.BookingId,
+
+                            SeatId =
+                                seat.SeatId,
+
+                            PriceAtBooking =
+                                bookingPrice,
+
+                            IsActive =
+                                true,
+
+                            ReservedAt =
+                                utcNow,
+
+                            Seat =
+                                seat
+                        };
+
+                    booking.BookingSeats
+                        .Add(bookingSeat);
+
+                    seat.Status =
+                        "Booked";
+
+                    seat.UpdatedAt =
+                        utcNow;
+                }
+
+                booking.UpdatedAt =
+                    utcNow;
+
+                bool saved =
+                    await _bookingRepository
+                        .SaveChangesAsync();
+
+                if (!saved)
+                {
+                    await transaction
+                        .RollbackAsync();
+
+                    return ServiceResult<BookingResponseDto>
+                        .Fail(
+                            "Failed to add seats to booking.");
+                }
+
+                await transaction
+                    .CommitAsync();
+
+                Booking? updatedBooking =
+                    await _bookingRepository
+                        .GetBookingWithDetailsAsync(
+                            bookingId);
+
+                if (updatedBooking == null)
+                {
+                    return ServiceResult<BookingResponseDto>
+                        .Fail(
+                            "Booking was updated but could not be retrieved.");
+                }
+
+                return ServiceResult<BookingResponseDto>
+                    .Ok(
+                        MapToBookingResponseDto(
+                            updatedBooking),
+                        "Seats added successfully.");
+            }
+            catch
+            {
+                await transaction
+                    .RollbackAsync();
+
+                return ServiceResult<BookingResponseDto>
+                    .Fail(
+                        "An error occurred while adding seats.");
+            }
+        }
+
+        // ======================================
+        // ADD PARKING
+        // ======================================
+
+        public async Task<ServiceResult<BookingResponseDto>>
+            AddParkingAsync(
+                int bookingId,
+                int customerId,
+                BookingParkingRequestDto dto)
+        {
+            if (dto.ParkingSlotId <= 0)
+            {
+                return ServiceResult<BookingResponseDto>
+                    .Fail(
+                        "A valid parking slot is required.");
+            }
+
+            await using var transaction =
+                await _bookingRepository
+                    .BeginTransactionAsync();
+
+            try
+            {
+                Booking? booking =
+                    await _bookingRepository
+                        .GetBookingWithDetailsAsync(
+                            bookingId);
+
+                if (booking == null)
+                {
+                    return ServiceResult<BookingResponseDto>
+                        .Fail(
+                            "Booking was not found.");
+                }
+
+                if (booking.CustomerId !=
+                    customerId)
+                {
+                    return ServiceResult<BookingResponseDto>
+                        .Fail(
+                            "You are not authorized to modify this booking.");
+                }
+
+                if (!string.Equals(
+                    booking.Status,
+                    "Pending",
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    return ServiceResult<BookingResponseDto>
+                        .Fail(
+                            "Parking can only be added to a pending booking.");
+                }
+
+                DateTime utcNow =
+                    DateTime.UtcNow;
+
+                if (booking.HoldExpiresAt.HasValue &&
+                    booking.HoldExpiresAt.Value <= utcNow)
+                {
+                    return ServiceResult<BookingResponseDto>
+                        .Fail(
+                            "Booking hold has expired.");
+                }
+
+                if (booking.ParkingReservation != null &&
+                    booking.ParkingReservation.IsActive)
+                {
+                    return ServiceResult<BookingResponseDto>
+                        .Fail(
+                            "Booking already has an active parking reservation.");
+                }
+
+                ParkingSlot? parkingSlot =
+                    await _bookingRepository
+                        .GetParkingSlotByIdAsync(
+                            booking.EventId,
+                            dto.ParkingSlotId);
+
+                if (parkingSlot == null)
+                {
+                    return ServiceResult<BookingResponseDto>
+                        .Fail(
+                            "Parking slot was not found for this event.");
+                }
+
+                if (!string.Equals(
+                    parkingSlot.Status,
+                    "Available",
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    return ServiceResult<BookingResponseDto>
+                        .Fail(
+                            $"Parking slot {parkingSlot.SlotNumber} is not available.");
+                }
+
+                bool hasActiveParking =
+                    await _bookingRepository
+                        .HasActiveParkingReservationAsync(
+                            parkingSlot.ParkingSlotId);
+
+                if (hasActiveParking)
+                {
+                    return ServiceResult<BookingResponseDto>
+                        .Fail(
+                            $"Parking slot {parkingSlot.SlotNumber} has already been reserved.");
+                }
+
+                if (booking.ParkingReservation == null)
+                {
+                    booking.ParkingReservation =
+                        new ParkingReservation
+                        {
+                            BookingId =
+                                booking.BookingId,
+
+                            ParkingSlotId =
+                                parkingSlot.ParkingSlotId,
+
+                            FeeAtReservation =
+                                parkingSlot.Fee,
+
+                            ReservedAt =
+                                utcNow,
+
+                            ReleasedAt =
+                                null,
+
+                            IsActive =
+                                true,
+
+                            ParkingSlot =
+                                parkingSlot
+                        };
+                }
+                else
+                {
+                    booking.ParkingReservation
+                        .ParkingSlotId =
+                            parkingSlot.ParkingSlotId;
+
+                    booking.ParkingReservation
+                        .FeeAtReservation =
+                            parkingSlot.Fee;
+
+                    booking.ParkingReservation
+                        .ReservedAt =
+                            utcNow;
+
+                    booking.ParkingReservation
+                        .ReleasedAt =
+                            null;
+
+                    booking.ParkingReservation
+                        .IsActive =
+                            true;
+
+                    booking.ParkingReservation
+                        .ParkingSlot =
+                            parkingSlot;
+                }
+
+                parkingSlot.Status =
+                    "Reserved";
+
+                parkingSlot.UpdatedAt =
+                    utcNow;
+
+                booking.UpdatedAt =
+                    utcNow;
+
+                bool saved =
+                    await _bookingRepository
+                        .SaveChangesAsync();
+
+                if (!saved)
+                {
+                    await transaction
+                        .RollbackAsync();
+
+                    return ServiceResult<BookingResponseDto>
+                        .Fail(
+                            "Failed to add parking reservation.");
+                }
+
+                await transaction
+                    .CommitAsync();
+
+                Booking? updatedBooking =
+                    await _bookingRepository
+                        .GetBookingWithDetailsAsync(
+                            bookingId);
+
+                if (updatedBooking == null)
+                {
+                    return ServiceResult<BookingResponseDto>
+                        .Fail(
+                            "Booking was updated but could not be retrieved.");
+                }
+
+                return ServiceResult<BookingResponseDto>
+                    .Ok(
+                        MapToBookingResponseDto(
+                            updatedBooking),
+                        "Parking added successfully.");
+            }
+            catch
+            {
+                await transaction
+                    .RollbackAsync();
+
+                return ServiceResult<BookingResponseDto>
+                    .Fail(
+                        "An error occurred while adding parking.");
+            }
+        }
+
+        // ======================================
+        // REMOVE PARKING
+        // ======================================
+
+        public async Task<ServiceResult<BookingResponseDto>>
+            RemoveParkingAsync(
+                int bookingId,
+                int customerId)
+        {
+            await using var transaction =
+                await _bookingRepository
+                    .BeginTransactionAsync();
+
+            try
+            {
+                Booking? booking =
+                    await _bookingRepository
+                        .GetBookingWithDetailsAsync(
+                            bookingId);
+
+                if (booking == null)
+                {
+                    return ServiceResult<BookingResponseDto>
+                        .Fail(
+                            "Booking was not found.");
+                }
+
+                if (booking.CustomerId !=
+                    customerId)
+                {
+                    return ServiceResult<BookingResponseDto>
+                        .Fail(
+                            "You are not authorized to modify this booking.");
+                }
+
+                if (!string.Equals(
+                    booking.Status,
+                    "Pending",
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    return ServiceResult<BookingResponseDto>
+                        .Fail(
+                            "Parking can only be removed from a pending booking.");
+                }
+
+                DateTime utcNow =
+                    DateTime.UtcNow;
+
+                if (booking.HoldExpiresAt.HasValue &&
+                    booking.HoldExpiresAt.Value <= utcNow)
+                {
+                    return ServiceResult<BookingResponseDto>
+                        .Fail(
+                            "Booking hold has expired.");
+                }
+
+                if (booking.ParkingReservation == null ||
+                    !booking.ParkingReservation.IsActive)
+                {
+                    return ServiceResult<BookingResponseDto>
+                        .Fail(
+                            "Booking does not have an active parking reservation.");
+                }
+
+                booking.ParkingReservation
+                    .IsActive =
+                        false;
+
+                booking.ParkingReservation
+                    .ReleasedAt =
+                        utcNow;
+
+                if (booking.ParkingReservation
+                    .ParkingSlot != null)
+                {
+                    booking.ParkingReservation
+                        .ParkingSlot!
+                        .Status =
+                            "Available";
+
+                    booking.ParkingReservation
+                        .ParkingSlot!
+                        .UpdatedAt =
+                            utcNow;
+                }
+
+                booking.UpdatedAt =
+                    utcNow;
+
+                bool saved =
+                    await _bookingRepository
+                        .SaveChangesAsync();
+
+                if (!saved)
+                {
+                    await transaction
+                        .RollbackAsync();
+
+                    return ServiceResult<BookingResponseDto>
+                        .Fail(
+                            "Failed to remove parking reservation.");
+                }
+
+                await transaction
+                    .CommitAsync();
+
+                Booking? updatedBooking =
+                    await _bookingRepository
+                        .GetBookingWithDetailsAsync(
+                            bookingId);
+
+                if (updatedBooking == null)
+                {
+                    return ServiceResult<BookingResponseDto>
+                        .Fail(
+                            "Booking was updated but could not be retrieved.");
+                }
+
+                BookingResponseDto response =
+                    MapToBookingResponseDto(
+                        updatedBooking);
+
+                response.Parking =
+                    null;
+
+                response.ParkingFee =
+                    0m;
+
+                response.TotalAmount =
+                    response.SeatTotal;
+
+                return ServiceResult<BookingResponseDto>
+                    .Ok(
+                        response,
+                        "Parking removed successfully.");
+            }
+            catch
+            {
+                await transaction
+                    .RollbackAsync();
+
+                return ServiceResult<BookingResponseDto>
+                    .Fail(
+                        "An error occurred while removing parking.");
             }
         }
 
@@ -423,7 +976,8 @@ namespace Event_parking.Services.Implementations
                     .ToList();
 
             return ServiceResult<
-                List<BookingResponseDto>>.Ok(
+                List<BookingResponseDto>>
+                .Ok(
                     response,
                     "Bookings retrieved successfully.");
         }
@@ -458,10 +1012,11 @@ namespace Event_parking.Services.Implementations
                         "You are not authorized to access this booking.");
             }
 
-            return ServiceResult<BookingResponseDto>.Ok(
-                MapToBookingResponseDto(
-                    booking),
-                "Booking retrieved successfully.");
+            return ServiceResult<BookingResponseDto>
+                .Ok(
+                    MapToBookingResponseDto(
+                        booking),
+                    "Booking retrieved successfully.");
         }
 
         // ======================================
@@ -515,7 +1070,8 @@ namespace Event_parking.Services.Implementations
                     booking.HoldExpiresAt.Value <= utcNow
                 );
 
-            int remainingSeconds = 0;
+            int remainingSeconds =
+                0;
 
             if (!isExpired &&
                 string.Equals(
@@ -532,9 +1088,7 @@ namespace Event_parking.Services.Implementations
                             (
                                 booking.HoldExpiresAt.Value
                                 - utcNow
-                            ).TotalSeconds
-                        )
-                    );
+                            ).TotalSeconds));
             }
 
             BookingHoldStatusDto response =
@@ -548,7 +1102,10 @@ namespace Event_parking.Services.Implementations
 
                     Status =
                         isExpired &&
-                        booking.Status == "Pending"
+                        string.Equals(
+                            booking.Status,
+                            "Pending",
+                            StringComparison.OrdinalIgnoreCase)
                             ? "Expired"
                             : booking.Status,
 
@@ -563,7 +1120,8 @@ namespace Event_parking.Services.Implementations
                 };
 
             return ServiceResult<
-                BookingHoldStatusDto>.Ok(
+                BookingHoldStatusDto>
+                .Ok(
                     response,
                     "Booking hold status retrieved successfully.");
         }
@@ -646,14 +1204,16 @@ namespace Event_parking.Services.Implementations
 
                 if (!saved)
                 {
-                    await transaction.RollbackAsync();
+                    await transaction
+                        .RollbackAsync();
 
                     return ServiceResult<bool>
                         .Fail(
                             "Failed to cancel booking.");
                 }
 
-                await transaction.CommitAsync();
+                await transaction
+                    .CommitAsync();
 
                 await _notificationService
                     .CreateNotificationAsync(
@@ -678,13 +1238,15 @@ namespace Event_parking.Services.Implementations
                                 $"Booking {booking.BookingNumber} has been cancelled."
                         });
 
-                return ServiceResult<bool>.Ok(
-                    true,
-                    "Booking cancelled successfully.");
+                return ServiceResult<bool>
+                    .Ok(
+                        true,
+                        "Booking cancelled successfully.");
             }
             catch
             {
-                await transaction.RollbackAsync();
+                await transaction
+                    .RollbackAsync();
 
                 return ServiceResult<bool>
                     .Fail(
@@ -713,7 +1275,8 @@ namespace Event_parking.Services.Implementations
                     .ToList();
 
             return ServiceResult<
-                List<BookingResponseDto>>.Ok(
+                List<BookingResponseDto>>
+                .Ok(
                     response,
                     "Bookings retrieved successfully.");
         }
@@ -741,7 +1304,9 @@ namespace Event_parking.Services.Implementations
 
                 if (expiredBookings.Count == 0)
                 {
-                    await transaction.CommitAsync();
+                    await transaction
+                        .CommitAsync();
+
                     return;
                 }
 
@@ -762,11 +1327,14 @@ namespace Event_parking.Services.Implementations
                 await _bookingRepository
                     .SaveChangesAsync();
 
-                await transaction.CommitAsync();
+                await transaction
+                    .CommitAsync();
             }
             catch
             {
-                await transaction.RollbackAsync();
+                await transaction
+                    .RollbackAsync();
+
                 throw;
             }
         }
@@ -818,12 +1386,12 @@ namespace Event_parking.Services.Implementations
                     booking.ParkingReservation
                         .ParkingSlot!
                         .Status =
-                        "Available";
+                            "Available";
 
                     booking.ParkingReservation
                         .ParkingSlot!
                         .UpdatedAt =
-                        utcNow;
+                            utcNow;
                 }
             }
         }
@@ -878,32 +1446,51 @@ namespace Event_parking.Services.Implementations
             decimal parkingFee =
                 0m;
 
-            if (booking.ParkingReservation != null)
+            // Pending booking-la customer parking
+            // remove pannina inactive parking-a
+            // response-la kaatta koodathu.
+            //
+            // Cancelled / Expired history-la
+            // old parking details preserve pannuvom.
+
+            bool shouldIncludeParking =
+                booking.ParkingReservation != null
+                &&
+                (
+                    booking.ParkingReservation.IsActive
+                    ||
+                    !string.Equals(
+                        booking.Status,
+                        "Pending",
+                        StringComparison.OrdinalIgnoreCase)
+                );
+
+            if (shouldIncludeParking)
             {
                 parkingFee =
-                    booking.ParkingReservation
+                    booking.ParkingReservation!
                         .FeeAtReservation;
 
                 parkingDto =
                     new BookingParkingDto
                     {
                         ParkingSlotId =
-                            booking.ParkingReservation
+                            booking.ParkingReservation!
                                 .ParkingSlotId,
 
                         SlotNumber =
-                            booking.ParkingReservation
+                            booking.ParkingReservation!
                                 .ParkingSlot?
                                 .SlotNumber
                             ?? string.Empty,
 
                         Zone =
-                            booking.ParkingReservation
+                            booking.ParkingReservation!
                                 .ParkingSlot?
                                 .Zone,
 
                         FeeAtReservation =
-                            booking.ParkingReservation
+                            booking.ParkingReservation!
                                 .FeeAtReservation
                     };
             }

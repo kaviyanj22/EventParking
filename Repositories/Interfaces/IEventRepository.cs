@@ -5,26 +5,45 @@ namespace Event_parking.Repositories.Interfaces
 {
     public interface IEventRepository
     {
-        Task<IEnumerable<Event>> GetAllAsync(EventFilterDto? filter = null);
+        Task<IEnumerable<Event>>
+            GetAllAsync(
+                EventFilterDto? filter = null);
 
-        Task<Event?> GetByIdAsync(int id);
+        Task<Event?>
+            GetByIdAsync(
+                int id);
 
-        Task<Event> CreateAsync(Event eventEntity);
+        Task<Event>
+            CreateAsync(
+                Event eventEntity);
 
-        Task<Event> UpdateAsync(Event eventEntity);
+        Task<Event>
+            UpdateAsync(
+                Event eventEntity);
 
-        Task<bool> DeleteAsync(Event eventEntity);
+        Task<bool>
+            DeleteAsync(
+                Event eventEntity);
 
-        Task<bool> HasActiveBookingsAsync(int eventId);
+        Task<bool>
+            HasActiveBookingsAsync(
+                int eventId);
 
-        Task<int> GetBookedSeatCountAsync(int eventId);
+        Task<int>
+            GetBookedSeatCountAsync(
+                int eventId);
 
-        Task<bool> HasVenueOverlapAsync(
-            int venueId,
-            DateTime eventDate,
-            TimeSpan startTime,
-            TimeSpan endTime,
-            int? excludeEventId = null
-        );
+        Task<List<int>>
+            GetActiveBookingCustomerIdsAsync(
+                int eventId);
+
+        Task<bool>
+            HasVenueOverlapAsync(
+                int venueId,
+                DateTime eventDate,
+                TimeSpan startTime,
+                TimeSpan endTime,
+                int? excludeEventId = null
+            );
     }
 }

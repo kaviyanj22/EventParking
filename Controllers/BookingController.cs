@@ -12,12 +12,14 @@ namespace Event_parking.Controllers
     [Authorize]
     public class BookingController : ControllerBase
     {
-        private readonly IBookingService _bookingService;
+        private readonly IBookingService
+            _bookingService;
 
         public BookingController(
             IBookingService bookingService)
         {
-            _bookingService = bookingService;
+            _bookingService =
+                bookingService;
         }
 
         // ======================================
@@ -51,7 +53,8 @@ namespace Event_parking.Controllers
         [Authorize(Roles = "Customer")]
         public async Task<IActionResult>
             CreateBooking(
-                [FromBody] BookingCreateDto dto)
+                [FromBody]
+                BookingCreateDto dto)
         {
             int customerId =
                 GetCurrentCustomerId();
@@ -64,7 +67,8 @@ namespace Event_parking.Controllers
 
             if (!result.Success)
             {
-                return MapBookingError(result);
+                return MapBookingError(
+                    result);
             }
 
             return StatusCode(
@@ -73,10 +77,105 @@ namespace Event_parking.Controllers
         }
 
         // ======================================
+        // POST /api/bookings/{id}/seats
+        // ADD SEATS TO PENDING BOOKING
+        // ======================================
+
+        [HttpPost("{id:int}/seats")]
+        [Authorize(Roles = "Customer")]
+        public async Task<IActionResult>
+            AddSeats(
+                int id,
+                [FromBody]
+                BookingAddSeatsDto dto)
+        {
+            int customerId =
+                GetCurrentCustomerId();
+
+            ServiceResult<BookingResponseDto> result =
+                await _bookingService
+                    .AddSeatsAsync(
+                        id,
+                        customerId,
+                        dto);
+
+            if (!result.Success)
+            {
+                return MapBookingError(
+                    result);
+            }
+
+            return Ok(result);
+        }
+
+        // ======================================
+        // POST /api/bookings/{id}/parking
+        // ADD PARKING TO PENDING BOOKING
+        // ======================================
+
+        [HttpPost("{id:int}/parking")]
+        [Authorize(Roles = "Customer")]
+        public async Task<IActionResult>
+            AddParking(
+                int id,
+                [FromBody]
+                BookingParkingRequestDto dto)
+        {
+            int customerId =
+                GetCurrentCustomerId();
+
+            ServiceResult<BookingResponseDto> result =
+                await _bookingService
+                    .AddParkingAsync(
+                        id,
+                        customerId,
+                        dto);
+
+            if (!result.Success)
+            {
+                return MapBookingError(
+                    result);
+            }
+
+            return Ok(result);
+        }
+
+        // ======================================
+        // DELETE /api/bookings/{id}/parking
+        // REMOVE PARKING BEFORE PAYMENT
+        // ======================================
+
+        [HttpDelete("{id:int}/parking")]
+        [Authorize(Roles = "Customer")]
+        public async Task<IActionResult>
+            RemoveParking(
+                int id)
+        {
+            int customerId =
+                GetCurrentCustomerId();
+
+            ServiceResult<BookingResponseDto> result =
+                await _bookingService
+                    .RemoveParkingAsync(
+                        id,
+                        customerId);
+
+            if (!result.Success)
+            {
+                return MapBookingError(
+                    result);
+            }
+
+            return Ok(result);
+        }
+
+        // ======================================
         // GET /api/bookings/customer/{customerId}
         // ======================================
 
-        [HttpGet("customer/{customerId:int}")]
+        [HttpGet(
+            "customer/{customerId:int}"
+        )]
         [Authorize(Roles = "Customer,Admin")]
         public async Task<IActionResult>
             GetCustomerBookings(
@@ -94,11 +193,13 @@ namespace Event_parking.Controllers
                 return StatusCode(
                     StatusCodes.Status403Forbidden,
                     ServiceResult<object>.Fail(
-                        "You are not authorized to access these bookings."));
+                        "You are not authorized to access these bookings."
+                    )
+                );
             }
 
-            ServiceResult<List<BookingResponseDto>>
-                result =
+            ServiceResult<
+                List<BookingResponseDto>> result =
                     await _bookingService
                         .GetCustomerBookingsAsync(
                             customerId);
@@ -131,7 +232,8 @@ namespace Event_parking.Controllers
 
             if (!result.Success)
             {
-                return MapBookingError(result);
+                return MapBookingError(
+                    result);
             }
 
             return Ok(result);
@@ -241,10 +343,11 @@ namespace Event_parking.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult>
             GetBookings(
-                [FromQuery] int? eventId)
+                [FromQuery]
+                int? eventId)
         {
-            ServiceResult<List<BookingResponseDto>>
-                result =
+            ServiceResult<
+                List<BookingResponseDto>> result =
                     await _bookingService
                         .GetBookingsAsync(
                             eventId);
@@ -253,18 +356,26 @@ namespace Event_parking.Controllers
         }
 
         // ======================================
-        // COMMON ERROR RESPONSE
+        // COMMON BOOKING ERROR RESPONSE
         // ======================================
 
-        private IActionResult MapBookingError(
-            ServiceResult<BookingResponseDto> result)
+        private IActionResult
+            MapBookingError(
+                ServiceResult<BookingResponseDto>
+                    result)
         {
+            // ======================================
+            // 403 FORBIDDEN
+            // ======================================
+
             if (result.Message.Contains(
                     "not authorized",
-                    StringComparison.OrdinalIgnoreCase) ||
+                    StringComparison.OrdinalIgnoreCase)
+                ||
                 result.Message.Contains(
                     "verify your email",
-                    StringComparison.OrdinalIgnoreCase) ||
+                    StringComparison.OrdinalIgnoreCase)
+                ||
                 result.Message.Contains(
                     "account is not active",
                     StringComparison.OrdinalIgnoreCase))
@@ -274,28 +385,52 @@ namespace Event_parking.Controllers
                     result);
             }
 
+            // ======================================
+            // 409 CONFLICT
+            // SEAT / PARKING CONFLICTS
+            // ======================================
+
             if (result.Message.Contains(
                     "not available",
-                    StringComparison.OrdinalIgnoreCase) ||
+                    StringComparison.OrdinalIgnoreCase)
+                ||
                 result.Message.Contains(
                     "already been booked",
-                    StringComparison.OrdinalIgnoreCase) ||
+                    StringComparison.OrdinalIgnoreCase)
+                ||
                 result.Message.Contains(
                     "already been reserved",
+                    StringComparison.OrdinalIgnoreCase)
+                ||
+                result.Message.Contains(
+                    "already part of this booking",
+                    StringComparison.OrdinalIgnoreCase)
+                ||
+                result.Message.Contains(
+                    "already has an active parking reservation",
                     StringComparison.OrdinalIgnoreCase))
             {
                 return Conflict(result);
             }
 
+            // ======================================
+            // 404 NOT FOUND
+            // ======================================
+
             if (result.Message.Contains(
                     "not found",
-                    StringComparison.OrdinalIgnoreCase) ||
+                    StringComparison.OrdinalIgnoreCase)
+                ||
                 result.Message.Contains(
                     "do not exist",
                     StringComparison.OrdinalIgnoreCase))
             {
                 return NotFound(result);
             }
+
+            // ======================================
+            // 400 BAD REQUEST
+            // ======================================
 
             return BadRequest(result);
         }

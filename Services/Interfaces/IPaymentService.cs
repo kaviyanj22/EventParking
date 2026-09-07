@@ -5,6 +5,17 @@ namespace Event_parking.Services.Interfaces
     public interface IPaymentService
     {
         // ======================================
+        // GET PAYMENT SUMMARY
+        // ======================================
+
+        Task<ServiceResult<PaymentSummaryDto>>
+            GetPaymentSummaryAsync(
+                int bookingId,
+                int customerId,
+                bool isAdmin
+            );
+
+        // ======================================
         // GET PAYMENT BY BOOKING
         // ======================================
 
@@ -33,6 +44,14 @@ namespace Event_parking.Services.Interfaces
             GetCustomerPaymentsAsync(
                 int customerId
             );
+
+        // ======================================
+        // ALL PAYMENTS
+        // ADMIN
+        // ======================================
+
+        Task<ServiceResult<List<PaymentHistoryDto>>>
+            GetAllPaymentsAsync();
 
         // ======================================
         // RECEIPT
