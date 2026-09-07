@@ -40,6 +40,10 @@ namespace Event_parking.Models
         [Range(0, double.MaxValue)]
         public decimal ParkingFee { get; set; }
 
+        // Main seating plan image for the event
+        [MaxLength(500)]
+        public string? SeatingLayoutImageUrl { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public DateTime? UpdatedAt { get; set; }
@@ -50,5 +54,8 @@ namespace Event_parking.Models
 
         [ForeignKey(nameof(CategoryId))]
         public EventCategory? Category { get; set; }
+
+        public ICollection<SeatSection> SeatSections { get; set; }
+            = new List<SeatSection>();
     }
 }

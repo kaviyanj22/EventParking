@@ -89,20 +89,72 @@ namespace Event_parking.Repositories.Implementations
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public Task<bool> HasActiveBookingsAsync(int eventId)
+        // ======================================
+        // CHECK ACTIVE BOOKINGS
+        // ======================================
+
+        public async Task<bool>
+            HasActiveBookingsAsync(
+                int eventId)
         {
-            // Booking module is not implemented yet.
-            // Replace this after Booking integration.
-            return Task.FromResult(false);
+            return await _context.Bookings
+                .AnyAsync(booking =>
+                    booking.EventId == eventId
+                    &&
+                    (
+                        booking.Status == "Pending"
+                        ||
+                        booking.Status == "Confirmed"
+                    ));
         }
 
-        public Task<int> GetBookedSeatCountAsync(int eventId)
+
+        // ======================================
+        // GET BOOKED SEAT COUNT
+        // ======================================
+        // ======================================
+        // GET BOOKED SEAT COUNT
+        // ======================================
+
+        public async Task<int>
+            GetBookedSeatCountAsync(
+                int eventId)
         {
-            // BookingSeat module is not implemented yet.
-            // Replace this after Booking integration.
-            return Task.FromResult(0);
+            return await (
+                from bookingSeat in _context.BookingSeats
+                join booking in _context.Bookings
+                    on bookingSeat.BookingId
+                    equals booking.BookingId
+                where bookingSeat.IsActive
+                      && booking.EventId == eventId
+                select bookingSeat
+            )
+            .CountAsync();
         }
 
+        // ======================================
+        // GET CUSTOMERS WITH ACTIVE BOOKINGS
+        // USED FOR EVENT UPDATE NOTIFICATIONS
+        // ======================================
+
+        public async Task<List<int>>
+            GetActiveBookingCustomerIdsAsync(
+                int eventId)
+        {
+            return await _context.Bookings
+                .Where(booking =>
+                    booking.EventId == eventId
+                    &&
+                    (
+                        booking.Status == "Pending"
+                        ||
+                        booking.Status == "Confirmed"
+                    ))
+                .Select(booking =>
+                    booking.CustomerId)
+                .Distinct()
+                .ToListAsync();
+        }
         public async Task<bool> HasVenueOverlapAsync(
             int venueId,
             DateTime eventDate,

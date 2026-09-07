@@ -4,28 +4,36 @@ namespace Event_parking.Services.Interfaces
 {
     public interface IBookingService
     {
-        // ======================================
-        // CREATE BOOKING
-        // ======================================
-
         Task<ServiceResult<BookingResponseDto>>
             CreateBookingAsync(
                 int customerId,
                 BookingCreateDto dto
             );
 
-        // ======================================
-        // GET CUSTOMER BOOKINGS
-        // ======================================
+        Task<ServiceResult<BookingResponseDto>>
+            AddSeatsAsync(
+                int bookingId,
+                int customerId,
+                BookingAddSeatsDto dto
+            );
+
+        Task<ServiceResult<BookingResponseDto>>
+            AddParkingAsync(
+                int bookingId,
+                int customerId,
+                BookingParkingRequestDto dto
+            );
+
+        Task<ServiceResult<BookingResponseDto>>
+            RemoveParkingAsync(
+                int bookingId,
+                int customerId
+            );
 
         Task<ServiceResult<List<BookingResponseDto>>>
             GetCustomerBookingsAsync(
                 int customerId
             );
-
-        // ======================================
-        // GET BOOKING BY ID
-        // ======================================
 
         Task<ServiceResult<BookingResponseDto>>
             GetBookingByIdAsync(
@@ -34,20 +42,12 @@ namespace Event_parking.Services.Interfaces
                 bool isAdmin
             );
 
-        // ======================================
-        // HOLD STATUS
-        // ======================================
-
         Task<ServiceResult<BookingHoldStatusDto>>
             GetHoldStatusAsync(
                 int bookingId,
                 int customerId,
                 bool isAdmin
             );
-
-        // ======================================
-        // CANCEL BOOKING
-        // ======================================
 
         Task<ServiceResult<bool>>
             CancelBookingAsync(
@@ -56,18 +56,10 @@ namespace Event_parking.Services.Interfaces
                 bool isAdmin
             );
 
-        // ======================================
-        // ADMIN BOOKING LIST
-        // ======================================
-
         Task<ServiceResult<List<BookingResponseDto>>>
             GetBookingsAsync(
                 int? eventId
             );
-
-        // ======================================
-        // EXPIRE PENDING BOOKINGS
-        // ======================================
 
         Task ExpirePendingBookingsAsync();
     }

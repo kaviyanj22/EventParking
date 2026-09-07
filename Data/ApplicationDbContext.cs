@@ -34,7 +34,7 @@ namespace Event_parking.Data
         // ======================================
 
         public DbSet<Seat> Seats { get; set; }
-
+        public DbSet<SeatSection> SeatSections { get; set; }
         public DbSet<ParkingSlot> ParkingSlots { get; set; }
 
         public DbSet<ParkingReservation>
@@ -111,6 +111,41 @@ namespace Event_parking.Data
                 .OnDelete(
                     DeleteBehavior.Restrict);
 
+
+            // ======================================
+            // MEMBER 3 - SEAT SECTION
+            // ======================================
+
+            // Same event-la same section name duplicate aaga koodathu
+            modelBuilder.Entity<SeatSection>()
+                .HasIndex(section => new
+                {
+                    section.EventId,
+                    section.SectionName
+                })
+                .IsUnique();
+
+            // Event -> SeatSections
+            modelBuilder.Entity<SeatSection>()
+                .HasOne(section =>
+                    section.Event)
+                .WithMany(eventEntity =>
+                    eventEntity.SeatSections)
+                .HasForeignKey(section =>
+                    section.EventId)
+                .OnDelete(
+                    DeleteBehavior.Restrict);
+
+            // SeatSection -> Seats
+            modelBuilder.Entity<Seat>()
+                .HasOne(seat =>
+                    seat.SeatSection)
+                .WithMany(section =>
+                    section.Seats)
+                .HasForeignKey(seat =>
+                    seat.SeatSectionId)
+                .OnDelete(
+                    DeleteBehavior.Restrict);
 
             // ======================================
             // MEMBER 4 - BOOKING SEAT

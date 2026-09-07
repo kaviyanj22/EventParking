@@ -10,358 +10,492 @@ using Event_parking.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 
-var builder = WebApplication.CreateBuilder(args);
-
-// ======================================
-// CONTROLLERS
-// ======================================
-
-builder.Services.AddControllers();
-
-// ======================================
-// SWAGGER
-// ======================================
-
-builder.Services.AddEndpointsApiExplorer();
-
-builder.Services.AddSwaggerGen();
-
-// ======================================
-// DATABASE CONNECTION
-// ======================================
-
-string? connectionString =
-    builder.Configuration.GetConnectionString(
-        "DefaultConnection"
-    );
-
-if (string.IsNullOrWhiteSpace(connectionString))
+public partial class Program
 {
-    throw new InvalidOperationException(
-        "DefaultConnection is missing."
-    );
-}
-
-builder.Services.AddDbContext<ApplicationDbContext>(
-    options =>
+    private static void Main(string[] args)
     {
-        options.UseSqlServer(connectionString);
-    }
-);
+        var builder = WebApplication.CreateBuilder(args);
 
-// ======================================
-// CONFIGURATION CLASSES
-// ======================================
+        // ======================================
+        // CONTROLLERS
+        // ======================================
 
-builder.Services.Configure<JwtSettings>(
-    builder.Configuration.GetSection(
-        JwtSettings.SectionName
-    )
-);
+        builder.Services.AddControllers();
 
-builder.Services.Configure<EmailSettings>(
-    builder.Configuration.GetSection(
-        EmailSettings.SectionName
-    )
-);
+        // ======================================
+        // SWAGGER
+        // ======================================
 
-// Member 4
-builder.Services.Configure<BookingSettings>(
-    builder.Configuration.GetSection(
-        BookingSettings.SectionName
-    )
-);
+        builder.Services.AddEndpointsApiExplorer();
 
-// ======================================
-// READ JWT SETTINGS
-// ======================================
-
-JwtSettings jwtSettings =
-    builder.Configuration
-        .GetSection(JwtSettings.SectionName)
-        .Get<JwtSettings>()
-    ??
-    throw new InvalidOperationException(
-        "JwtSettings configuration is missing."
-    );
-
-if (string.IsNullOrWhiteSpace(jwtSettings.Key))
-{
-    throw new InvalidOperationException(
-        "JWT Key is missing."
-    );
-}
-
-if (jwtSettings.Key.Length < 32)
-{
-    throw new InvalidOperationException(
-        "JWT Key must contain at least 32 characters."
-    );
-}
-
-// ======================================
-// JWT AUTHENTICATION
-// ======================================
-
-builder.Services
-    .AddAuthentication(
-        options =>
+        builder.Services.AddSwaggerGen(options =>
         {
-            options.DefaultAuthenticateScheme =
-                JwtBearerDefaults.AuthenticationScheme;
-
-            options.DefaultChallengeScheme =
-                JwtBearerDefaults.AuthenticationScheme;
-
-            options.DefaultScheme =
-                JwtBearerDefaults.AuthenticationScheme;
-        }
-    )
-    .AddJwtBearer(
-        options =>
-        {
-            options.SaveToken = true;
-            options.RequireHttpsMetadata = false;
-
-            options.TokenValidationParameters =
-                new TokenValidationParameters
+            options.AddSecurityDefinition(
+                "Bearer",
+                new OpenApiSecurityScheme
                 {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
+                    Name = "Authorization",
+                    Description = "Enter your JWT token.",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT"
+                }
+            );
 
-                    ValidIssuer = jwtSettings.Issuer,
-                    ValidAudience = jwtSettings.Audience,
-
-                    IssuerSigningKey =
-                        new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes(
-                                jwtSettings.Key
+            options.AddSecurityRequirement(
+                document =>
+                    new OpenApiSecurityRequirement
+                    {
+                        [
+                            new OpenApiSecuritySchemeReference(
+                                "Bearer",
+                                document
                             )
-                        ),
+                        ] = []
+                    }
+            );
+        });
 
-                    ClockSkew = TimeSpan.Zero
-                };
+        // ======================================
+        // DATABASE CONNECTION
+        // ======================================
+
+        string? connectionString =
+            builder.Configuration.GetConnectionString(
+                "DefaultConnection"
+            );
+
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            throw new InvalidOperationException(
+                "DefaultConnection is missing."
+            );
         }
-    );
 
-// ======================================
-// AUTHORIZATION
-// ======================================
-
-builder.Services.AddAuthorization();
-
-// ======================================
-// REPOSITORIES
-// ======================================
-
-// Member 1
-builder.Services.AddScoped<
-    ICustomerRepository,
-    CustomerRepository
->();
-
-builder.Services.AddScoped<
-    IVehicleRepository,
-    VehicleRepository
->();
-
-// Thenusaan
-builder.Services.AddScoped<
-    ICategoryRepository,
-    CategoryRepository
->();
-
-builder.Services.AddScoped<
-    IVenueRepository,
-    VenueRepository
->();
-
-builder.Services.AddScoped<
-    IEventRepository,
-    EventRepository
->();
-
-// Member 3 - Castro
-builder.Services.AddScoped<
-    ISeatRepository,
-    SeatRepository
->();
-
-builder.Services.AddScoped<
-    IParkingRepository,
-    ParkingRepository
->();
-
-// Member 4
-builder.Services.AddScoped<
-    IBookingRepository,
-    BookingRepository
->();
-
-builder.Services.AddScoped<
-    IPaymentRepository,
-    PaymentRepository
->();
-
-builder.Services.AddScoped<
-    INotificationRepository,
-    NotificationRepository
->();
-
-// ======================================
-// SERVICES
-// ======================================
-
-// Member 1
-builder.Services.AddScoped<
-    IAuthService,
-    AuthService
->();
-
-builder.Services.AddScoped<
-    ICustomerService,
-    CustomerService
->();
-
-builder.Services.AddScoped<
-    IVehicleService,
-    VehicleService
->();
-
-builder.Services.AddScoped<
-    IEmailService,
-    EmailService
->();
-
-// Thenusaan
-builder.Services.AddScoped<
-    ICategoryService,
-    CategoryService
->();
-
-builder.Services.AddScoped<
-    IVenueService,
-    VenueService
->();
-
-builder.Services.AddScoped<
-    IEventService,
-    EventService
->();
-
-// Member 3 - Castro
-builder.Services.AddScoped<
-    ISeatService,
-    SeatService
->();
-
-builder.Services.AddScoped<
-    IParkingService,
-    ParkingService
->();
-
-// Member 4
-builder.Services.AddScoped<
-    IBookingService,
-    BookingService
->();
-
-builder.Services.AddScoped<
-    IPaymentService,
-    PaymentService
->();
-
-builder.Services.AddScoped<
-    INotificationService,
-    NotificationService
->();
-
-// ======================================
-// HELPERS
-// ======================================
-
-builder.Services.AddScoped<PasswordHelper>();
-
-builder.Services.AddScoped<JwtHelper>();
-
-// Member 4
-builder.Services.AddScoped<
-    BookingNumberGenerator
->();
-
-// ======================================
-// MEMBER 4 BACKGROUND SERVICE
-// ======================================
-
-builder.Services.AddHostedService<
-    BookingExpiryService
->();
-
-// ======================================
-// CORS
-// ======================================
-
-builder.Services.AddCors(
-    options =>
-    {
-        options.AddPolicy(
-            "FrontendPolicy",
-            policy =>
+        builder.Services.AddDbContext<ApplicationDbContext>(
+            options =>
             {
-                policy
-                    .WithOrigins(
-                        "http://localhost:4200",
-                        "https://localhost:4200",
-                        "http://localhost:5500",
-                        "https://localhost:5500"
-                    )
-                    .AllowAnyHeader()
-                    .AllowAnyMethod();
+                options.UseSqlServer(connectionString);
             }
         );
-    }
-);
 
-// ======================================
-// BUILD APPLICATION
-// ======================================
+        // ======================================
+        // CONFIGURATION CLASSES
+        // ======================================
 
-var app = builder.Build();
-
-// ======================================
-// DEVELOPMENT CONFIGURATION
-// ======================================
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint(
-            "/swagger/v1/swagger.json",
-            "Event Parking API V1"
+        builder.Services.Configure<JwtSettings>(
+            builder.Configuration.GetSection(
+                JwtSettings.SectionName
+            )
         );
 
-        options.RoutePrefix = "swagger";
-    });
+        builder.Services.Configure<EmailSettings>(
+            builder.Configuration.GetSection(
+                EmailSettings.SectionName
+            )
+        );
+
+        builder.Services.Configure<BookingSettings>(
+            builder.Configuration.GetSection(
+                BookingSettings.SectionName
+            )
+        );
+
+        // ======================================
+        // READ JWT SETTINGS
+        // ======================================
+
+        JwtSettings jwtSettings =
+            builder.Configuration
+                .GetSection(JwtSettings.SectionName)
+                .Get<JwtSettings>()
+            ??
+            throw new InvalidOperationException(
+                "JwtSettings configuration is missing."
+            );
+
+        if (string.IsNullOrWhiteSpace(jwtSettings.Key))
+        {
+            throw new InvalidOperationException(
+                "JWT Key is missing."
+            );
+        }
+
+        if (jwtSettings.Key.Length < 32)
+        {
+            throw new InvalidOperationException(
+                "JWT Key must contain at least 32 characters."
+            );
+        }
+
+        // ======================================
+        // JWT AUTHENTICATION
+        // ======================================
+
+        builder.Services
+            .AddAuthentication(
+                options =>
+                {
+                    options.DefaultAuthenticateScheme =
+                        JwtBearerDefaults.AuthenticationScheme;
+
+                    options.DefaultChallengeScheme =
+                        JwtBearerDefaults.AuthenticationScheme;
+
+                    options.DefaultScheme =
+                        JwtBearerDefaults.AuthenticationScheme;
+                }
+            )
+            .AddJwtBearer(
+                options =>
+                {
+                    options.SaveToken = true;
+
+                    options.RequireHttpsMetadata = false;
+
+                    options.TokenValidationParameters =
+                        new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
+
+                            ValidateAudience = true,
+
+                            ValidateLifetime = true,
+
+                            ValidateIssuerSigningKey = true,
+
+                            ValidIssuer =
+                                jwtSettings.Issuer,
+
+                            ValidAudience =
+                                jwtSettings.Audience,
+
+                            IssuerSigningKey =
+                                new SymmetricSecurityKey(
+                                    Encoding.UTF8.GetBytes(
+                                        jwtSettings.Key
+                                    )
+                                ),
+
+                            ClockSkew =
+                                TimeSpan.Zero
+                        };
+
+                    // ==================================
+                    // JWT ERROR DEBUG
+                    // ==================================
+
+                    options.Events =
+                        new JwtBearerEvents
+                        {
+                            OnAuthenticationFailed =
+                                context =>
+                                {
+                                    Console.WriteLine(
+                                        "================================"
+                                    );
+
+                                    Console.WriteLine(
+                                        "JWT AUTHENTICATION FAILED"
+                                    );
+
+                                    Console.WriteLine(
+                                        "ERROR TYPE: " +
+                                        context.Exception
+                                            .GetType()
+                                            .Name
+                                    );
+
+                                    Console.WriteLine(
+                                        "ERROR MESSAGE: " +
+                                        context.Exception
+                                            .Message
+                                    );
+
+                                    Console.WriteLine(
+                                        "================================"
+                                    );
+
+                                    return Task.CompletedTask;
+                                }
+                        };
+                }
+            );
+
+        // ======================================
+        // AUTHORIZATION
+        // ======================================
+
+        builder.Services.AddAuthorization();
+
+        // ======================================
+        // REPOSITORIES
+        // ======================================
+
+        // Member 1
+        builder.Services.AddScoped<
+            ICustomerRepository,
+            CustomerRepository
+        >();
+
+        builder.Services.AddScoped<
+            IVehicleRepository,
+            VehicleRepository
+        >();
+
+        // ======================================
+        // THENUSAAN
+        // ======================================
+
+        builder.Services.AddScoped<
+            ICategoryRepository,
+            CategoryRepository
+        >();
+
+        builder.Services.AddScoped<
+            IVenueRepository,
+            VenueRepository
+        >();
+
+        builder.Services.AddScoped<
+            IEventRepository,
+            EventRepository
+        >();
+
+        // ======================================
+        // MEMBER 3 - CASTRO
+        // ======================================
+
+        builder.Services.AddScoped<
+            ISeatRepository,
+            SeatRepository
+        >();
+
+        builder.Services.AddScoped<
+            ISeatSectionRepository,
+            SeatSectionRepository
+        >();
+
+        builder.Services.AddScoped<
+            IParkingRepository,
+            ParkingRepository
+        >();
+
+        // ======================================
+        // MEMBER 4
+        // ======================================
+
+        builder.Services.AddScoped<
+            IBookingRepository,
+            BookingRepository
+        >();
+
+        builder.Services.AddScoped<
+            IPaymentRepository,
+            PaymentRepository
+        >();
+
+        builder.Services.AddScoped<
+            INotificationRepository,
+            NotificationRepository
+        >();
+
+        // ======================================
+        // ADMIN DASHBOARD
+        // ======================================
+
+        builder.Services.AddScoped<
+            IAdminDashboardRepository,
+            AdminDashboardRepository
+        >();
+
+        // ======================================
+        // SERVICES
+        // ======================================
+
+        // Member 1
+        builder.Services.AddScoped<
+            IAuthService,
+            AuthService
+        >();
+
+        builder.Services.AddScoped<
+            ICustomerService,
+            CustomerService
+        >();
+
+        builder.Services.AddScoped<
+            IVehicleService,
+            VehicleService
+        >();
+
+        builder.Services.AddScoped<
+            IEmailService,
+            EmailService
+        >();
+
+        // ======================================
+        // THENUSAAN
+        // ======================================
+
+        builder.Services.AddScoped<
+            ICategoryService,
+            CategoryService
+        >();
+
+        builder.Services.AddScoped<
+            IVenueService,
+            VenueService
+        >();
+
+        builder.Services.AddScoped<
+            IEventService,
+            EventService
+        >();
+
+        // ======================================
+        // MEMBER 3 - CASTRO
+        // ======================================
+
+        builder.Services.AddScoped<
+            ISeatService,
+            SeatService
+        >();
+
+        builder.Services.AddScoped<
+            ISeatSectionService,
+            SeatSectionService
+        >();
+
+        builder.Services.AddScoped<
+            IParkingService,
+            ParkingService
+        >();
+
+        // ======================================
+        // MEMBER 4
+        // ======================================
+
+        builder.Services.AddScoped<
+            IBookingService,
+            BookingService
+        >();
+
+        builder.Services.AddScoped<
+            IPaymentService,
+            PaymentService
+        >();
+
+        builder.Services.AddScoped<
+            INotificationService,
+            NotificationService
+        >();
+
+        // ======================================
+        // ADMIN DASHBOARD SERVICE
+        // ======================================
+
+        builder.Services.AddScoped<
+            IAdminDashboardService,
+            AdminDashboardService
+        >();
+
+        // ======================================
+        // HELPERS
+        // ======================================
+
+        builder.Services.AddScoped<
+            PasswordHelper
+        >();
+
+        builder.Services.AddScoped<
+            JwtHelper
+        >();
+
+        builder.Services.AddScoped<
+            BookingNumberGenerator
+        >();
+
+        // ======================================
+        // BOOKING EXPIRY BACKGROUND SERVICE
+        // ======================================
+
+        builder.Services.AddHostedService<
+            BookingExpiryService
+        >();
+
+        // ======================================
+        // CORS
+        // ======================================
+
+        builder.Services.AddCors(
+            options =>
+            {
+                options.AddPolicy(
+                    "FrontendPolicy",
+                    policy =>
+                    {
+                        policy
+                            .WithOrigins(
+                                "http://localhost:4200",
+                                "https://localhost:4200",
+                                "http://localhost:5500",
+                                "https://localhost:5500"
+                            )
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    }
+                );
+            }
+        );
+
+        // ======================================
+        // BUILD APPLICATION
+        // ======================================
+
+        var app = builder.Build();
+
+        // ======================================
+        // DEVELOPMENT CONFIGURATION
+        // ======================================
+
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+
+            app.UseSwaggerUI(
+                options =>
+                {
+                    options.SwaggerEndpoint(
+                        "/swagger/v1/swagger.json",
+                        "Event Parking API V1"
+                    );
+
+                    options.RoutePrefix =
+                        "swagger";
+                }
+            );
+        }
+
+        // ======================================
+        // HTTP PIPELINE
+        // ======================================
+
+        app.UseHttpsRedirection();
+
+        app.UseCors(
+            "FrontendPolicy"
+        );
+
+        app.UseAuthentication();
+
+        app.UseAuthorization();
+
+        app.MapControllers();
+
+        app.Run();
+    }
 }
-
-// ======================================
-// HTTP PIPELINE
-// ======================================
-
-app.UseHttpsRedirection();
-
-app.UseCors("FrontendPolicy");
-
-app.UseAuthentication();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();

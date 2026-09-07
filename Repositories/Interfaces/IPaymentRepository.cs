@@ -9,25 +9,41 @@ namespace Event_parking.Repositories.Interfaces
         // BOOKING
         // ======================================
 
-        Task<Booking?> GetBookingWithDetailsAsync(
-            int bookingId
-        );
+        Task<Booking?>
+            GetBookingWithDetailsAsync(
+                int bookingId
+            );
 
         // ======================================
         // PAYMENT
         // ======================================
 
-        Task<Payment?> GetPaymentByBookingIdAsync(
-            int bookingId
-        );
+        Task<Payment?>
+            GetPaymentByBookingIdAsync(
+                int bookingId
+            );
 
-        Task<Payment?> GetPaymentByIdAsync(
-            int paymentId
-        );
+        Task<Payment?>
+            GetPaymentByIdAsync(
+                int paymentId
+            );
 
-        Task<List<Payment>> GetPaymentsByCustomerAsync(
-            int customerId
-        );
+        Task<List<Payment>>
+            GetPaymentsByCustomerAsync(
+                int customerId
+            );
+
+        // ======================================
+        // ALL PAYMENTS
+        // ADMIN
+        // ======================================
+
+        Task<List<Payment>>
+            GetAllPaymentsAsync();
+
+        // ======================================
+        // ADD PAYMENT
+        // ======================================
 
         Task AddPaymentAsync(
             Payment payment
@@ -40,6 +56,7 @@ namespace Event_parking.Repositories.Interfaces
         Task<IDbContextTransaction>
             BeginTransactionAsync();
 
-        Task<bool> SaveChangesAsync();
+        Task<bool>
+            SaveChangesAsync();
     }
 }
