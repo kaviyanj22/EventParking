@@ -1,0 +1,85 @@
+<div class="verify-page">
+
+  <div class="verify-card">
+
+    <!-- LOADING -->
+    @if (isLoading) {
+
+      <div class="status-icon loading-icon">
+        <div class="spinner"></div>
+      </div>
+
+      <h1>Verifying your email</h1>
+
+      <p class="description">
+        Please wait while we verify your email address.
+      </p>
+
+    }
+
+    <!-- SUCCESS -->
+    @else if (isSuccess) {
+
+      <div class="status-icon success-icon">
+        ✓
+      </div>
+
+      <h1>Email verified!</h1>
+
+      <p class="description">
+        {{ message }}
+      </p>
+
+      <p class="sub-text">
+        Your ParkEase account is now ready to use.
+      </p>
+
+      <a
+        routerLink="/login"
+        class="primary-button"
+      >
+        Continue to Login
+      </a>
+
+    }
+
+    <!-- FAILED -->
+    @else {
+
+      <div class="status-icon error-icon">
+        !
+      </div>
+
+      <h1>Verification failed</h1>
+
+      <p class="description">
+        {{ message }}
+      </p>
+
+      <p class="sub-text">
+        The verification link may be invalid or expired.
+      </p>
+
+      <div class="button-group">
+
+        <a
+          routerLink="/login"
+          class="primary-button"
+        >
+          Back to Login
+        </a>
+
+        <a
+          routerLink="/register"
+          class="secondary-button"
+        >
+          Create Account
+        </a>
+
+      </div>
+
+    }
+
+  </div>
+
+</div>

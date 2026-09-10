@@ -1,0 +1,265 @@
+<div class="profile-page">
+
+  <div class="profile-container">
+
+    <div class="page-header">
+      <div>
+        <h1>My Profile</h1>
+        <p>
+          View and manage your ParkEase account information.
+        </p>
+      </div>
+
+      <a
+        routerLink="/events"
+        class="back-button"
+      >
+        ← Back to Events
+      </a>
+    </div>
+
+    @if (isLoading) {
+
+      <div class="state-card">
+        <div class="spinner"></div>
+        <p>Loading your profile...</p>
+      </div>
+
+    } @else {
+
+      @if (errorMessage) {
+        <div class="error-alert">
+          {{ errorMessage }}
+        </div>
+      }
+
+      @if (successMessage) {
+        <div class="success-alert">
+          ✓ {{ successMessage }}
+        </div>
+      }
+
+      @if (customer) {
+
+        <div class="profile-grid">
+
+          <!-- LEFT PROFILE SUMMARY -->
+
+          <section class="profile-summary">
+
+            <div class="avatar">
+              {{ customer.fullName.charAt(0).toUpperCase() }}
+            </div>
+
+            <h2>
+              {{ customer.fullName }}
+            </h2>
+
+            <p class="email">
+              {{ customer.email }}
+            </p>
+
+            <span
+              class="role-badge"
+              [class.admin]="customer.role.toLowerCase() === 'admin'"
+            >
+              {{ customer.role }}
+            </span>
+
+            <div class="summary-divider"></div>
+
+            <div class="summary-row">
+              <span>Account Status</span>
+
+              <strong
+                class="status"
+                [class.active]="customer.status.toLowerCase() === 'active'"
+              >
+                {{ customer.status }}
+              </strong>
+            </div>
+
+            <div class="summary-row">
+              <span>Email Verification</span>
+
+              @if (customer.emailVerified) {
+                <strong class="verified">
+                  ✓ Verified
+                </strong>
+              } @else {
+                <strong class="not-verified">
+                  Not Verified
+                </strong>
+              }
+            </div>
+
+            <div class="summary-row">
+              <span>Member Since</span>
+
+              <strong>
+                {{ customer.createdAt | date:'mediumDate' }}
+              </strong>
+            </div>
+
+          </section>
+
+          <!-- RIGHT EDIT FORM -->
+
+          <section class="profile-form-card">
+
+            <div class="form-header">
+              <h2>Personal Information</h2>
+
+              <p>
+                Update your name and phone number.
+              </p>
+            </div>
+
+            <form
+              [formGroup]="profileForm"
+              (ngSubmit)="onSubmit()"
+              novalidate
+            >
+
+              <!-- FULL NAME -->
+
+              <div class="form-group">
+
+                <label for="fullName">
+                  Full name
+                </label>
+
+                <input
+                  id="fullName"
+                  type="text"
+                  formControlName="fullName"
+                  autocomplete="name"
+                />
+
+                @if (fullName.invalid && fullName.touched) {
+
+                  <div class="validation-message">
+
+                    @if (fullName.hasError('required')) {
+                      <span>
+                        Full name is required.
+                      </span>
+                    }
+
+                    @if (fullName.hasError('minlength')) {
+                      <span>
+                        Full name must contain at least 2 characters.
+                      </span>
+                    }
+
+                  </div>
+
+                }
+
+              </div>
+
+              <!-- EMAIL READ ONLY -->
+
+              <div class="form-group">
+
+                <label for="email">
+                  Email address
+                </label>
+
+                <input
+                  id="email"
+                  type="email"
+                  [value]="customer.email"
+                  readonly
+                  class="readonly-input"
+                />
+
+                <small>
+                  Email address cannot be changed here.
+                </small>
+
+              </div>
+
+              <!-- PHONE -->
+
+              <div class="form-group">
+
+                <label for="phone">
+                  Phone number
+                </label>
+
+                <input
+                  id="phone"
+                  type="tel"
+                  formControlName="phone"
+                  autocomplete="tel"
+                />
+
+                @if (phone.invalid && phone.touched) {
+                  <div class="validation-message">
+                    Phone number is required.
+                  </div>
+                }
+
+              </div>
+
+              <!-- ROLE READ ONLY -->
+
+              <div class="form-group">
+
+                <label for="role">
+                  Account role
+                </label>
+
+                <input
+                  id="role"
+                  type="text"
+                  [value]="customer.role"
+                  readonly
+                  class="readonly-input"
+                />
+
+              </div>
+
+              <!-- BUTTONS -->
+
+              <div class="form-actions">
+
+                <button
+                  type="button"
+                  class="cancel-button"
+                  (click)="resetForm()"
+                  [disabled]="isSaving"
+                >
+                  Cancel Changes
+                </button>
+
+                <button
+                  type="submit"
+                  class="save-button"
+                  [disabled]="isSaving"
+                >
+
+                  @if (isSaving) {
+                    Saving...
+                  } @else {
+                    Save Changes
+                  }
+
+                </button>
+
+              </div>
+
+            </form>
+
+          </section>
+
+        </div>
+
+      }
+
+    }
+
+  </div>
+
+</div>
