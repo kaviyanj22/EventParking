@@ -1,0 +1,120 @@
+<div class="parking-management-container">
+
+  <div class="page-header">
+    <h2>Parking Management</h2>
+    <p>View and manage parking slots for an event</p>
+  </div>
+
+  <div class="event-search">
+
+    <label for="eventId">Event ID</label>
+
+    <input
+      id="eventId"
+      type="number"
+      min="1"
+      placeholder="Enter Event ID"
+      [value]="eventId ?? ''"
+      (input)="eventId = +$any($event.target).value"
+    />
+
+    <button
+      type="button"
+      (click)="loadParkingSlots()">
+      Load Parking
+    </button>
+
+  </div>
+
+  @if (loading) {
+    <p class="message">
+      Loading parking slots...
+    </p>
+  }
+
+  @if (successMessage) {
+    <p class="success-message">
+      {{ successMessage }}
+    </p>
+  }
+
+  @if (errorMessage) {
+    <p class="error-message">
+      {{ errorMessage }}
+    </p>
+  }
+
+  @if (!loading && parkingSlots.length > 0) {
+
+    <div class="table-wrapper">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Slot Number</th>
+            <th>Zone</th>
+            <th>Fee</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          @for (slot of parkingSlots; track slot.parkingSlotId) {
+
+            <tr>
+
+              <td>
+                {{ slot.slotNumber }}
+              </td>
+
+              <td>
+                {{ slot.zone || '-' }}
+              </td>
+
+              <td>
+                LKR {{ slot.fee | number:'1.2-2' }}
+              </td>
+
+              <td>
+                <span
+                  class="status"
+                  [class.available]="slot.status.toLowerCase() === 'available'"
+                  [class.reserved]="slot.status.toLowerCase() === 'reserved'"
+                  [class.occupied]="slot.status.toLowerCase() === 'occupied'">
+
+                  {{ slot.status }}
+
+                </span>
+              </td>
+
+              <td>
+                <button
+                  type="button"
+                  class="delete-button"
+                  (click)="deleteParkingSlot(slot)">
+                  Delete
+                </button>
+              </td>
+
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  }
+
+  @if (!loading && !errorMessage && eventId && parkingSlots.length === 0) {
+    <p class="message">
+      No parking slots found for this event.
+    </p>
+  }
+
+</div>
