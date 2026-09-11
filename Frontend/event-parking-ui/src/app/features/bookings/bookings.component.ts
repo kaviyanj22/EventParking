@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { Booking } from '../../../core/models/booking.model';
-import { BookingService } from '../../../core/services/booking.service';
+import { Booking } from '../../core/models/booking.model';
+import { BookingService } from '../../core/services/booking.service';
 
 @Component({
   selector: 'app-admin-bookings',
@@ -90,4 +90,4 @@ export class AdminBookingsComponent implements OnInit {
       .toLowerCase()
       .replace(/\s+/g, '-');
   }
-}
+} 

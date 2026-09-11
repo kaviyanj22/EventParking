@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
-import { PaymentHistory } from '../../../core/models/payment.model';
-import { PaymentService } from '../../../core/services/payment.service';
+import { PaymentHistory } from '../../core/models/payment.model';
+import { PaymentService } from '../../core/services/payment.service';
 
 @Component({
   selector: 'app-admin-payments',
