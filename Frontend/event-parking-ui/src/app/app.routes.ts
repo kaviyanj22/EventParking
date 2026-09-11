@@ -1,25 +1,11 @@
 import { Routes } from '@angular/router';
-import { ParkingMapComponent } from './features/parking/parking-map/parking-map';
 
-<<<<<<< HEAD
-export const routes: Routes = [
-  {
-    path: '',
-    redirectTo: 'parking/1',
-    pathMatch: 'full'
-  },
-  {
-    path: 'parking/:id',
-    component: ParkingMapComponent
-  }
-=======
-import {
-  authGuard
-} from './core/guards/auth.guard';
+import { authGuard } from './core/guards/auth.guard';
+import { adminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
 
-  // LOGIN
+  // MEMBER 1 - AUTH
   {
     path: 'login',
     loadComponent: () =>
@@ -27,7 +13,6 @@ export const routes: Routes = [
         .then(m => m.Login)
   },
 
-  // REGISTER
   {
     path: 'register',
     loadComponent: () =>
@@ -35,7 +20,6 @@ export const routes: Routes = [
         .then(m => m.Register)
   },
 
-  // VERIFY EMAIL
   {
     path: 'verify-email',
     loadComponent: () =>
@@ -43,7 +27,6 @@ export const routes: Routes = [
         .then(m => m.VerifyEmail)
   },
 
-  // FORGOT PASSWORD
   {
     path: 'forgot-password',
     loadComponent: () =>
@@ -51,7 +34,6 @@ export const routes: Routes = [
         .then(m => m.ForgotPassword)
   },
 
-  // RESET PASSWORD
   {
     path: 'reset-password',
     loadComponent: () =>
@@ -59,13 +41,49 @@ export const routes: Routes = [
         .then(m => m.ResetPassword)
   },
 
-  // CUSTOMER PROFILE - LOGIN REQUIRED
+  // MEMBER 1 - CUSTOMER PROFILE
   {
     path: 'profile',
     canActivate: [authGuard],
     loadComponent: () =>
       import('./features/customer/profile/profile')
         .then(m => m.Profile)
+  },
+
+  // MEMBER 3 - SEATS
+  {
+    path: 'events/:id/seats',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/seats/seat-map/seat-map')
+        .then(m => m.SeatMapComponent)
+  },
+
+  // MEMBER 3 - PARKING
+  {
+    path: 'events/:id/parking',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/parking/parking-map/parking-map')
+        .then(m => m.ParkingMapComponent)
+  },
+
+  // MEMBER 3 - ADMIN SEAT MANAGEMENT
+  {
+    path: 'admin/seat-management',
+    canActivate: [authGuard, adminGuard],
+    loadComponent: () =>
+      import('./features/admin/seat-management/seat-management')
+        .then(m => m.SeatManagementComponent)
+  },
+
+  // MEMBER 3 - ADMIN PARKING MANAGEMENT
+  {
+    path: 'admin/parking-management',
+    canActivate: [authGuard, adminGuard],
+    loadComponent: () =>
+      import('./features/admin/parking-management/parking-management')
+        .then(m => m.ParkingManagementComponent)
   },
 
   // DEFAULT
@@ -75,11 +93,10 @@ export const routes: Routes = [
     pathMatch: 'full'
   },
 
-  // TEMPORARY FALLBACK
+  // FALLBACK - ALWAYS LAST
   {
     path: '**',
     redirectTo: 'login'
   }
 
->>>>>>> origin/Devlop
 ];
