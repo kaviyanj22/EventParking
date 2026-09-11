@@ -1,0 +1,89 @@
+<div class="seat-map-container">
+
+  <div class="seat-map-header">
+    <h2>Select Your Seats</h2>
+    <p>Choose one or more available seats</p>
+  </div>
+
+  <div class="legend">
+    <div>
+      <span class="legend-box available"></span>
+      Available
+    </div>
+
+    <div>
+      <span class="legend-box selected"></span>
+      Selected
+    </div>
+
+    <div>
+      <span class="legend-box booked"></span>
+      Booked
+    </div>
+  </div>
+
+  @if (loading) {
+    <p class="message">Loading seats...</p>
+  }
+
+  @if (errorMessage) {
+    <p class="error-message">
+      {{ errorMessage }}
+    </p>
+  }
+
+  @if (!loading && !errorMessage && seats.length === 0) {
+    <p class="message">No seats available for this event.</p>
+  }
+
+  @if (!loading && seats.length > 0) {
+
+    <div class="screen">
+      EVENT STAGE
+    </div>
+
+    <div class="seat-grid">
+      @for (seat of seats; track seat.seatId) {
+
+        <app-seat
+          [seat]="seat"
+          [selected]="isSelected(seat)"
+          (seatSelected)="toggleSeat($event)">
+        </app-seat>
+
+      }
+    </div>
+
+    <div class="selection-summary">
+      <h3>Your Selection</h3>
+
+      @if (selectedSeats.length === 0) {
+        <p>No seats selected.</p>
+      }
+
+      @if (selectedSeats.length > 0) {
+        <p>
+          <strong>Seats:</strong>
+
+          @for (seat of selectedSeats; track seat.seatId; let last = $last) {
+            {{ seat.seatNumber }}@if (!last) {, }
+          }
+        </p>
+
+        <p>
+          <strong>Total:</strong>
+          LKR {{ totalPrice | number:'1.2-2' }}
+        </p>
+
+        <button
+          type="button"
+          class="continue-button">
+          Continue
+        </button>
+      }
+
+    </div>
+
+  }
+
+</div>

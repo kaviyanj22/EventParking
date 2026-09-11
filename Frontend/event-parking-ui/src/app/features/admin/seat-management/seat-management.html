@@ -1,0 +1,401 @@
+<div class="seat-management-container">
+
+  <h2>Seat Management</h2>
+
+  <!-- EVENT ID -->
+  <div class="event-search">
+
+    <label for="eventId">
+      Event ID
+    </label>
+
+    <input
+      id="eventId"
+      type="number"
+      min="1"
+      placeholder="Enter Event ID"
+      [value]="eventId ?? ''"
+      (input)="eventId = +$any($event.target).value"
+    />
+
+    <button
+      type="button"
+      (click)="loadSeats()">
+      Load Seats
+    </button>
+
+  </div>
+
+
+  <!-- MESSAGES -->
+
+  @if (loading) {
+    <p class="loading-message">
+      Loading seats...
+    </p>
+  }
+
+  @if (successMessage) {
+    <p class="success-message">
+      {{ successMessage }}
+    </p>
+  }
+
+  @if (errorMessage) {
+    <p class="error-message">
+      {{ errorMessage }}
+    </p>
+  }
+
+
+  <!-- CREATE / EDIT FORM -->
+
+  <div class="seat-form-section">
+
+    <h3>
+      {{ selectedSeatId ? 'Edit Seat' : 'Create Seat' }}
+    </h3>
+
+    <form [formGroup]="seatForm">
+
+      <div class="form-grid">
+
+        <!-- SEAT NUMBER -->
+
+        <div class="form-group">
+
+          <label>
+            Seat Number *
+          </label>
+
+          <input
+            type="text"
+            formControlName="seatNumber"
+            placeholder="Example: A1"
+          />
+
+          @if (
+            seatForm.controls.seatNumber.touched &&
+            seatForm.controls.seatNumber.invalid
+          ) {
+            <small class="validation-error">
+              Seat number is required.
+            </small>
+          }
+
+        </div>
+
+
+        <!-- SECTION ID -->
+
+        <div class="form-group">
+
+          <label>
+            Seat Section ID
+          </label>
+
+          <input
+            type="number"
+            formControlName="seatSectionId"
+            placeholder="Section ID"
+          />
+
+        </div>
+
+
+        <!-- ROW -->
+
+        <div class="form-group">
+
+          <label>
+            Row Name
+          </label>
+
+          <input
+            type="text"
+            formControlName="rowName"
+            placeholder="Example: A"
+          />
+
+        </div>
+
+
+        <!-- COLUMN -->
+
+        <div class="form-group">
+
+          <label>
+            Column Number
+          </label>
+
+          <input
+            type="number"
+            formControlName="columnNumber"
+            placeholder="Example: 1"
+          />
+
+        </div>
+
+
+        <!-- SEAT TYPE -->
+
+        <div class="form-group">
+
+          <label>
+            Seat Type
+          </label>
+
+          <input
+            type="text"
+            formControlName="seatType"
+            placeholder="Example: Regular"
+          />
+
+        </div>
+
+
+        <!-- PRICE -->
+
+        <div class="form-group">
+
+          <label>
+            Price
+          </label>
+
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            formControlName="price"
+            placeholder="0.00"
+          />
+
+        </div>
+
+
+        <!-- POSITION X -->
+
+        <div class="form-group">
+
+          <label>
+            Position X
+          </label>
+
+          <input
+            type="number"
+            step="0.01"
+            formControlName="positionX"
+            placeholder="X position"
+          />
+
+        </div>
+
+
+        <!-- POSITION Y -->
+
+        <div class="form-group">
+
+          <label>
+            Position Y
+          </label>
+
+          <input
+            type="number"
+            step="0.01"
+            formControlName="positionY"
+            placeholder="Y position"
+          />
+
+        </div>
+
+
+        <!-- STATUS -->
+
+        @if (selectedSeatId) {
+
+          <div class="form-group">
+
+            <label>
+              Status
+            </label>
+
+            <select formControlName="status">
+
+              <option value="Available">
+                Available
+              </option>
+
+              <option value="Booked">
+                Booked
+              </option>
+
+            </select>
+
+          </div>
+
+        }
+
+      </div>
+
+
+      <!-- FORM BUTTONS -->
+
+      <div class="form-actions">
+
+        @if (!selectedSeatId) {
+
+          <button
+            type="button"
+            class="create-button"
+            (click)="createSeat()">
+
+            Create Seat
+
+          </button>
+
+        } @else {
+
+          <button
+            type="button"
+            class="update-button"
+            (click)="updateSeat()">
+
+            Update Seat
+
+          </button>
+
+          <button
+            type="button"
+            class="cancel-button"
+            (click)="resetForm()">
+
+            Cancel
+
+          </button>
+
+        }
+
+      </div>
+
+    </form>
+
+  </div>
+
+
+  <!-- SEAT TABLE -->
+
+  @if (!loading && seats.length > 0) {
+
+    <div class="table-container">
+
+      <table>
+
+        <thead>
+
+          <tr>
+            <th>Seat</th>
+            <th>Section</th>
+            <th>Row</th>
+            <th>Column</th>
+            <th>Type</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          @for (seat of seats; track seat.seatId) {
+
+            <tr>
+
+              <td>
+                {{ seat.seatNumber }}
+              </td>
+
+              <td>
+                {{ seat.sectionName || '-' }}
+              </td>
+
+              <td>
+                {{ seat.rowName || '-' }}
+              </td>
+
+              <td>
+                {{ seat.columnNumber ?? '-' }}
+              </td>
+
+              <td>
+                {{ seat.seatType || '-' }}
+              </td>
+
+              <td>
+                {{ (seat.price ?? 0) | number:'1.2-2' }}
+              </td>
+
+              <td>
+
+                <span
+                  class="status"
+                  [class.available]="seat.status.toLowerCase() === 'available'"
+                  [class.booked]="seat.status.toLowerCase() === 'booked'">
+
+                  {{ seat.status }}
+
+                </span>
+
+              </td>
+
+              <td class="action-buttons">
+
+                <button
+                  type="button"
+                  class="edit-button"
+                  (click)="editSeat(seat)">
+
+                  Edit
+
+                </button>
+
+                <button
+                  type="button"
+                  class="delete-button"
+                  (click)="deleteSeat(seat)">
+
+                  Delete
+
+                </button>
+
+              </td>
+
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  }
+
+
+  <!-- EMPTY STATE -->
+
+  @if (
+    !loading &&
+    eventId &&
+    seats.length === 0 &&
+    !errorMessage
+  ) {
+
+    <p class="empty-message">
+      No seats found for this event.
+    </p>
+
+  }
+
+</div>

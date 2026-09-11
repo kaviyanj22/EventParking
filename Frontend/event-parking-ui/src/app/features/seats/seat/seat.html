@@ -1,0 +1,14 @@
+<button
+  type="button"
+  class="seat"
+  [ngClass]="{
+    'available': seat.status.toLowerCase() === 'available',
+    'booked': seat.status.toLowerCase() === 'booked',
+    'selected': selected
+  }"
+  [disabled]="seat.status.toLowerCase() === 'booked'"
+  (click)="selectSeat()">
+
+  {{ seat.seatNumber }}
+
+</button>

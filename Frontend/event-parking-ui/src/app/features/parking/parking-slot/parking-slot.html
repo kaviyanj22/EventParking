@@ -1,0 +1,27 @@
+<button
+  type="button"
+  class="parking-slot"
+  [ngClass]="{
+    'available': slot.status.toLowerCase() === 'available',
+    'selected': selected,
+    'occupied': slot.status.toLowerCase() === 'occupied',
+    'reserved': slot.status.toLowerCase() === 'reserved'
+  }"
+  [disabled]="slot.status.toLowerCase() !== 'available'"
+  (click)="selectSlot()">
+
+  <span class="slot-number">
+    {{ slot.slotNumber }}
+  </span>
+
+  @if (slot.zone) {
+    <span class="slot-zone">
+      {{ slot.zone }}
+    </span>
+  }
+
+  <span class="slot-fee">
+    LKR {{ slot.fee | number:'1.2-2' }}
+  </span>
+
+</button>
