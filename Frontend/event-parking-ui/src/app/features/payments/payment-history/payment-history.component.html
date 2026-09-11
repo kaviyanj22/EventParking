@@ -1,0 +1,111 @@
+<div class="payment-history-container">
+
+  <div class="page-header">
+    <h1>Payment History</h1>
+    <p>View your completed payment transactions.</p>
+  </div>
+
+  <div
+    class="loading-message"
+    *ngIf="isLoading"
+  >
+    Loading payment history...
+  </div>
+
+  <div
+    class="error-message"
+    *ngIf="errorMessage"
+  >
+    {{ errorMessage }}
+  </div>
+
+  <div
+    class="empty-state"
+    *ngIf="
+      !isLoading &&
+      !errorMessage &&
+      payments.length === 0
+    "
+  >
+    <h2>No Payments Found</h2>
+    <p>You don't have any payment history yet.</p>
+  </div>
+
+  <div
+    class="payment-list"
+    *ngIf="!isLoading && payments.length > 0"
+  >
+
+    <div
+      class="payment-card"
+      *ngFor="let payment of payments"
+    >
+
+      <div class="payment-card-header">
+
+        <div>
+          <span class="payment-label">
+            Booking Number
+          </span>
+
+          <h2>
+            {{ payment.bookingNumber }}
+          </h2>
+        </div>
+
+        <span
+          class="status-badge"
+          [ngClass]="getStatusClass(payment.status)"
+        >
+          {{ payment.status }}
+        </span>
+
+      </div>
+
+      <div class="payment-content">
+
+        <div class="payment-info">
+          <span>Event</span>
+          <strong>{{ payment.eventName }}</strong>
+        </div>
+
+        <div class="payment-info">
+          <span>Amount</span>
+          <strong>
+            {{ payment.amount | currency }}
+          </strong>
+        </div>
+
+        <div class="payment-info">
+          <span>Transaction Reference</span>
+          <strong>
+            {{ payment.transactionReference || 'N/A' }}
+          </strong>
+        </div>
+
+        <div class="payment-info">
+          <span>Paid On</span>
+          <strong>
+            {{ payment.paidAt | date:'medium' }}
+          </strong>
+        </div>
+
+      </div>
+
+      <div class="payment-footer">
+
+        <button
+          type="button"
+          class="receipt-btn"
+          (click)="viewReceipt(payment.paymentId)"
+        >
+          View Receipt
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

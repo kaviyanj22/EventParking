@@ -1,0 +1,139 @@
+.notifications-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 20px;
+}
+
+.notifications-header {
+  margin-bottom: 28px;
+}
+
+.notifications-header h1 {
+  margin: 0 0 6px;
+  font-size: 28px;
+  color: #212529;
+}
+
+.notifications-header p {
+  margin: 0;
+  color: #6c757d;
+}
+
+.notification-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.notification-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: transform 0.2s ease,
+              box-shadow 0.2s ease;
+}
+
+.notification-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.notification-card.unread {
+  background: #f0f7ff;
+  border-left: 4px solid #0d6efd;
+}
+
+.notification-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.notification-type {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: #e9ecef;
+  color: #495057;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.read-status {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6c757d;
+}
+
+.unread-status {
+  color: #0d6efd;
+}
+
+.notification-content h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  color: #212529;
+}
+
+.notification-content p {
+  margin: 0;
+  line-height: 1.6;
+  color: #495057;
+}
+
+.notification-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  margin-top: 15px;
+  padding-top: 12px;
+  border-top: 1px solid #eeeeee;
+  font-size: 13px;
+  color: #6c757d;
+}
+
+.loading-message,
+.error-message,
+.empty-message {
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.loading-message {
+  background: #f8f9fa;
+  color: #6c757d;
+}
+
+.error-message {
+  background: #f8d7da;
+  color: #842029;
+}
+
+.empty-message {
+  background: #f8f9fa;
+  color: #6c757d;
+}
+
+@media (max-width: 600px) {
+  .notifications-container {
+    padding: 20px 12px;
+  }
+
+  .notifications-header h1 {
+    font-size: 24px;
+  }
+
+  .notification-card {
+    padding: 16px;
+  }
+
+  .notification-footer {
+    flex-direction: column;
+    gap: 5px;
+  }
+}

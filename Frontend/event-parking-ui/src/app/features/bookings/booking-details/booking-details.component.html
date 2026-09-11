@@ -1,0 +1,206 @@
+<div class="booking-details-container">
+
+  <div
+    class="loading-message"
+    *ngIf="isLoading"
+  >
+    Loading booking details...
+  </div>
+
+  <div
+    class="error-message"
+    *ngIf="errorMessage"
+  >
+    {{ errorMessage }}
+  </div>
+
+  <div
+    class="success-message"
+    *ngIf="successMessage"
+  >
+    {{ successMessage }}
+  </div>
+
+  <div
+    class="booking-card"
+    *ngIf="!isLoading && booking"
+  >
+
+    <div class="page-header">
+
+      <div>
+        <span class="booking-label">
+          Booking Number
+        </span>
+
+        <h1>
+          {{ booking.bookingNumber }}
+        </h1>
+      </div>
+
+      <span
+        class="status-badge"
+        [ngClass]="booking.status.toLowerCase()"
+      >
+        {{ booking.status }}
+      </span>
+
+    </div>
+
+    <div class="details-section">
+
+      <h2>Event Details</h2>
+
+      <div class="detail-row">
+        <span>Event</span>
+        <strong>{{ booking.eventName }}</strong>
+      </div>
+
+      <div class="detail-row">
+        <span>Booking Status</span>
+        <strong>{{ booking.status }}</strong>
+      </div>
+
+      <div class="detail-row">
+        <span>Booked On</span>
+        <strong>
+          {{ booking.createdAt | date:'medium' }}
+        </strong>
+      </div>
+
+      <div
+        class="detail-row"
+        *ngIf="booking.confirmedAt"
+      >
+        <span>Confirmed On</span>
+        <strong>
+          {{ booking.confirmedAt | date:'medium' }}
+        </strong>
+      </div>
+
+      <div
+        class="detail-row"
+        *ngIf="booking.cancelledAt"
+      >
+        <span>Cancelled On</span>
+        <strong>
+          {{ booking.cancelledAt | date:'medium' }}
+        </strong>
+      </div>
+
+    </div>
+
+    <div class="details-section">
+
+      <h2>Seats</h2>
+
+      <div class="seat-list">
+
+        <div
+          class="seat-item"
+          *ngFor="let seat of booking.seats"
+        >
+          <strong>{{ seat.seatNumber }}</strong>
+
+          <span *ngIf="seat.seatType">
+            {{ seat.seatType }}
+          </span>
+
+          <span>
+            {{ seat.priceAtBooking | currency }}
+          </span>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div
+      class="details-section"
+      *ngIf="booking.parking"
+    >
+
+      <h2>Parking</h2>
+
+      <div class="detail-row">
+        <span>Slot Number</span>
+        <strong>
+          {{ booking.parking.slotNumber }}
+        </strong>
+      </div>
+
+      <div
+        class="detail-row"
+        *ngIf="booking.parking.zone"
+      >
+        <span>Zone</span>
+        <strong>
+          {{ booking.parking.zone }}
+        </strong>
+      </div>
+
+      <div class="detail-row">
+        <span>Parking Fee</span>
+        <strong>
+          {{ booking.parking.feeAtReservation | currency }}
+        </strong>
+      </div>
+
+    </div>
+
+    <div class="details-section">
+
+      <h2>Payment Summary</h2>
+
+      <div class="detail-row">
+        <span>Seat Total</span>
+        <strong>
+          {{ booking.seatTotal | currency }}
+        </strong>
+      </div>
+
+      <div class="detail-row">
+        <span>Parking Fee</span>
+        <strong>
+          {{ booking.parkingFee | currency }}
+        </strong>
+      </div>
+
+      <div class="detail-row total-row">
+        <span>Total Amount</span>
+        <strong>
+          {{ booking.totalAmount | currency }}
+        </strong>
+      </div>
+
+    </div>
+
+    <div class="booking-actions">
+
+      <button
+        type="button"
+        class="back-btn"
+        (click)="goBack()"
+      >
+        Back to My Bookings
+      </button>
+
+      <button
+        *ngIf="canCancelBooking()"
+        type="button"
+        class="cancel-btn"
+        [disabled]="isCancelling"
+        (click)="cancelBooking()"
+      >
+        {{
+          isCancelling
+            ? 'Cancelling...'
+            : 'Cancel Booking'
+        }}
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,167 @@
+<div class="confirmation-container">
+
+  <div
+    class="loading-message"
+    *ngIf="isLoading"
+  >
+    Loading booking confirmation...
+  </div>
+
+  <div
+    class="error-message"
+    *ngIf="errorMessage"
+  >
+    {{ errorMessage }}
+  </div>
+
+  <div
+    class="confirmation-card"
+    *ngIf="!isLoading && booking"
+  >
+
+    <div class="success-section">
+
+      <div class="success-icon">
+        ✓
+      </div>
+
+      <h1>Booking Confirmed!</h1>
+
+      <p>
+        Your payment was successful and your booking
+        has been confirmed.
+      </p>
+
+    </div>
+
+    <div class="booking-number-section">
+
+      <span>Booking Number</span>
+
+      <strong>
+        {{ booking.bookingNumber }}
+      </strong>
+
+    </div>
+
+    <div class="details-section">
+
+      <h2>Booking Details</h2>
+
+      <div class="detail-row">
+        <span>Event</span>
+        <strong>{{ booking.eventName }}</strong>
+      </div>
+
+      <div class="detail-row">
+        <span>Status</span>
+        <strong class="confirmed-status">
+          {{ booking.status }}
+        </strong>
+      </div>
+
+      <div
+        class="detail-row"
+        *ngIf="booking.confirmedAt"
+      >
+        <span>Confirmed On</span>
+        <strong>
+          {{ booking.confirmedAt | date:'medium' }}
+        </strong>
+      </div>
+
+    </div>
+
+    <div class="details-section">
+
+      <h2>Selected Seats</h2>
+
+      <div class="seat-list">
+
+        <span
+          class="seat-chip"
+          *ngFor="let seat of booking.seats"
+        >
+          {{ seat.seatNumber }}
+        </span>
+
+      </div>
+
+    </div>
+
+    <div
+      class="details-section"
+      *ngIf="booking.parking"
+    >
+
+      <h2>Parking</h2>
+
+      <div class="detail-row">
+        <span>Parking Slot</span>
+        <strong>
+          {{ booking.parking.slotNumber }}
+        </strong>
+      </div>
+
+      <div
+        class="detail-row"
+        *ngIf="booking.parking.zone"
+      >
+        <span>Zone</span>
+        <strong>
+          {{ booking.parking.zone }}
+        </strong>
+      </div>
+
+    </div>
+
+    <div class="details-section">
+
+      <h2>Payment Summary</h2>
+
+      <div class="detail-row">
+        <span>Seat Total</span>
+        <strong>
+          {{ booking.seatTotal | currency }}
+        </strong>
+      </div>
+
+      <div class="detail-row">
+        <span>Parking Fee</span>
+        <strong>
+          {{ booking.parkingFee | currency }}
+        </strong>
+      </div>
+
+      <div class="detail-row total-row">
+        <span>Total Amount</span>
+        <strong>
+          {{ booking.totalAmount | currency }}
+        </strong>
+      </div>
+
+    </div>
+
+    <div class="confirmation-actions">
+
+      <button
+        type="button"
+        class="secondary-btn"
+        (click)="goToEvents()"
+      >
+        Browse Events
+      </button>
+
+      <button
+        type="button"
+        class="primary-btn"
+        (click)="goToMyBookings()"
+      >
+        My Bookings
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

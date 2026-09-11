@@ -1,0 +1,155 @@
+<div class="receipt-container">
+
+  <div
+    class="loading-message"
+    *ngIf="isLoading"
+  >
+    Loading receipt...
+  </div>
+
+  <div
+    class="error-message"
+    *ngIf="errorMessage"
+  >
+    {{ errorMessage }}
+  </div>
+
+  <div
+    class="receipt-card"
+    *ngIf="!isLoading && receipt"
+  >
+
+    <div class="receipt-header">
+
+      <div class="success-icon">
+        ✓
+      </div>
+
+      <h1>Payment Receipt</h1>
+
+      <p>
+        Your payment has been recorded successfully.
+      </p>
+
+    </div>
+
+    <div class="reference-section">
+
+      <span>Transaction Reference</span>
+
+      <strong>
+        {{ receipt.transactionReference }}
+      </strong>
+
+    </div>
+
+    <div class="details-section">
+
+      <h2>Booking Information</h2>
+
+      <div class="detail-row">
+        <span>Booking Number</span>
+        <strong>
+          {{ receipt.bookingNumber }}
+        </strong>
+      </div>
+
+      <div class="detail-row">
+        <span>Event</span>
+        <strong>
+          {{ receipt.eventName }}
+        </strong>
+      </div>
+
+    </div>
+
+    <div class="details-section">
+
+      <h2>Customer Information</h2>
+
+      <div class="detail-row">
+        <span>Customer Name</span>
+        <strong>
+          {{ receipt.customerName }}
+        </strong>
+      </div>
+
+      <div class="detail-row">
+        <span>Email</span>
+        <strong>
+          {{ receipt.customerEmail }}
+        </strong>
+      </div>
+
+    </div>
+
+    <div class="details-section">
+
+      <h2>Payment Summary</h2>
+
+      <div class="detail-row">
+        <span>Seat Total</span>
+        <strong>
+          {{ receipt.seatTotal | currency }}
+        </strong>
+      </div>
+
+      <div class="detail-row">
+        <span>Parking Fee</span>
+        <strong>
+          {{ receipt.parkingFee | currency }}
+        </strong>
+      </div>
+
+      <div class="detail-row total-row">
+        <span>Total Amount</span>
+        <strong>
+          {{ receipt.totalAmount | currency }}
+        </strong>
+      </div>
+
+    </div>
+
+    <div class="details-section">
+
+      <div class="detail-row">
+        <span>Payment Status</span>
+
+        <strong class="payment-status">
+          {{ receipt.paymentStatus }}
+        </strong>
+      </div>
+
+      <div class="detail-row">
+        <span>Paid On</span>
+
+        <strong>
+          {{ receipt.paidAt | date:'medium' }}
+        </strong>
+      </div>
+
+    </div>
+
+    <div class="receipt-actions">
+
+      <button
+        type="button"
+        class="back-btn"
+        (click)="goToPaymentHistory()"
+      >
+        Payment History
+      </button>
+
+      <button
+        type="button"
+        class="print-btn"
+        (click)="printReceipt()"
+      >
+        Print Receipt
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

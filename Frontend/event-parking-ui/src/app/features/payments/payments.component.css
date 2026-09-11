@@ -1,0 +1,165 @@
+.admin-payments-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 32px 20px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 26px;
+}
+
+.page-header h1 {
+  margin: 0 0 6px;
+  font-size: 30px;
+  color: #212529;
+}
+
+.page-header p {
+  margin: 0;
+  color: #6c757d;
+}
+
+.revenue-card {
+  min-width: 200px;
+  padding: 16px 20px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  text-align: right;
+}
+
+.revenue-card span {
+  display: block;
+  margin-bottom: 6px;
+  color: #6c757d;
+  font-size: 13px;
+}
+
+.revenue-card strong {
+  color: #212529;
+  font-size: 24px;
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.payments-table {
+  width: 100%;
+  min-width: 1050px;
+  border-collapse: collapse;
+}
+
+.payments-table th,
+.payments-table td {
+  padding: 15px 14px;
+  border-bottom: 1px solid #eeeeee;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.payments-table th {
+  background: #f8f9fa;
+  color: #495057;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.payments-table td {
+  color: #343a40;
+  font-size: 14px;
+}
+
+.payments-table tbody tr:hover {
+  background: #fafafa;
+}
+
+.payments-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.status-badge.completed {
+  background: #d1e7dd;
+  color: #0f5132;
+}
+
+.status-badge.pending {
+  background: #fff3cd;
+  color: #664d03;
+}
+
+.status-badge.failed {
+  background: #f8d7da;
+  color: #842029;
+}
+
+.receipt-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 9px 14px;
+  background: #212529;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.receipt-btn:hover {
+  opacity: 0.9;
+}
+
+.loading-message,
+.error-message,
+.empty-message {
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.loading-message,
+.empty-message {
+  background: #f8f9fa;
+  color: #6c757d;
+}
+
+.error-message {
+  background: #f8d7da;
+  color: #842029;
+}
+
+@media (max-width: 700px) {
+  .admin-payments-container {
+    padding: 20px 12px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .page-header h1 {
+    font-size: 25px;
+  }
+
+  .revenue-card {
+    min-width: 0;
+    text-align: left;
+  }
+}

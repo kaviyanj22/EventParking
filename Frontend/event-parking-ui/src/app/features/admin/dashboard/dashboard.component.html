@@ -1,0 +1,119 @@
+<div class="admin-dashboard-container">
+
+  <div class="dashboard-header">
+    <div>
+      <h1>Admin Dashboard</h1>
+      <p>Overview of the Event Parking Reservation System.</p>
+    </div>
+  </div>
+
+  <div
+    class="loading-message"
+    *ngIf="isLoading"
+  >
+    Loading dashboard...
+  </div>
+
+  <div
+    class="error-message"
+    *ngIf="errorMessage"
+  >
+    {{ errorMessage }}
+  </div>
+
+  <div
+    class="dashboard-content"
+    *ngIf="!isLoading && !errorMessage && dashboard"
+  >
+
+    <div class="stats-grid">
+
+      <div class="stat-card">
+        <span class="stat-label">Total Events</span>
+
+        <strong class="stat-value">
+          {{ dashboard.totalEvents }}
+        </strong>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-label">Total Bookings</span>
+
+        <strong class="stat-value">
+          {{ dashboard.totalBookings }}
+        </strong>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-label">Available Seats</span>
+
+        <strong class="stat-value">
+          {{ dashboard.availableSeats }}
+        </strong>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-label">
+          Occupied Parking Slots
+        </span>
+
+        <strong class="stat-value">
+          {{ dashboard.occupiedParkingSlots }}
+        </strong>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-label">
+          Total Revenue Collected
+        </span>
+
+        <strong class="stat-value">
+          {{ dashboard.totalRevenueCollected | currency }}
+        </strong>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-label">Total Customers</span>
+
+        <strong class="stat-value">
+          {{ dashboard.totalCustomers }}
+        </strong>
+      </div>
+
+    </div>
+
+    <div class="management-section">
+
+      <h2>Management</h2>
+
+      <div class="management-grid">
+
+        <button
+          type="button"
+          class="management-card"
+          (click)="goToBookings()"
+        >
+          <strong>Manage Bookings</strong>
+          <span>
+            View and manage customer bookings.
+          </span>
+        </button>
+
+        <button
+          type="button"
+          class="management-card"
+          (click)="goToPayments()"
+        >
+          <strong>View Payments</strong>
+          <span>
+            View payment transactions and history.
+          </span>
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

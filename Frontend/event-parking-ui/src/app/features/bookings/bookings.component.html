@@ -1,0 +1,159 @@
+<div class="admin-bookings-container">
+
+  <div class="page-header">
+    <div>
+      <h1>Manage Bookings</h1>
+      <p>View and manage customer bookings.</p>
+    </div>
+  </div>
+
+  <div class="filter-section">
+
+    <div class="filter-field">
+      <label for="eventId">Event ID</label>
+
+      <input
+        id="eventId"
+        type="number"
+        min="1"
+        [(ngModel)]="eventId"
+        placeholder="Enter Event ID"
+      />
+    </div>
+
+    <button
+      type="button"
+      class="filter-btn"
+      (click)="applyFilter()"
+    >
+      Apply Filter
+    </button>
+
+    <button
+      type="button"
+      class="clear-btn"
+      (click)="clearFilter()"
+    >
+      Clear
+    </button>
+
+  </div>
+
+  <div
+    class="loading-message"
+    *ngIf="isLoading"
+  >
+    Loading bookings...
+  </div>
+
+  <div
+    class="error-message"
+    *ngIf="errorMessage"
+  >
+    {{ errorMessage }}
+  </div>
+
+  <div
+    class="empty-message"
+    *ngIf="
+      !isLoading &&
+      !errorMessage &&
+      bookings.length === 0
+    "
+  >
+    No bookings found.
+  </div>
+
+  <div
+    class="table-wrapper"
+    *ngIf="
+      !isLoading &&
+      !errorMessage &&
+      bookings.length > 0
+    "
+  >
+
+    <table class="bookings-table">
+
+      <thead>
+        <tr>
+          <th>Booking</th>
+          <th>Customer</th>
+          <th>Event</th>
+          <th>Seats</th>
+          <th>Parking</th>
+          <th>Total</th>
+          <th>Status</th>
+          <th>Created</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let booking of bookings">
+
+          <td>
+            <strong>
+              {{ booking.bookingNumber }}
+            </strong>
+          </td>
+
+          <td>
+            {{ booking.customerName }}
+          </td>
+
+          <td>
+            {{ booking.eventName }}
+          </td>
+
+          <td>
+            {{ booking.seats.length }}
+          </td>
+
+          <td>
+            <span *ngIf="booking.parking">
+              {{ booking.parking.slotNumber }}
+            </span>
+
+            <span *ngIf="!booking.parking">
+              No Parking
+            </span>
+          </td>
+
+          <td>
+            {{ booking.totalAmount | currency }}
+          </td>
+
+          <td>
+            <span
+              class="status-badge"
+              [ngClass]="getStatusClass(booking.status)"
+            >
+              {{ booking.status }}
+            </span>
+          </td>
+
+          <td>
+            {{ booking.createdAt | date:'mediumDate' }}
+          </td>
+
+          <td>
+            <button
+              type="button"
+              class="view-btn"
+              (click)="viewBooking(booking.bookingId)"
+            >
+              View Details
+            </button>
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>

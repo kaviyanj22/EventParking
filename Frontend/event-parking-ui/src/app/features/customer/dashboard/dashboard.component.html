@@ -1,0 +1,134 @@
+<div class="dashboard-container">
+
+  <div class="dashboard-header">
+    <div>
+      <h1>Customer Dashboard</h1>
+      <p>Manage your bookings, payments and notifications.</p>
+    </div>
+
+    <button
+      type="button"
+      class="browse-btn"
+      (click)="goToEvents()"
+    >
+      Browse Events
+    </button>
+  </div>
+
+  <div
+    class="loading-message"
+    *ngIf="isLoading"
+  >
+    Loading dashboard...
+  </div>
+
+  <div
+    class="error-message"
+    *ngIf="errorMessage"
+  >
+    {{ errorMessage }}
+  </div>
+
+  <div
+    class="dashboard-content"
+    *ngIf="!isLoading && !errorMessage"
+  >
+
+    <div class="stats-grid">
+
+      <div class="stat-card">
+        <div class="stat-label">
+          Total Bookings
+        </div>
+
+        <div class="stat-value">
+          {{ bookings.length }}
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">
+          Confirmed Bookings
+        </div>
+
+        <div class="stat-value">
+          {{ confirmedBookings }}
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">
+          Total Spent
+        </div>
+
+        <div class="stat-value">
+          {{ totalSpent | currency }}
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">
+          Unread Notifications
+        </div>
+
+        <div class="stat-value">
+          {{ unreadNotifications }}
+        </div>
+      </div>
+
+    </div>
+
+    <div class="quick-actions">
+
+      <h2>Quick Actions</h2>
+
+      <div class="action-grid">
+
+        <button
+          type="button"
+          class="action-card"
+          (click)="goToEvents()"
+        >
+          <strong>Browse Events</strong>
+          <span>Find and reserve seats for upcoming events.</span>
+        </button>
+
+        <button
+          type="button"
+          class="action-card"
+          (click)="goToBookings()"
+        >
+          <strong>My Bookings</strong>
+          <span>View your current and previous bookings.</span>
+        </button>
+
+        <button
+          type="button"
+          class="action-card"
+          (click)="goToPayments()"
+        >
+          <strong>Payment History</strong>
+          <span>View payments and payment receipts.</span>
+        </button>
+
+        <button
+          type="button"
+          class="action-card"
+          (click)="goToNotifications()"
+        >
+          <strong>Notifications</strong>
+          <span>
+            View booking and event updates
+            <ng-container *ngIf="unreadNotifications > 0">
+              ({{ unreadNotifications }} unread)
+            </ng-container>.
+          </span>
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

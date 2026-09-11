@@ -1,0 +1,121 @@
+<div class="admin-payments-container">
+
+  <div class="page-header">
+    <div>
+      <h1>Payment Management</h1>
+      <p>View all payment transactions and receipts.</p>
+    </div>
+
+    <div class="revenue-card">
+      <span>Total Revenue</span>
+      <strong>{{ totalRevenue | currency }}</strong>
+    </div>
+  </div>
+
+  <div
+    class="loading-message"
+    *ngIf="isLoading"
+  >
+    Loading payments...
+  </div>
+
+  <div
+    class="error-message"
+    *ngIf="errorMessage"
+  >
+    {{ errorMessage }}
+  </div>
+
+  <div
+    class="empty-message"
+    *ngIf="
+      !isLoading &&
+      !errorMessage &&
+      payments.length === 0
+    "
+  >
+    No payments found.
+  </div>
+
+  <div
+    class="table-wrapper"
+    *ngIf="
+      !isLoading &&
+      !errorMessage &&
+      payments.length > 0
+    "
+  >
+
+    <table class="payments-table">
+
+      <thead>
+        <tr>
+          <th>Payment ID</th>
+          <th>Booking</th>
+          <th>Event</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Transaction Reference</th>
+          <th>Paid On</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let payment of payments">
+
+          <td>
+            #{{ payment.paymentId }}
+          </td>
+
+          <td>
+            <strong>
+              {{ payment.bookingNumber }}
+            </strong>
+          </td>
+
+          <td>
+            {{ payment.eventName }}
+          </td>
+
+          <td>
+            {{ payment.amount | currency }}
+          </td>
+
+          <td>
+            <span
+              class="status-badge"
+              [ngClass]="getStatusClass(payment.status)"
+            >
+              {{ payment.status }}
+            </span>
+          </td>
+
+          <td>
+            {{ payment.transactionReference || '-' }}
+          </td>
+
+          <td>
+            {{ payment.paidAt | date:'medium' }}
+          </td>
+
+          <td>
+            <button
+              type="button"
+              class="receipt-btn"
+              (click)="viewReceipt(payment.paymentId)"
+            >
+              View Receipt
+            </button>
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>
