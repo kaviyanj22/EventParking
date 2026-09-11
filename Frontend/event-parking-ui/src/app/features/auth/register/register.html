@@ -1,0 +1,286 @@
+<div class="register-page">
+
+  <div class="register-container">
+
+    <!-- LEFT SIDE -->
+    <section class="register-visual">
+
+      <div class="visual-content">
+
+        <div class="visual-logo">
+          <span>P</span>
+          ParkEase
+        </div>
+
+        <h1>
+          Create your
+          ParkEase account.
+        </h1>
+
+        <p>
+          Reserve event seats, add parking
+          and manage all your bookings
+          from one place.
+        </p>
+
+        <div class="feature-list">
+
+          <div class="feature-item">
+            <span>✓</span>
+            Discover upcoming events
+          </div>
+
+          <div class="feature-item">
+            <span>✓</span>
+            Reserve seats and parking
+          </div>
+
+          <div class="feature-item">
+            <span>✓</span>
+            Manage bookings easily
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- RIGHT SIDE -->
+    <section class="register-form-section">
+
+      <div class="register-card">
+
+        <div class="register-header">
+          <h2>Create account</h2>
+
+          <p>
+            Enter your details to get started
+          </p>
+        </div>
+
+        @if (errorMessage) {
+          <div class="error-alert">
+            {{ errorMessage }}
+          </div>
+        }
+
+        @if (successMessage) {
+          <div class="success-alert">
+            {{ successMessage }}
+          </div>
+        }
+
+        <form
+          [formGroup]="registerForm"
+          (ngSubmit)="onSubmit()"
+          novalidate
+        >
+
+          <!-- FULL NAME -->
+          <div class="form-group">
+
+            <label for="fullName">
+              Full name
+            </label>
+
+            <input
+              id="fullName"
+              type="text"
+              formControlName="fullName"
+              placeholder="Enter your full name"
+              autocomplete="name"
+            />
+
+            @if (fullName.invalid && fullName.touched) {
+
+              <div class="validation-message">
+
+                @if (fullName.hasError('required')) {
+                  <span>Full name is required.</span>
+                }
+
+                @if (fullName.hasError('minlength')) {
+                  <span>
+                    Full name must contain at least 2 characters.
+                  </span>
+                }
+
+              </div>
+            }
+
+          </div>
+
+          <!-- EMAIL -->
+          <div class="form-group">
+
+            <label for="email">
+              Email address
+            </label>
+
+            <input
+              id="email"
+              type="email"
+              formControlName="email"
+              placeholder="Enter your email"
+              autocomplete="email"
+            />
+
+            @if (email.invalid && email.touched) {
+
+              <div class="validation-message">
+
+                @if (email.hasError('required')) {
+                  <span>Email is required.</span>
+                }
+
+                @if (email.hasError('email')) {
+                  <span>Enter a valid email address.</span>
+                }
+
+              </div>
+            }
+
+          </div>
+
+          <!-- PHONE -->
+          <div class="form-group">
+
+            <label for="phone">
+              Phone number
+            </label>
+
+            <input
+              id="phone"
+              type="tel"
+              formControlName="phone"
+              placeholder="Enter your phone number"
+              autocomplete="tel"
+            />
+
+            @if (phone.invalid && phone.touched) {
+              <div class="validation-message">
+                <span>Phone number is required.</span>
+              </div>
+            }
+
+          </div>
+
+          <!-- PASSWORD -->
+          <div class="form-group">
+
+            <label for="password">
+              Password
+            </label>
+
+            <div class="password-input">
+
+              <input
+                id="password"
+                [type]="showPassword ? 'text' : 'password'"
+                formControlName="password"
+                placeholder="Minimum 8 characters"
+                autocomplete="new-password"
+              />
+
+              <button
+                type="button"
+                class="password-toggle"
+                (click)="togglePassword()"
+              >
+                {{ showPassword ? 'Hide' : 'Show' }}
+              </button>
+
+            </div>
+
+            @if (password.invalid && password.touched) {
+
+              <div class="validation-message">
+
+                @if (password.hasError('required')) {
+                  <span>Password is required.</span>
+                }
+
+                @if (password.hasError('minlength')) {
+                  <span>
+                    Password must contain at least 8 characters.
+                  </span>
+                }
+
+              </div>
+            }
+
+          </div>
+
+          <!-- CONFIRM PASSWORD -->
+          <div class="form-group">
+
+            <label for="confirmPassword">
+              Confirm password
+            </label>
+
+            <div class="password-input">
+
+              <input
+                id="confirmPassword"
+                [type]="showConfirmPassword ? 'text' : 'password'"
+                formControlName="confirmPassword"
+                placeholder="Re-enter your password"
+                autocomplete="new-password"
+              />
+
+              <button
+                type="button"
+                class="password-toggle"
+                (click)="toggleConfirmPassword()"
+              >
+                {{ showConfirmPassword ? 'Hide' : 'Show' }}
+              </button>
+
+            </div>
+
+            @if (
+              confirmPassword.invalid &&
+              confirmPassword.touched
+            ) {
+              <div class="validation-message">
+                <span>
+                  Please confirm your password.
+                </span>
+              </div>
+            }
+
+          </div>
+
+          <!-- REGISTER BUTTON -->
+          <button
+            type="submit"
+            class="register-button"
+            [disabled]="isLoading"
+          >
+
+            @if (isLoading) {
+              Creating account...
+            } @else {
+              Create Account
+            }
+
+          </button>
+
+        </form>
+
+        <div class="login-text">
+          <span>Already have an account?</span>
+
+          <a routerLink="/login">
+            Sign in
+          </a>
+        </div>
+
+      </div>
+
+    </section>
+
+  </div>
+
+</div>

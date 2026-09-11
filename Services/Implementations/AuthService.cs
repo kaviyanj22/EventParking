@@ -126,7 +126,7 @@ namespace Event_parking.Services.Implementations
             string verificationLink =
                 $"{_emailSettings.FrontendBaseUrl
                     .TrimEnd('/')}" +
-                $"/verify-email.html?token={encodedToken}";
+                $"/verify-email?token={encodedToken}";
 
             string emailBody = $"""
                 <h2>Event Parking Account Verification</h2>
@@ -475,7 +475,7 @@ namespace Event_parking.Services.Implementations
                 string resetPasswordLink =
                     $"{_emailSettings.FrontendBaseUrl
                         .TrimEnd('/')}" +
-                    "/reset-password.html" +
+                    "/reset-password" +
                     $"?token={encodedToken}";
 
                 string emailBody = $"""
