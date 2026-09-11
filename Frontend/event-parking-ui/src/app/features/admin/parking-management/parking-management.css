@@ -1,0 +1,289 @@
+.parking-management-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  color: var(--color-text);
+}
+
+.parking-management-container h2 {
+  margin: 0 0 24px;
+  color: var(--color-navy);
+  font-size: 28px;
+  font-weight: 700;
+}
+
+/* EVENT SEARCH */
+
+.event-search {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  margin-bottom: 24px;
+  padding: 18px;
+
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+}
+
+.event-search label {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.event-search input {
+  width: 190px;
+  padding: 10px 12px;
+
+  background: var(--color-card);
+  color: var(--color-text);
+
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+.event-search input:focus {
+  outline: none;
+  border-color: var(--color-blue);
+}
+
+.event-search button {
+  padding: 10px 18px;
+
+  border: none;
+  border-radius: 8px;
+
+  background: var(--color-blue);
+  color: #ffffff;
+
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* PARKING FORM CARD */
+
+.parking-form-section {
+  margin-bottom: 30px;
+  padding: 24px;
+
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+}
+
+.parking-form-section h3 {
+  margin: 0 0 20px;
+  color: var(--color-navy);
+  font-size: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.form-group label {
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px 12px;
+
+  background: var(--color-card);
+  color: var(--color-text);
+
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--color-blue);
+}
+
+/* MESSAGES */
+
+.validation-error,
+.error-message {
+  color: var(--color-red);
+}
+
+.success-message {
+  color: var(--color-green);
+}
+
+.loading-message,
+.empty-message {
+  color: var(--color-muted);
+}
+
+/* FORM ACTIONS */
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.form-actions button,
+.action-buttons button {
+  padding: 9px 16px;
+
+  border: none;
+  border-radius: 8px;
+
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.create-button,
+.update-button {
+  background: var(--color-blue);
+  color: #ffffff;
+}
+
+.cancel-button {
+  background: #f1f5f9;
+  color: var(--color-text);
+  border: 1px solid var(--color-border) !important;
+}
+
+/* TABLE */
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 13px 14px;
+  text-align: left;
+  white-space: nowrap;
+
+  border-bottom: 1px solid var(--color-border);
+}
+
+th {
+  background: #f8fafc;
+  color: var(--color-navy);
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+td {
+  color: var(--color-text);
+}
+
+tbody tr:hover {
+  background: #f8fafc;
+}
+
+/* STATUS */
+
+.status {
+  display: inline-block;
+  padding: 5px 10px;
+
+  border-radius: 20px;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status.available {
+  background: #f0fdf4;
+  color: var(--color-green);
+}
+
+.status.reserved {
+  background: #fffbeb;
+  color: var(--color-warning);
+}
+
+.status.occupied {
+  background: #f1f5f9;
+  color: var(--color-muted);
+}
+
+/* ACTION BUTTONS */
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-button {
+  background: #eff6ff;
+  color: var(--color-blue);
+}
+
+.delete-button {
+  background: #fef2f2;
+  color: var(--color-red);
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+  .form-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .parking-management-container {
+    padding: 20px 14px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .event-search {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .event-search input {
+    width: 100%;
+  }
+
+  .event-search button {
+    width: 100%;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+}

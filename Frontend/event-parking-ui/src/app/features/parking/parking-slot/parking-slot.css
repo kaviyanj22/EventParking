@@ -1,0 +1,124 @@
+.parking-slot {
+  min-width: 120px;
+  padding: 16px 14px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  border: 2px solid var(--color-border);
+  border-radius: 12px;
+
+  background: var(--color-card);
+  color: var(--color-text);
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* SLOT NUMBER */
+
+.slot-number {
+  color: var(--color-navy);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* ZONE */
+
+.slot-zone {
+  color: var(--color-muted);
+  font-size: 13px;
+}
+
+/* FEE */
+
+.slot-fee {
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* AVAILABLE */
+
+.parking-slot.available {
+  background: #f0fdf4;
+  border-color: var(--color-green);
+}
+
+.parking-slot.available:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 5px 14px rgba(15, 23, 42, 0.1);
+}
+
+/* SELECTED */
+
+.parking-slot.selected {
+  background: var(--color-blue);
+  border-color: var(--color-blue);
+  color: #ffffff;
+
+  box-shadow:
+    0 5px 14px rgba(37, 99, 235, 0.22);
+}
+
+.parking-slot.selected .slot-number,
+.parking-slot.selected .slot-zone,
+.parking-slot.selected .slot-fee {
+  color: #ffffff;
+}
+
+/* RESERVED */
+
+.parking-slot.reserved {
+  background: #fffbeb;
+  border-color: var(--color-warning);
+  color: #92400e;
+
+  cursor: not-allowed;
+}
+
+/* OCCUPIED */
+
+.parking-slot.occupied {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: var(--color-muted);
+
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+/* DISABLED */
+
+.parking-slot:disabled {
+  cursor: not-allowed;
+}
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+  .parking-slot {
+    min-width: 100px;
+    padding: 13px 10px;
+  }
+
+  .slot-number {
+    font-size: 14px;
+  }
+
+  .slot-zone,
+  .slot-fee {
+    font-size: 12px;
+  }
+}

@@ -1,0 +1,158 @@
+<div class="venue-form-card">
+
+  <div class="form-header">
+    <h2>
+      {{ venue ? 'Edit Venue' : 'Add Venue' }}
+    </h2>
+
+    <p>
+      {{ venue
+        ? 'Update the venue information.'
+        : 'Enter the details for the new venue.'
+      }}
+    </p>
+  </div>
+
+  <!-- Success -->
+  <div
+    class="message success-message"
+    *ngIf="successMessage"
+  >
+    {{ successMessage }}
+  </div>
+
+  <!-- Error -->
+  <div
+    class="message error-message"
+    *ngIf="errorMessage"
+  >
+    {{ errorMessage }}
+  </div>
+
+  <form
+    #venueForm="ngForm"
+    (ngSubmit)="saveVenue()"
+  >
+
+    <!-- Venue Name -->
+    <div class="form-group">
+
+      <label for="venueName">
+        Venue Name
+      </label>
+
+      <input
+        id="venueName"
+        type="text"
+        name="venueName"
+        [(ngModel)]="formData.venueName"
+        #venueName="ngModel"
+        required
+        maxlength="150"
+        placeholder="Enter venue name"
+      />
+
+      <small
+        class="validation-error"
+        *ngIf="
+          venueName.invalid &&
+          venueName.touched
+        "
+      >
+        Venue name is required.
+      </small>
+
+    </div>
+
+    <!-- Address -->
+    <div class="form-group">
+
+      <label for="address">
+        Address
+      </label>
+
+      <textarea
+        id="address"
+        name="address"
+        [(ngModel)]="formData.address"
+        #address="ngModel"
+        required
+        maxlength="250"
+        rows="4"
+        placeholder="Enter venue address"
+      ></textarea>
+
+      <small
+        class="validation-error"
+        *ngIf="
+          address.invalid &&
+          address.touched
+        "
+      >
+        Address is required.
+      </small>
+
+    </div>
+
+    <!-- Capacity -->
+    <div class="form-group">
+
+      <label for="capacity">
+        Capacity
+      </label>
+
+      <input
+        id="capacity"
+        type="number"
+        name="capacity"
+        [(ngModel)]="formData.capacity"
+        #capacity="ngModel"
+        required
+        min="1"
+        placeholder="Enter venue capacity"
+      />
+
+      <small
+        class="validation-error"
+        *ngIf="
+          capacity.invalid &&
+          capacity.touched
+        "
+      >
+        Capacity must be greater than 0.
+      </small>
+
+    </div>
+
+    <!-- Buttons -->
+    <div class="form-actions">
+
+      <button
+        type="button"
+        class="cancel-btn"
+        (click)="cancel()"
+        [disabled]="submitting"
+      >
+        Cancel
+      </button>
+
+      <button
+        type="submit"
+        class="save-btn"
+        [disabled]="
+          venueForm.invalid ||
+          submitting
+        "
+      >
+        {{
+          submitting
+            ? 'Saving...'
+            : (venue ? 'Update Venue' : 'Add Venue')
+        }}
+      </button>
+
+    </div>
+
+  </form>
+
+</div>

@@ -1,0 +1,143 @@
+<nav class="navbar">
+
+  <div class="navbar-container">
+
+    <!-- LOGO -->
+    <a
+      routerLink="/events"
+      class="brand"
+      (click)="closeMenu()"
+    >
+      <span class="brand-icon">P</span>
+      <span class="brand-name">ParkEase</span>
+    </a>
+
+    <!-- MOBILE MENU BUTTON -->
+    <button
+      type="button"
+      class="menu-button"
+      (click)="toggleMenu()"
+      aria-label="Toggle navigation"
+    >
+      ☰
+    </button>
+
+    <!-- NAVIGATION -->
+    <div
+      class="nav-content"
+      [class.open]="menuOpen"
+    >
+
+      <div class="nav-links">
+
+        <a
+          routerLink="/events"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: false }"
+          (click)="closeMenu()"
+        >
+          Events
+        </a>
+
+        @if (isLoggedIn && !isAdmin) {
+
+          <a
+            routerLink="/my-bookings"
+            routerLinkActive="active"
+            (click)="closeMenu()"
+          >
+            My Bookings
+          </a>
+
+          <a
+            routerLink="/payments"
+            routerLinkActive="active"
+            (click)="closeMenu()"
+          >
+            Payments
+          </a>
+
+          <a
+            routerLink="/notifications"
+            routerLinkActive="active"
+            (click)="closeMenu()"
+          >
+            Notifications
+          </a>
+
+        }
+
+        @if (isLoggedIn && isAdmin) {
+
+          <a
+            routerLink="/admin"
+            routerLinkActive="active"
+            (click)="closeMenu()"
+          >
+            Admin Dashboard
+          </a>
+
+        }
+
+      </div>
+
+      <!-- RIGHT SIDE -->
+      <div class="nav-actions">
+
+        @if (!isLoggedIn) {
+
+          <a
+            routerLink="/login"
+            class="login-link"
+            (click)="closeMenu()"
+          >
+            Login
+          </a>
+
+          <a
+            routerLink="/register"
+            class="register-button"
+            (click)="closeMenu()"
+          >
+            Register
+          </a>
+
+        } @else {
+
+          <a
+            routerLink="/profile"
+            class="user-profile"
+            (click)="closeMenu()"
+          >
+            <span class="user-avatar">
+              {{ currentUser?.fullName?.charAt(0)?.toUpperCase() }}
+            </span>
+
+            <span class="user-info">
+              <span class="user-name">
+                {{ currentUser?.fullName }}
+              </span>
+
+              <span class="user-role">
+                {{ currentUser?.role }}
+              </span>
+            </span>
+          </a>
+
+          <button
+            type="button"
+            class="logout-button"
+            (click)="logout()"
+          >
+            Logout
+          </button>
+
+        }
+
+      </div>
+
+    </div>
+
+  </div>
+
+</nav>

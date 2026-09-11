@@ -1,0 +1,151 @@
+<div class="parking-map-container">
+
+  <div class="parking-header">
+    <h2>Select Parking</h2>
+    <p>Select one available parking slot</p>
+  </div>
+
+  <!-- LEGEND -->
+
+  <div class="legend">
+
+    <div class="legend-item">
+      <span class="legend-box available"></span>
+      <span>Available</span>
+    </div>
+
+    <div class="legend-item">
+      <span class="legend-box selected"></span>
+      <span>Selected</span>
+    </div>
+
+    <div class="legend-item">
+      <span class="legend-box reserved"></span>
+      <span>Reserved</span>
+    </div>
+
+    <div class="legend-item">
+      <span class="legend-box occupied"></span>
+      <span>Occupied</span>
+    </div>
+
+  </div>
+
+  <!-- LOADING -->
+
+  @if (loading) {
+    <p class="loading-message">
+      Loading parking slots...
+    </p>
+  }
+
+  <!-- ERROR -->
+
+  @if (errorMessage) {
+    <p class="error-message">
+      {{ errorMessage }}
+    </p>
+  }
+
+  <!-- EMPTY -->
+
+  @if (
+    !loading &&
+    !errorMessage &&
+    parkingSlots.length === 0
+  ) {
+    <p class="empty-message">
+      No parking slots available for this event.
+    </p>
+  }
+
+  <!-- PARKING SLOTS -->
+
+  @if (
+    !loading &&
+    !errorMessage &&
+    parkingSlots.length > 0
+  ) {
+
+    <div class="parking-grid">
+
+      @for (
+        slot of parkingSlots;
+        track slot.parkingSlotId
+      ) {
+
+        <app-parking-slot
+          [slot]="slot"
+          [selected]="isSelected(slot)"
+          (slotSelected)="selectSlot($event)">
+        </app-parking-slot>
+
+      }
+
+    </div>
+
+    <!-- SELECTION SUMMARY -->
+
+    <div class="selection-summary">
+
+      <h3>Parking Selection</h3>
+
+      @if (!selectedSlot) {
+
+        <p>
+          No parking slot selected.
+        </p>
+
+      }
+
+      @if (selectedSlot) {
+
+        <p>
+          <strong>Slot:</strong>
+          {{ selectedSlot.slotNumber }}
+        </p>
+
+        @if (selectedSlot.zone) {
+
+          <p>
+            <strong>Zone:</strong>
+            {{ selectedSlot.zone }}
+          </p>
+
+        }
+
+        <p>
+          <strong>Parking Fee:</strong>
+          LKR {{ selectedSlot.fee | number:'1.2-2' }}
+        </p>
+
+      }
+
+      <!-- ACTIONS -->
+
+      <div class="parking-actions">
+
+        <button
+          type="button"
+          class="continue-button"
+          [disabled]="!selectedSlot">
+
+          Continue
+
+        </button>
+
+        <button
+          type="button"
+          class="skip-button">
+
+          Skip Parking
+
+        </button>
+
+      </div>
+
+    </div>
+
+  }
+
+</div>

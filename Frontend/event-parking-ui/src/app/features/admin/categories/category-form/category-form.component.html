@@ -1,0 +1,121 @@
+<div class="category-form-card">
+
+  <div class="form-header">
+    <h2>
+      {{ category ? 'Edit Category' : 'Add Category' }}
+    </h2>
+
+    <p>
+      {{
+        category
+          ? 'Update the category information.'
+          : 'Enter the details for the new category.'
+      }}
+    </p>
+  </div>
+
+  <!-- Success -->
+  <div
+    class="message success-message"
+    *ngIf="successMessage"
+  >
+    {{ successMessage }}
+  </div>
+
+  <!-- Error -->
+  <div
+    class="message error-message"
+    *ngIf="errorMessage"
+  >
+    {{ errorMessage }}
+  </div>
+
+  <form
+    #categoryForm="ngForm"
+    (ngSubmit)="saveCategory()"
+  >
+
+    <!-- Category Name -->
+    <div class="form-group">
+
+      <label for="categoryName">
+        Category Name
+      </label>
+
+      <input
+        id="categoryName"
+        type="text"
+        name="categoryName"
+        [(ngModel)]="formData.categoryName"
+        #categoryName="ngModel"
+        required
+        maxlength="100"
+        placeholder="Enter category name"
+      />
+
+      <small
+        class="validation-error"
+        *ngIf="
+          categoryName.invalid &&
+          categoryName.touched
+        "
+      >
+        Category name is required.
+      </small>
+
+    </div>
+
+    <!-- Description -->
+    <div class="form-group">
+
+      <label for="description">
+        Description
+      </label>
+
+      <textarea
+        id="description"
+        name="description"
+        [(ngModel)]="formData.description"
+        maxlength="250"
+        rows="4"
+        placeholder="Enter category description"
+      ></textarea>
+
+      <small class="field-hint">
+        Optional - maximum 250 characters.
+      </small>
+
+    </div>
+
+    <!-- Buttons -->
+    <div class="form-actions">
+
+      <button
+        type="button"
+        class="cancel-btn"
+        (click)="cancel()"
+        [disabled]="submitting"
+      >
+        Cancel
+      </button>
+
+      <button
+        type="submit"
+        class="save-btn"
+        [disabled]="
+          categoryForm.invalid ||
+          submitting
+        "
+      >
+        {{
+          submitting
+            ? 'Saving...'
+            : (category ? 'Update Category' : 'Add Category')
+        }}
+      </button>
+
+    </div>
+
+  </form>
+
+</div>

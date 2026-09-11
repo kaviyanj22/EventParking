@@ -1,0 +1,140 @@
+<div class="venue-page">
+
+<!-- Venue Form -->
+<div *ngIf="showForm">
+
+  <app-venue-form
+    [venue]="selectedVenue"
+    (saved)="onVenueSaved()"
+    (cancelled)="onVenueCancelled()"
+  >
+  </app-venue-form>
+
+</div>
+
+  <div class="page-header">
+    <div>
+      <h1>Venue Management</h1>
+      <p>Manage event venues and their capacity.</p>
+    </div>
+    
+<button
+  type="button"
+  class="add-btn"
+  (click)="addVenue()"
+>
+  + Add Venue
+</button>
+  </div>
+
+  <!-- Success -->
+  <div
+    class="message success-message"
+    *ngIf="successMessage"
+  >
+    {{ successMessage }}
+  </div>
+
+  <!-- Error -->
+  <div
+    class="message error-message"
+    *ngIf="errorMessage"
+  >
+    {{ errorMessage }}
+  </div>
+
+  <!-- Loading -->
+  <div
+    class="state-message"
+    *ngIf="loading"
+  >
+    Loading venues...
+  </div>
+
+  <!-- Empty -->
+  <div
+    class="state-message"
+    *ngIf="
+      !loading &&
+      !errorMessage &&
+      venues.length === 0
+    "
+  >
+    No venues found.
+  </div>
+
+  <!-- Venue Table -->
+  <div
+    class="table-wrapper"
+    *ngIf="
+      !loading &&
+      venues.length > 0
+    "
+  >
+
+    <table class="venue-table">
+
+      <thead>
+        <tr>
+          <th>Venue ID</th>
+          <th>Venue Name</th>
+          <th>Address</th>
+          <th>Capacity</th>
+          <th>Created Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let venue of venues">
+
+          <td>
+            {{ venue.venueId }}
+          </td>
+
+          <td>
+            {{ venue.venueName }}
+          </td>
+
+          <td>
+            {{ venue.address }}
+          </td>
+
+          <td>
+            {{ venue.capacity }}
+          </td>
+
+          <td>
+            {{ venue.createdAt | date:'mediumDate' }}
+          </td>
+
+          <td class="actions">
+
+            <button
+              type="button"
+              class="edit-btn"
+              (click)="editVenue(venue.venueId)"
+            >
+              Edit
+            </button>
+
+            <button
+              type="button"
+              class="delete-btn"
+              (click)="deleteVenue(venue.venueId)"
+            >
+              Delete
+            </button>
+
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>
