@@ -1,1 +1,63 @@
-/* You can add global styles to this file, and also import other style files */
+/* ParkEase Global Styles */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+
+  font-family:
+    Inter,
+    "Segoe UI",
+    Arial,
+    sans-serif;
+
+  background: #f8fafc;
+  color: #1e293b;
+}
+
+body {
+  min-width: 320px;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* ParkEase Design Variables */
+
+:root {
+  --color-navy: #0f172a;
+  --color-blue: #2563eb;
+  --color-green: #16a34a;
+  --color-warning: #f59e0b;
+  --color-red: #dc2626;
+
+  --color-background: #f8fafc;
+  --color-card: #ffffff;
+
+  --color-text: #1e293b;
+  --color-muted: #64748b;
+  --color-border: #e2e8f0;
+}

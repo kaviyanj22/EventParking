@@ -1,0 +1,17 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.app-content {
+  width: 100%;
+  min-height: calc(100vh - 72px);
+  background: #f8fafc;
+}
+
+@media (max-width: 480px) {
+  .app-content {
+    min-height: calc(100vh - 64px);
+  }
+}
