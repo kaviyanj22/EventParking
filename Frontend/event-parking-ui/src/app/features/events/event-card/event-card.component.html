@@ -1,0 +1,54 @@
+<div class="event-card">
+
+  <div class="event-card-body">
+
+    <span class="category">
+      {{ event.categoryName }}
+    </span>
+
+    <h2 class="event-name">
+      {{ event.eventName }}
+    </h2>
+
+    <div class="event-info">
+
+      <p>
+        <strong>Venue:</strong>
+        {{ event.venueName }}
+      </p>
+
+      <p>
+        <strong>Date:</strong>
+        {{ event.eventDate | date:'mediumDate' }}
+      </p>
+
+      <p>
+        <strong>Time:</strong>
+        {{ event.startTime }} - {{ event.endTime }}
+      </p>
+
+    </div>
+
+    <div class="event-footer">
+
+      <div class="price">
+        <span>Ticket Price</span>
+
+        <strong>
+          LKR {{ event.ticketPrice | number:'1.2-2' }}
+        </strong>
+      </div>
+
+      <button
+        type="button"
+        class="details-btn"
+        (click)="onViewDetails()"
+      >
+        View Details
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

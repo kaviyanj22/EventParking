@@ -1,0 +1,136 @@
+<div class="category-page">
+
+  <!-- Category Form -->
+<div *ngIf="showForm">
+
+  <app-category-form
+    [category]="selectedCategory"
+    (saved)="onCategorySaved()"
+    (cancelled)="onCategoryCancelled()"
+  >
+  </app-category-form>
+
+</div>
+
+  <div class="page-header">
+    <div>
+      <h1>Category Management</h1>
+      <p>Manage event categories.</p>
+    </div>
+
+    <button
+  type="button"
+  class="add-btn"
+  (click)="addCategory()"
+>
+  + Add Category
+</button>
+
+  </div>
+
+  <!-- Success -->
+  <div
+    class="message success-message"
+    *ngIf="successMessage"
+  >
+    {{ successMessage }}
+  </div>
+
+  <!-- Error -->
+  <div
+    class="message error-message"
+    *ngIf="errorMessage"
+  >
+    {{ errorMessage }}
+  </div>
+
+  <!-- Loading -->
+  <div
+    class="state-message"
+    *ngIf="loading"
+  >
+    Loading categories...
+  </div>
+
+  <!-- Empty -->
+  <div
+    class="state-message"
+    *ngIf="
+      !loading &&
+      !errorMessage &&
+      categories.length === 0
+    "
+  >
+    No categories found.
+  </div>
+
+  <!-- Category Table -->
+  <div
+    class="table-wrapper"
+    *ngIf="
+      !loading &&
+      categories.length > 0
+    "
+  >
+
+    <table class="category-table">
+
+      <thead>
+        <tr>
+          <th>Category ID</th>
+          <th>Category Name</th>
+          <th>Description</th>
+          <th>Created Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let category of categories">
+
+          <td>
+            {{ category.categoryId }}
+          </td>
+
+          <td>
+            {{ category.categoryName }}
+          </td>
+
+          <td>
+            {{ category.description || '-' }}
+          </td>
+
+          <td>
+            {{ category.createdAt | date:'mediumDate' }}
+          </td>
+
+          <td class="actions">
+
+            <button
+              type="button"
+              class="edit-btn"
+              (click)="editCategory(category.categoryId)"
+            >
+              Edit
+            </button>
+
+            <button
+              type="button"
+              class="delete-btn"
+              (click)="deleteCategory(category.categoryId)"
+            >
+              Delete
+            </button>
+
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>
