@@ -1,0 +1,105 @@
+<div class="event-details-page">
+
+  <!-- Loading -->
+  <div
+    class="state-message"
+    *ngIf="loading"
+  >
+    Loading event details...
+  </div>
+
+  <!-- Error -->
+  <div
+    class="state-message error-message"
+    *ngIf="!loading && errorMessage"
+  >
+    {{ errorMessage }}
+  </div>
+
+  <!-- Event Details -->
+  <div
+    class="details-card"
+    *ngIf="!loading && !errorMessage && event"
+  >
+
+    <div class="details-header">
+
+      <span class="category">
+        {{ event.categoryName }}
+      </span>
+
+      <h1>
+        {{ event.eventName }}
+      </h1>
+
+      <p class="venue">
+        {{ event.venueName }}
+      </p>
+
+    </div>
+
+    <div class="details-grid">
+
+      <div class="detail-item">
+        <span>Date</span>
+        <strong>
+          {{ event.eventDate | date:'fullDate' }}
+        </strong>
+      </div>
+
+      <div class="detail-item">
+        <span>Time</span>
+        <strong>
+          {{ event.startTime }} - {{ event.endTime }}
+        </strong>
+      </div>
+
+      <div class="detail-item">
+        <span>Venue</span>
+        <strong>
+          {{ event.venueName }}
+        </strong>
+      </div>
+
+      <div class="detail-item">
+        <span>Category</span>
+        <strong>
+          {{ event.categoryName }}
+        </strong>
+      </div>
+
+      <div class="detail-item">
+        <span>Ticket Price</span>
+        <strong>
+          LKR {{ event.ticketPrice | number:'1.2-2' }}
+        </strong>
+      </div>
+
+      <div class="detail-item">
+        <span>Capacity</span>
+        <strong>
+          {{ event.capacity }}
+        </strong>
+      </div>
+
+      <div class="detail-item">
+        <span>Parking Fee</span>
+        <strong>
+          LKR {{ event.parkingFee | number:'1.2-2' }}
+        </strong>
+      </div>
+
+    </div>
+
+    <div class="booking-section">
+      <button
+        type="button"
+        class="book-btn"
+        (click)="onBookNow()">
+        Book Now
+      </button>
+    </div>
+
+  </div>
+
+</div>

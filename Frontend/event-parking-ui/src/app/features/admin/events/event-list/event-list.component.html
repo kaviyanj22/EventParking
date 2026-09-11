@@ -1,0 +1,148 @@
+<div class="admin-event-page">
+
+  <!-- Event Form -->
+<div *ngIf="showForm">
+
+  <app-admin-event-form
+    [event]="selectedEvent"
+    (saved)="onEventSaved()"
+    (cancelled)="onEventCancelled()"
+  >
+  </app-admin-event-form>
+
+</div>
+
+  <div class="page-header">
+    <div>
+      <h1>Event Management</h1>
+      <p>Manage all events.</p>
+    </div>
+
+    <button
+      type="button"
+      class="add-btn"
+      (click)="addEvent()"
+    >
+      + Add Event
+    </button>
+  </div>
+
+  <!-- Success -->
+  <div
+    class="message success-message"
+    *ngIf="successMessage"
+  >
+    {{ successMessage }}
+  </div>
+
+  <!-- Error -->
+  <div
+    class="message error-message"
+    *ngIf="errorMessage"
+  >
+    {{ errorMessage }}
+  </div>
+
+  <!-- Loading -->
+  <div
+    class="state-message"
+    *ngIf="loading"
+  >
+    Loading events...
+  </div>
+
+  <!-- Empty -->
+  <div
+    class="state-message"
+    *ngIf="
+      !loading &&
+      !errorMessage &&
+      events.length === 0
+    "
+  >
+    No events found.
+  </div>
+
+  <!-- Event Table -->
+  <div
+    class="table-wrapper"
+    *ngIf="
+      !loading &&
+      events.length > 0
+    "
+  >
+    <table class="event-table">
+
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Venue</th>
+          <th>Category</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Ticket Price</th>
+          <th>Capacity</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let event of events">
+
+          <td>
+            {{ event.eventName }}
+          </td>
+
+          <td>
+            {{ event.venueName }}
+          </td>
+
+          <td>
+            {{ event.categoryName }}
+          </td>
+
+          <td>
+            {{ event.eventDate | date:'mediumDate' }}
+          </td>
+
+          <td>
+            {{ event.startTime }} - {{ event.endTime }}
+          </td>
+
+          <td>
+            LKR {{ event.ticketPrice | number:'1.2-2' }}
+          </td>
+
+          <td>
+            {{ event.capacity }}
+          </td>
+
+          <td class="actions">
+
+            <button
+              type="button"
+              class="edit-btn"
+              (click)="editEvent(event.eventId)"
+            >
+              Edit
+            </button>
+
+            <button
+              type="button"
+              class="delete-btn"
+              (click)="deleteEvent(event.eventId)"
+            >
+              Delete
+            </button>
+
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+  </div>
+
+</div>

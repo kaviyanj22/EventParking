@@ -1,0 +1,145 @@
+.category-form-card {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 28px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+}
+
+.form-header {
+  margin-bottom: 24px;
+}
+
+.form-header h2 {
+  margin: 0 0 6px;
+  font-size: 26px;
+  color: #111111;
+}
+
+.form-header p {
+  margin: 0;
+  color: #666666;
+}
+
+/* Messages */
+
+.message {
+  padding: 12px 14px;
+  margin-bottom: 18px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.success-message {
+  background: #ecfdf3;
+  color: #027a48;
+}
+
+.error-message {
+  background: #fff1f0;
+  color: #b42318;
+}
+
+/* Form */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333333;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #333333;
+}
+
+.validation-error {
+  color: #b42318;
+  font-size: 12px;
+}
+
+.field-hint {
+  color: #777777;
+  font-size: 12px;
+}
+
+/* Buttons */
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 26px;
+}
+
+.form-actions button {
+  padding: 11px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background: #e5e7eb;
+  color: #222222;
+}
+
+.save-btn {
+  background: #222222;
+  color: #ffffff;
+}
+
+.form-actions button:hover:not(:disabled) {
+  opacity: 0.88;
+}
+
+.form-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive */
+
+@media (max-width: 650px) {
+  .category-form-card {
+    padding: 18px;
+  }
+
+  .form-header h2 {
+    font-size: 23px;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .form-actions button {
+    width: 100%;
+  }
+}

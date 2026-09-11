@@ -1,0 +1,209 @@
+.event-page {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-header h1 {
+  margin: 0 0 6px;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.page-header p {
+  margin: 0;
+  color: #666;
+}
+
+/* Filters */
+
+.filter-section {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr) auto;
+  gap: 16px;
+  align-items: end;
+  padding: 20px;
+  margin-bottom: 28px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.filter-group label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.filter-group input,
+.filter-group select {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.filter-group input:focus,
+.filter-group select:focus {
+  outline: none;
+  border-color: #333333;
+}
+
+.filter-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.filter-actions button {
+  padding: 11px 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.search-btn {
+  background: #222222;
+  color: #ffffff;
+}
+
+.clear-btn {
+  background: #e5e7eb;
+  color: #222222;
+}
+
+/* States */
+
+.state-message {
+  padding: 30px;
+  text-align: center;
+  border-radius: 10px;
+  background: #f8f9fa;
+  color: #555555;
+}
+
+.error-message {
+  color: #b42318;
+  background: #fff1f0;
+}
+
+/* Event Cards */
+
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.event-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.2s ease,
+              box-shadow 0.2s ease;
+}
+
+.event-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+}
+
+.event-card-body {
+  padding: 20px;
+}
+
+.category {
+  display: inline-block;
+  padding: 5px 10px;
+  margin-bottom: 12px;
+  border-radius: 20px;
+  background: #f1f3f5;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.event-card h2 {
+  margin: 0 0 16px;
+  font-size: 21px;
+}
+
+.event-card p {
+  margin: 8px 0;
+  color: #555555;
+  font-size: 14px;
+}
+
+.event-card .price {
+  margin-top: 16px;
+  color: #111111;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.details-btn {
+  width: 100%;
+  margin-top: 16px;
+  padding: 11px;
+  border: none;
+  border-radius: 8px;
+  background: #222222;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.details-btn:hover,
+.search-btn:hover {
+  opacity: 0.88;
+}
+
+/* Responsive */
+
+@media (max-width: 1100px) {
+  .filter-section {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .event-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  .event-page {
+    padding: 16px;
+  }
+
+  .filter-section {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-actions {
+    width: 100%;
+  }
+
+  .filter-actions button {
+    flex: 1;
+  }
+
+  .event-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-header h1 {
+    font-size: 25px;
+  }
+}
