@@ -1,0 +1,138 @@
+<div class="payment-container">
+
+  <div
+    class="loading-message"
+    *ngIf="isLoading"
+  >
+    Loading payment summary...
+  </div>
+
+  <div
+    class="error-message"
+    *ngIf="errorMessage"
+  >
+    {{ errorMessage }}
+  </div>
+
+  <div
+    class="payment-card"
+    *ngIf="!isLoading && paymentSummary"
+  >
+
+    <div class="payment-header">
+      <h1>Payment Summary</h1>
+      <p>
+        Review your booking amount before completing payment.
+      </p>
+    </div>
+
+    <div class="booking-section">
+
+      <div class="detail-row">
+        <span>Booking Number</span>
+        <strong>
+          {{ paymentSummary.bookingNumber }}
+        </strong>
+      </div>
+
+      <div class="detail-row">
+        <span>Event</span>
+        <strong>
+          {{ paymentSummary.eventName }}
+        </strong>
+      </div>
+
+      <div class="detail-row">
+        <span>Booking Status</span>
+        <strong>
+          {{ paymentSummary.bookingStatus }}
+        </strong>
+      </div>
+
+      <div class="detail-row">
+        <span>Payment Status</span>
+        <strong>
+          {{ paymentSummary.paymentStatus }}
+        </strong>
+      </div>
+
+    </div>
+
+    <div class="amount-section">
+
+      <h2>Amount Details</h2>
+
+      <div class="detail-row">
+        <span>Seat Total</span>
+        <strong>
+          {{ paymentSummary.seatTotal | currency }}
+        </strong>
+      </div>
+
+      <div class="detail-row">
+        <span>Parking Fee</span>
+        <strong>
+          {{ paymentSummary.parkingFee | currency }}
+        </strong>
+      </div>
+
+      <div class="detail-row total-row">
+        <span>Total Amount</span>
+        <strong>
+          {{ paymentSummary.totalAmount | currency }}
+        </strong>
+      </div>
+
+    </div>
+
+    <div
+      class="hold-warning"
+      *ngIf="!paymentSummary.isExpired"
+    >
+      <strong>Booking Hold Active</strong>
+
+      <p>
+        Complete the payment before your reservation expires.
+      </p>
+    </div>
+
+    <div
+      class="expired-warning"
+      *ngIf="paymentSummary.isExpired"
+    >
+      <strong>Booking Hold Expired</strong>
+
+      <p>
+        This booking can no longer be paid.
+      </p>
+    </div>
+
+    <div class="payment-actions">
+
+      <button
+        type="button"
+        class="back-btn"
+        [disabled]="isPaying"
+        (click)="goBack()"
+      >
+        Back
+      </button>
+
+      <button
+        type="button"
+        class="pay-btn"
+        [disabled]="!canPay"
+        (click)="payNow()"
+      >
+        {{
+          isPaying
+            ? 'Processing Payment...'
+            : 'Pay Now'
+        }}
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

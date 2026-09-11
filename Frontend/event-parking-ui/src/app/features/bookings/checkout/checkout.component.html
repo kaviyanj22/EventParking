@@ -1,0 +1,86 @@
+<div class="checkout-container">
+
+  <div class="checkout-header">
+    <h1>Booking Review</h1>
+    <p>Review your selection before creating the booking.</p>
+  </div>
+
+  <div
+    class="error-message"
+    *ngIf="errorMessage"
+  >
+    {{ errorMessage }}
+  </div>
+
+  <div
+    class="checkout-card"
+    *ngIf="bookingState"
+  >
+
+    <div class="review-section">
+      <h2>Event</h2>
+
+      <div class="review-row">
+        <span>Event ID</span>
+        <strong>{{ bookingState.eventId }}</strong>
+      </div>
+    </div>
+
+    <div class="review-section">
+      <h2>Selected Seats</h2>
+
+      <div class="seat-list">
+
+        <span
+          class="seat-chip"
+          *ngFor="let seatId of bookingState.seatIds"
+        >
+          Seat {{ seatId }}
+        </span>
+
+      </div>
+
+      <div class="review-row">
+        <span>Total Seats</span>
+        <strong>
+          {{ bookingState.seatIds.length }}
+        </strong>
+      </div>
+    </div>
+
+    <div class="review-section">
+      <h2>Parking</h2>
+
+      <div
+        class="review-row"
+        *ngIf="bookingState.parkingSlotId; else noParking"
+      >
+        <span>Parking Slot</span>
+        <strong>
+          Slot {{ bookingState.parkingSlotId }}
+        </strong>
+      </div>
+
+      <ng-template #noParking>
+        <p class="no-parking">
+          No parking slot selected.
+        </p>
+      </ng-template>
+    </div>
+
+    <div class="checkout-actions">
+
+      <button
+        type="button"
+        class="create-booking-btn"
+        [disabled]="isLoading"
+        (click)="createBooking()"
+      >
+        {{ isLoading ? 'Creating Booking...' : 'Create Booking' }}
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

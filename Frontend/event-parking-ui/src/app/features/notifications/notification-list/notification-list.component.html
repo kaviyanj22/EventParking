@@ -1,0 +1,87 @@
+<div class="notifications-container">
+
+  <div class="notifications-header">
+    <h1>Notifications</h1>
+    <p>View your latest booking and event updates.</p>
+  </div>
+
+  <div
+    class="loading-message"
+    *ngIf="isLoading"
+  >
+    Loading notifications...
+  </div>
+
+  <div
+    class="error-message"
+    *ngIf="errorMessage"
+  >
+    {{ errorMessage }}
+  </div>
+
+  <div
+    class="empty-message"
+    *ngIf="!isLoading &&
+           !errorMessage &&
+           notifications.length === 0"
+  >
+    No notifications available.
+  </div>
+
+  <div
+    class="notification-list"
+    *ngIf="!isLoading &&
+           notifications.length > 0"
+  >
+
+    <div
+      class="notification-card"
+      *ngFor="let notification of notifications"
+      [class.unread]="!notification.isRead"
+      (click)="markAsRead(notification)"
+    >
+
+      <div class="notification-content">
+
+        <div class="notification-top">
+
+          <span class="notification-type">
+            {{ notification.type }}
+          </span>
+
+          <span
+            class="read-status"
+            [class.unread-status]="!notification.isRead"
+          >
+            {{ notification.isRead ? 'Read' : 'Unread' }}
+          </span>
+
+        </div>
+
+        <h3>
+          {{ notification.title }}
+        </h3>
+
+        <p>
+          {{ notification.message }}
+        </p>
+
+        <div class="notification-footer">
+
+          <span>
+            {{ notification.createdAt | date:'medium' }}
+          </span>
+
+          <span *ngIf="notification.bookingId">
+            Booking #{{ notification.bookingId }}
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

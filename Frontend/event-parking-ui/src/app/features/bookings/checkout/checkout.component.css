@@ -1,0 +1,151 @@
+.checkout-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 20px;
+}
+
+.checkout-header {
+  margin-bottom: 24px;
+}
+
+.checkout-header h1 {
+  margin: 0 0 8px;
+  font-size: 30px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.checkout-header p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 15px;
+}
+
+.checkout-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.review-section {
+  padding: 20px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.review-section:first-child {
+  padding-top: 0;
+}
+
+.review-section h2 {
+  margin: 0 0 16px;
+  font-size: 18px;
+  color: #111827;
+}
+
+.review-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  color: #4b5563;
+}
+
+.review-row strong {
+  color: #111827;
+}
+
+.seat-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.seat-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  border-radius: 20px;
+  background: #eef2ff;
+  color: #3730a3;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.no-parking {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.error-message {
+  margin-bottom: 20px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  font-size: 14px;
+}
+
+.checkout-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 24px;
+}
+
+.create-booking-btn {
+  min-width: 180px;
+  padding: 12px 22px;
+  border: none;
+  border-radius: 10px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.create-booking-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.create-booking-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+@media (max-width: 600px) {
+  .checkout-container {
+    padding: 20px 14px;
+  }
+
+  .checkout-header h1 {
+    font-size: 24px;
+  }
+
+  .checkout-card {
+    padding: 20px;
+    border-radius: 12px;
+  }
+
+  .review-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .checkout-actions {
+    display: block;
+  }
+
+  .create-booking-btn {
+    width: 100%;
+  }
+}

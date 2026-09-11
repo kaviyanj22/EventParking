@@ -1,0 +1,104 @@
+<div class="hold-container">
+
+  <div
+    class="loading-message"
+    *ngIf="isLoading"
+  >
+    Loading booking details...
+  </div>
+
+  <div
+    class="error-message"
+    *ngIf="errorMessage"
+  >
+    {{ errorMessage }}
+  </div>
+
+  <div
+    class="hold-card"
+    *ngIf="!isLoading && holdStatus"
+  >
+
+    <div class="hold-header">
+
+      <h1>Booking Reserved</h1>
+
+      <p>
+        Your selected seats and parking are temporarily reserved.
+      </p>
+
+    </div>
+
+    <div class="booking-info">
+
+      <div class="info-row">
+        <span>Booking Number</span>
+        <strong>
+          {{ holdStatus.bookingNumber }}
+        </strong>
+      </div>
+
+      <div class="info-row">
+        <span>Booking Status</span>
+
+        <strong
+          [class.expired-text]="holdStatus.isExpired"
+          [class.pending-text]="!holdStatus.isExpired"
+        >
+          {{ holdStatus.isExpired ? 'Expired' : holdStatus.status }}
+        </strong>
+      </div>
+
+    </div>
+
+    <div
+      class="timer-section"
+      *ngIf="!holdStatus.isExpired && remainingSeconds > 0"
+    >
+
+      <p class="timer-label">
+        Complete your payment within
+      </p>
+
+      <div class="countdown">
+        {{ formattedTime }}
+      </div>
+
+      <p class="timer-note">
+        Your reservation will expire automatically when the timer reaches 00:00.
+      </p>
+
+    </div>
+
+    <div
+      class="expired-section"
+      *ngIf="holdStatus.isExpired || remainingSeconds <= 0"
+    >
+
+      <h2>Booking Hold Expired</h2>
+
+      <p>
+        The reservation time has expired.
+        Please select your seats again to create a new booking.
+      </p>
+
+    </div>
+
+    <div
+      class="hold-actions"
+      *ngIf="!holdStatus.isExpired && remainingSeconds > 0"
+    >
+
+      <button
+        type="button"
+        class="payment-btn"
+        (click)="proceedToPayment()"
+      >
+        Proceed to Payment
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
