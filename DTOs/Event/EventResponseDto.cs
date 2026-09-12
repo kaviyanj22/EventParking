@@ -29,6 +29,10 @@ namespace Event_parking.DTOs.Event
 
         public decimal ParkingFee { get; set; }
 
+        // Customer-facing event poster image
+        public string? EventImageUrl { get; set; }
+
+        // Seating layout image
         public string? SeatingLayoutImageUrl { get; set; }
 
         public DateTime CreatedAt { get; set; }

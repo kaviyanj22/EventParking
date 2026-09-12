@@ -4,102 +4,295 @@
   padding: 24px;
 }
 
+/* =========================================
+   STATE MESSAGES
+========================================= */
+
 .state-message {
   padding: 30px;
   text-align: center;
-  background: #f8f9fa;
+
+  background: #f8fafc;
+  color: #475569;
+
+  border: 1px solid #e2e8f0;
   border-radius: 10px;
-  color: #555555;
 }
 
 .error-message {
-  color: #b42318;
-  background: #fff1f0;
+  background: #fef2f2;
+  color: #dc2626;
+
+  border-color: #fecaca;
 }
 
+/* =========================================
+   DETAILS CARD
+========================================= */
+
 .details-card {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 14px;
   padding: 28px;
+
+  background: #ffffff;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+
+  box-shadow:
+    0 8px 24px
+    rgba(15, 23, 42, 0.06);
 }
+
+/* =========================================
+   HEADER
+========================================= */
 
 .details-header {
   padding-bottom: 22px;
   margin-bottom: 24px;
-  border-bottom: 1px solid #e5e7eb;
+
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .category {
   display: inline-block;
+
   padding: 6px 12px;
   margin-bottom: 12px;
-  background: #f1f3f5;
+
+  background: #eff6ff;
+  color: #2563eb;
+
   border-radius: 20px;
+
   font-size: 13px;
   font-weight: 600;
 }
 
 .details-header h1 {
-  margin: 0 0 10px;
+  margin: 0 0 8px;
+
+  color: #0f172a;
+
   font-size: 32px;
-  color: #111111;
+  font-weight: 700;
+}
+
+/* =========================================
+   EVENT ID
+========================================= */
+
+.event-id {
+  display: inline-block;
+
+  margin: 0 0 10px;
+
+  padding: 5px 10px;
+
+  background: #f1f5f9;
+  color: #475569;
+
+  border-radius: 7px;
+
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .venue {
   margin: 0;
-  color: #666666;
+
+  color: #64748b;
+
   font-size: 16px;
 }
 
+/* =========================================
+   DETAILS GRID
+========================================= */
+
 .details-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
   gap: 16px;
+
+  margin-bottom: 24px;
 }
 
 .detail-item {
   display: flex;
   flex-direction: column;
   gap: 6px;
+
   padding: 16px;
-  background: #f8f9fa;
+
+  background: #f8fafc;
+
+  border: 1px solid #e2e8f0;
   border-radius: 10px;
 }
 
 .detail-item span {
+  color: #64748b;
+
   font-size: 13px;
-  color: #777777;
+  font-weight: 500;
 }
 
 .detail-item strong {
+  color: #1e293b;
+
   font-size: 16px;
-  color: #222222;
+  font-weight: 700;
 }
+
+/* =========================================
+   PRICING SECTION
+========================================= */
+
+.pricing-section {
+  margin-top: 24px;
+
+  padding: 20px;
+
+  background: #eff6ff;
+
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+}
+
+.pricing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 16px;
+
+  margin-bottom: 18px;
+}
+
+.pricing-header > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.pricing-title {
+  color: #64748b;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.pricing-value {
+  color: #0f172a;
+
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* =========================================
+   PRICING MESSAGE
+========================================= */
+
+.pricing-message {
+  padding: 16px;
+
+  background: #ffffff;
+
+  border: 1px solid #dbeafe;
+  border-radius: 10px;
+}
+
+.pricing-message > strong {
+  display: block;
+
+  margin-bottom: 9px;
+
+  color: #1e3a8a;
+
+  font-size: 15px;
+}
+
+.pricing-message p {
+  margin: 6px 0;
+
+  color: #475569;
+
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.final-price-note {
+  margin-top: 10px !important;
+
+  color: #2563eb !important;
+
+  font-weight: 600;
+}
+
+/* =========================================
+   BOOKING SECTION
+========================================= */
 
 .booking-section {
   margin-top: 28px;
+
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
+  align-items: flex-end;
+
+  gap: 8px;
 }
 
 .book-btn {
-  min-width: 160px;
+  min-width: 170px;
+
   padding: 13px 24px;
+
   border: none;
   border-radius: 8px;
-  background: #222222;
+
+  background: #2563eb;
   color: #ffffff;
+
   font-size: 15px;
   font-weight: 600;
+
   cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
 .book-btn:hover {
-  opacity: 0.88;
+  background: #1d4ed8;
 }
 
+.book-btn:active {
+  transform: scale(0.99);
+}
+
+.booking-help {
+  max-width: 330px;
+
+  color: #64748b;
+
+  font-size: 12px;
+  line-height: 1.5;
+
+  text-align: right;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
 @media (max-width: 650px) {
+
   .event-details-page {
     padding: 16px;
   }
@@ -116,11 +309,21 @@
     grid-template-columns: 1fr;
   }
 
+  .pricing-value {
+    font-size: 21px;
+  }
+
   .booking-section {
-    display: block;
+    align-items: stretch;
   }
 
   .book-btn {
     width: 100%;
   }
+
+  .booking-help {
+    max-width: none;
+    text-align: center;
+  }
+
 }

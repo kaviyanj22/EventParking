@@ -1,11 +1,15 @@
 import {
+  ChangeDetectorRef,
   Component,
   OnDestroy,
   OnInit
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import {
+  ActivatedRoute,
+  Router
+} from '@angular/router';
 
 import {
   BookingHoldStatus,
@@ -28,24 +32,35 @@ export class BookingHoldComponent implements OnInit, OnDestroy {
   remainingSeconds = 0;
 
   isLoading = true;
+
   errorMessage = '';
 
-  private countdownInterval: ReturnType<typeof setInterval> | null = null;
+  private countdownInterval:
+    ReturnType<typeof setInterval> | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private bookingService: BookingService
+    private bookingService: BookingService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
 
     this.bookingId =
-      Number(this.route.snapshot.paramMap.get('id'));
+      Number(
+        this.route.snapshot.paramMap.get('id')
+      );
 
     if (!this.bookingId) {
-      this.errorMessage = 'Invalid booking.';
+
+      this.errorMessage =
+        'Invalid booking.';
+
       this.isLoading = false;
+
+      this.cdr.detectChanges();
+
       return;
     }
 
@@ -55,6 +70,7 @@ export class BookingHoldComponent implements OnInit, OnDestroy {
   loadHoldStatus(): void {
 
     this.isLoading = true;
+
     this.errorMessage = '';
 
     this.bookingService
@@ -65,9 +81,13 @@ export class BookingHoldComponent implements OnInit, OnDestroy {
 
           this.isLoading = false;
 
-          if (response.success && response.data) {
+          if (
+            response.success &&
+            response.data
+          ) {
 
-            this.holdStatus = response.data;
+            this.holdStatus =
+              response.data;
 
             this.remainingSeconds =
               response.data.remainingSeconds;
@@ -76,8 +96,13 @@ export class BookingHoldComponent implements OnInit, OnDestroy {
               response.data.isExpired ||
               this.remainingSeconds <= 0
             ) {
+
               this.remainingSeconds = 0;
+
               this.stopCountdown();
+
+              this.cdr.detectChanges();
+
               return;
             }
 
@@ -89,6 +114,8 @@ export class BookingHoldComponent implements OnInit, OnDestroy {
               response.message ||
               'Unable to load booking hold status.';
           }
+
+          this.cdr.detectChanges();
         },
 
         error: (error) => {
@@ -96,9 +123,12 @@ export class BookingHoldComponent implements OnInit, OnDestroy {
           this.isLoading = false;
 
           this.errorMessage =
-            error.error?.message ||
+            error?.error?.message ||
             'Unable to load booking hold status.';
+
+          this.cdr.detectChanges();
         }
+
       });
   }
 
@@ -106,36 +136,46 @@ export class BookingHoldComponent implements OnInit, OnDestroy {
 
     this.stopCountdown();
 
-    this.countdownInterval = setInterval(() => {
+    this.countdownInterval =
+      setInterval(() => {
 
-      if (this.remainingSeconds > 0) {
+        if (this.remainingSeconds > 0) {
 
-        this.remainingSeconds--;
+          this.remainingSeconds--;
 
-      } else {
+        } else {
 
-        this.remainingSeconds = 0;
+          this.remainingSeconds = 0;
 
-        this.stopCountdown();
+          this.stopCountdown();
 
-        if (this.holdStatus) {
-          this.holdStatus.isExpired = true;
-          this.holdStatus.status = 'Expired';
+          if (this.holdStatus) {
+
+            this.holdStatus.isExpired = true;
+
+            this.holdStatus.status =
+              'Expired';
+          }
         }
-      }
 
-    }, 1000);
+        this.cdr.detectChanges();
+
+      }, 1000);
   }
 
   get formattedTime(): string {
 
     const minutes =
-      Math.floor(this.remainingSeconds / 60);
+      Math.floor(
+        this.remainingSeconds / 60
+      );
 
     const seconds =
       this.remainingSeconds % 60;
 
-    return `${minutes.toString().padStart(2, '0')}:${seconds
+    return `${minutes
+      .toString()
+      .padStart(2, '0')}:${seconds
       .toString()
       .padStart(2, '0')}`;
   }
@@ -147,26 +187,36 @@ export class BookingHoldComponent implements OnInit, OnDestroy {
       this.holdStatus.isExpired ||
       this.remainingSeconds <= 0
     ) {
+
       this.errorMessage =
         'Booking hold has expired. Payment cannot be continued.';
+
+      this.cdr.detectChanges();
+
       return;
     }
 
     this.router.navigate([
-      '/payments',
-      this.bookingId
+      '/bookings',
+      this.bookingId,
+      'payment'
     ]);
   }
 
   ngOnDestroy(): void {
+
     this.stopCountdown();
   }
 
   private stopCountdown(): void {
 
-    if (this.countdownInterval !== null) {
+    if (
+      this.countdownInterval !== null
+    ) {
 
-      clearInterval(this.countdownInterval);
+      clearInterval(
+        this.countdownInterval
+      );
 
       this.countdownInterval = null;
     }

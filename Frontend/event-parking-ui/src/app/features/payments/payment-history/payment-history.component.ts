@@ -1,8 +1,7 @@
 import {
+  ChangeDetectorRef,
   Component,
-  Input,
-  OnChanges,
-  SimpleChanges
+  OnInit
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
@@ -16,50 +15,74 @@ import {
   PaymentService
 } from '../../../core/services/payment.service';
 
+import {
+  AuthService
+} from '../../../core/services/auth.service';
+
 @Component({
   selector: 'app-payment-history',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule
+  ],
   templateUrl: './payment-history.component.html',
   styleUrl: './payment-history.component.css'
 })
-export class PaymentHistoryComponent implements OnChanges {
+export class PaymentHistoryComponent implements OnInit {
 
-  @Input() customerId: number | null = null;
+  customerId = 0;
 
   payments: PaymentHistory[] = [];
 
   isLoading = false;
+
   errorMessage = '';
 
   constructor(
     private paymentService: PaymentService,
-    private router: Router
-  ) {}
+    private authService: AuthService,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) { }
 
-  ngOnChanges(changes: SimpleChanges): void {
+  ngOnInit(): void {
 
-    if (
-      changes['customerId'] &&
-      this.customerId
-    ) {
-      this.loadPaymentHistory();
+    const currentUser =
+      this.authService.getCurrentUser();
+
+    if (!currentUser) {
+
+      this.router.navigate([
+        '/login'
+      ]);
+
+      return;
     }
+
+    this.customerId =
+      currentUser.customerId;
+
+    this.loadPaymentHistory();
   }
 
   loadPaymentHistory(): void {
 
     if (!this.customerId) {
+
       this.errorMessage =
         'Customer information is not available.';
+
       return;
     }
 
     this.isLoading = true;
+
     this.errorMessage = '';
 
     this.paymentService
-      .getCustomerPayments(this.customerId)
+      .getCustomerPayments(
+        this.customerId
+      )
       .subscribe({
 
         next: (response) => {
@@ -79,21 +102,29 @@ export class PaymentHistoryComponent implements OnChanges {
               response.message ||
               'Unable to load payment history.';
           }
+
+          this.cdr.markForCheck();
         },
 
         error: (error) => {
 
           this.isLoading = false;
+
           this.payments = [];
 
           this.errorMessage =
-            error.error?.message ||
+            error?.error?.message ||
             'Unable to load payment history.';
+
+          this.cdr.markForCheck();
         }
+
       });
   }
 
-  viewReceipt(paymentId: number): void {
+  viewReceipt(
+    paymentId: number
+  ): void {
 
     this.router.navigate([
       '/payments',
@@ -102,7 +133,9 @@ export class PaymentHistoryComponent implements OnChanges {
     ]);
   }
 
-  getStatusClass(status: string): string {
+  getStatusClass(
+    status: string
+  ): string {
 
     return status
       .toLowerCase()

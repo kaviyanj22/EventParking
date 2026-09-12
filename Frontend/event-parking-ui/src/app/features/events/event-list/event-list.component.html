@@ -1,154 +1,167 @@
 <div class="event-page">
 
- <!-- Event Details -->
-<div *ngIf="selectedEventId !== null">
+  <!-- ===================================== -->
+  <!-- EVENT DETAILS -->
+  <!-- ===================================== -->
 
-  <button
-    type="button"
-    class="back-btn"
-    (click)="closeEventDetails()">
-    ← Back to Events
-  </button>
+  <div *ngIf="selectedEventId !== null">
 
-  <app-event-details
-    [eventId]="selectedEventId">
-     (bookNow)="onBookNow($event)"
-  </app-event-details>
+    <button type="button"
+            class="back-btn"
+            (click)="closeEventDetails()">
+      ← Back to Events
+    </button>
 
-</div>
-
-<div *ngIf="selectedEventId === null">
-
-</div>
-
-  <div class="page-header">
-    <div>
-      <h1>Upcoming Events</h1>
-      <p>Find and reserve your favourite event.</p>
-    </div>
-  </div>
-
-  <!-- Search & Filters -->
-  <div class="filter-section">
-
-    <div class="filter-group">
-      <label for="eventName">Event Name</label>
-      <input
-        id="eventName"
-        type="text"
-        placeholder="Search event..."
-        [(ngModel)]="filter.name"
-      />
-    </div>
-
-    <div class="filter-group">
-      <label for="eventDate">Date</label>
-      <input
-        id="eventDate"
-        type="date"
-        [(ngModel)]="filter.date"
-      />
-    </div>
-
-    <div class="filter-group">
-      <label for="venue">Venue</label>
-      <select
-        id="venue"
-        [(ngModel)]="filter.venueId"
-      >
-        <option [ngValue]="undefined">
-          All Venues
-        </option>
-
-        <option
-          *ngFor="let venue of venues"
-          [ngValue]="venue.venueId"
-        >
-          {{ venue.venueName }}
-        </option>
-      </select>
-    </div>
-
-    <div class="filter-group">
-      <label for="category">Category</label>
-      <select
-        id="category"
-        [(ngModel)]="filter.categoryId"
-      >
-        <option [ngValue]="undefined">
-          All Categories
-        </option>
-
-        <option
-          *ngFor="let category of categories"
-          [ngValue]="category.categoryId"
-        >
-          {{ category.categoryName }}
-        </option>
-      </select>
-    </div>
-
-    <div class="filter-actions">
-      <button
-        type="button"
-        class="search-btn"
-        (click)="search()"
-      >
-        Search
-      </button>
-
-      <button
-        type="button"
-        class="clear-btn"
-        (click)="clearFilters()"
-      >
-        Clear
-      </button>
-    </div>
+    <app-event-details [eventId]="selectedEventId"
+                       (bookNow)="onBookNow($event)">
+    </app-event-details>
 
   </div>
 
-  <!-- Loading -->
-  <div
-    class="state-message"
-    *ngIf="loading"
-  >
-    Loading events...
+  <!-- ===================================== -->
+  <!-- EVENT LIST -->
+  <!-- ===================================== -->
+
+  <div *ngIf="selectedEventId === null">
+
+    <div class="page-header">
+      <div>
+        <h1>Upcoming Events</h1>
+        <p>
+          Find and reserve your favourite event.
+        </p>
+      </div>
+    </div>
+
+    <!-- SEARCH / FILTER -->
+
+    <div class="filter-section">
+
+      <div class="filter-group">
+        <label for="eventName">
+          Event Name
+        </label>
+
+        <input id="eventName"
+               type="text"
+               placeholder="Search event..."
+               [(ngModel)]="filter.name" />
+      </div>
+
+      <div class="filter-group">
+        <label for="eventDate">
+          Date
+        </label>
+
+        <input id="eventDate"
+               type="date"
+               [(ngModel)]="filter.date" />
+      </div>
+
+      <div class="filter-group">
+        <label for="venue">
+          Venue
+        </label>
+
+        <select id="venue"
+                [(ngModel)]="filter.venueId">
+
+          <option [ngValue]="undefined">
+            All Venues
+          </option>
+
+          <option *ngFor="let venue of venues"
+                  [ngValue]="venue.venueId">
+
+            {{ venue.venueName }}
+
+          </option>
+
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="category">
+          Category
+        </label>
+
+        <select id="category"
+                [(ngModel)]="filter.categoryId">
+
+          <option [ngValue]="undefined">
+            All Categories
+          </option>
+
+          <option *ngFor="let category of categories"
+                  [ngValue]="category.categoryId">
+
+            {{ category.categoryName }}
+
+          </option>
+
+        </select>
+      </div>
+
+      <div class="filter-actions">
+
+        <button type="button"
+                class="search-btn"
+                (click)="search()">
+          Search
+        </button>
+
+        <button type="button"
+                class="clear-btn"
+                (click)="clearFilters()">
+          Clear
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- LOADING -->
+
+    <div class="state-message"
+         *ngIf="loading">
+      Loading events...
+    </div>
+
+    <!-- ERROR -->
+
+    <div class="state-message error-message"
+         *ngIf="!loading && errorMessage">
+      {{ errorMessage }}
+    </div>
+
+    <!-- EMPTY -->
+
+    <div class="state-message"
+         *ngIf="
+        !loading &&
+        !errorMessage &&
+        events.length === 0
+      ">
+      No events found.
+    </div>
+
+    <!-- EVENT CARDS -->
+
+    <div class="event-grid"
+         *ngIf="
+         !loading &&
+         !errorMessage &&
+         events.length>
+      0
+      ">
+
+      <app-event-card *ngFor="let event of events"
+                      [event]="event"
+                      (viewDetails)="onViewDetails($event)">
+      </app-event-card>
+
+    </div>
+
   </div>
 
-  <!-- Error -->
-  <div
-    class="state-message error-message"
-    *ngIf="!loading && errorMessage"
-  >
-    {{ errorMessage }}
-  </div>
-
-  <!-- Empty -->
-  <div
-    class="state-message"
-    *ngIf="
-      !loading &&
-      !errorMessage &&
-      events.length === 0
-    "
-  >
-    No events found.
-  </div>
-
-  <!-- Event List -->
-<div
-  class="event-grid"
-  *ngIf="
-    !loading &&
-    !errorMessage &&
-    events.length > 0
-  "
->
-<app-event-card
-  *ngFor="let event of events"
-  [event]="event"
-  (viewDetails)="onViewDetails($event)"
->
-</app-event-card>
 </div>

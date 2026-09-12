@@ -5,8 +5,6 @@
     <p>Select one available parking slot</p>
   </div>
 
-  <!-- LEGEND -->
-
   <div class="legend">
 
     <div class="legend-item">
@@ -31,23 +29,17 @@
 
   </div>
 
-  <!-- LOADING -->
-
   @if (loading) {
     <p class="loading-message">
       Loading parking slots...
     </p>
   }
 
-  <!-- ERROR -->
-
   @if (errorMessage) {
     <p class="error-message">
       {{ errorMessage }}
     </p>
   }
-
-  <!-- EMPTY -->
 
   @if (
     !loading &&
@@ -58,8 +50,6 @@
       No parking slots available for this event.
     </p>
   }
-
-  <!-- PARKING SLOTS -->
 
   @if (
     !loading &&
@@ -84,18 +74,14 @@
 
     </div>
 
-    <!-- SELECTION SUMMARY -->
-
     <div class="selection-summary">
 
       <h3>Parking Selection</h3>
 
       @if (!selectedSlot) {
-
         <p>
           No parking slot selected.
         </p>
-
       }
 
       @if (selectedSlot) {
@@ -106,12 +92,10 @@
         </p>
 
         @if (selectedSlot.zone) {
-
           <p>
             <strong>Zone:</strong>
             {{ selectedSlot.zone }}
           </p>
-
         }
 
         <p>
@@ -121,14 +105,13 @@
 
       }
 
-      <!-- ACTIONS -->
-
       <div class="parking-actions">
 
         <button
           type="button"
           class="continue-button"
-          [disabled]="!selectedSlot">
+          [disabled]="!selectedSlot"
+          (click)="continueToCheckout()">
 
           Continue
 
@@ -136,7 +119,8 @@
 
         <button
           type="button"
-          class="skip-button">
+          class="skip-button"
+          (click)="skipParking()">
 
           Skip Parking
 

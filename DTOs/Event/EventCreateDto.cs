@@ -64,6 +64,11 @@ namespace Event_parking.DTOs.Event
         )]
         public decimal ParkingFee { get; set; }
 
+        // Customer-facing event poster image path
+        [MaxLength(500)]
+        public string? EventImageUrl { get; set; }
+
+        // Seating layout image path
         [MaxLength(500)]
         public string? SeatingLayoutImageUrl { get; set; }
     }

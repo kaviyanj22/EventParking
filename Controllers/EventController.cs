@@ -10,21 +10,19 @@ namespace Event_parking.Controllers
     public class EventController : ControllerBase
     {
         private readonly IEventService _eventService;
+        private readonly IWebHostEnvironment _environment;
 
         public EventController(
-            IEventService eventService)
+            IEventService eventService,
+            IWebHostEnvironment environment)
         {
             _eventService = eventService;
+            _environment = environment;
         }
 
         // ==========================================
         // GET ALL EVENTS
         // PUBLIC
-        // ==========================================
-        // GET: api/events
-        // GET: api/events?name=Music
-        // GET: api/events?date=2026-12-20
-        // GET: api/events?venueId=1&categoryId=2
         // ==========================================
 
         [HttpGet]
@@ -41,8 +39,6 @@ namespace Event_parking.Controllers
         // ==========================================
         // GET EVENT BY ID
         // PUBLIC
-        // ==========================================
-        // GET: api/events/5
         // ==========================================
 
         [HttpGet("{id:int}")]
@@ -65,10 +61,142 @@ namespace Event_parking.Controllers
         }
 
         // ==========================================
-        // CREATE EVENT
+        // UPLOAD EVENT POSTER IMAGE
         // ADMIN ONLY
         // ==========================================
-        // POST: api/events
+        // POST: api/events/upload-image
+        // multipart/form-data
+        // field name: file
+        // ==========================================
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost("upload-image")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadEventImage(
+            IFormFile file)
+        {
+            if (file == null ||
+                file.Length == 0)
+            {
+                return BadRequest(new
+                {
+                    message =
+                        "Please select an image."
+                });
+            }
+
+            // Maximum 5 MB
+            const long maxFileSize =
+                5 * 1024 * 1024;
+
+            if (file.Length > maxFileSize)
+            {
+                return BadRequest(new
+                {
+                    message =
+                        "Image size cannot exceed 5 MB."
+                });
+            }
+
+            var extension =
+                Path.GetExtension(file.FileName)
+                    .ToLowerInvariant();
+
+            string[] allowedExtensions =
+            {
+                ".jpg",
+                ".jpeg",
+                ".png",
+                ".webp"
+            };
+
+            if (!allowedExtensions.Contains(extension))
+            {
+                return BadRequest(new
+                {
+                    message =
+                        "Only JPG, JPEG, PNG and WEBP images are allowed."
+                });
+            }
+
+            if (string.IsNullOrWhiteSpace(
+                    file.ContentType) ||
+                !file.ContentType.StartsWith(
+                    "image/",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return BadRequest(new
+                {
+                    message =
+                        "The selected file is not a valid image."
+                });
+            }
+
+            string webRootPath =
+                _environment.WebRootPath;
+
+            if (string.IsNullOrWhiteSpace(
+                    webRootPath))
+            {
+                webRootPath =
+                    Path.Combine(
+                        _environment.ContentRootPath,
+                        "wwwroot"
+                    );
+            }
+
+            string uploadFolder =
+                Path.Combine(
+                    webRootPath,
+                    "uploads",
+                    "events"
+                );
+
+            if (!Directory.Exists(
+                    uploadFolder))
+            {
+                Directory.CreateDirectory(
+                    uploadFolder
+                );
+            }
+
+            string fileName =
+                $"{Guid.NewGuid():N}{extension}";
+
+            string filePath =
+                Path.Combine(
+                    uploadFolder,
+                    fileName
+                );
+
+            await using (
+                var stream =
+                    new FileStream(
+                        filePath,
+                        FileMode.Create
+                    )
+            )
+            {
+                await file.CopyToAsync(
+                    stream
+                );
+            }
+
+            string imageUrl =
+                $"/uploads/events/{fileName}";
+
+            return Ok(new
+            {
+                message =
+                    "Event image uploaded successfully.",
+
+                imageUrl
+            });
+        }
+
+        // ==========================================
+        // CREATE EVENT
+        // ADMIN ONLY
         // ==========================================
 
         [Authorize(Roles = "Admin")]
@@ -117,8 +245,6 @@ namespace Event_parking.Controllers
         // ==========================================
         // UPDATE EVENT
         // ADMIN ONLY
-        // ==========================================
-        // PUT: api/events/5
         // ==========================================
 
         [Authorize(Roles = "Admin")]
@@ -173,8 +299,6 @@ namespace Event_parking.Controllers
         // ==========================================
         // DELETE EVENT
         // ADMIN ONLY
-        // ==========================================
-        // DELETE: api/events/5
         // ==========================================
 
         [Authorize(Roles = "Admin")]

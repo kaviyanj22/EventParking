@@ -14,7 +14,7 @@
     </p>
   </div>
 
-  <!-- Success -->
+  <!-- SUCCESS MESSAGE -->
   <div
     class="message success-message"
     *ngIf="successMessage"
@@ -22,7 +22,7 @@
     {{ successMessage }}
   </div>
 
-  <!-- Error -->
+  <!-- ERROR MESSAGE -->
   <div
     class="message error-message"
     *ngIf="errorMessage"
@@ -35,9 +35,12 @@
     (ngSubmit)="saveEvent()"
   >
 
-    <!-- Event Name -->
+    <!-- EVENT NAME -->
     <div class="form-group">
-      <label for="eventName">Event Name</label>
+
+      <label for="eventName">
+        Event Name
+      </label>
 
       <input
         id="eventName"
@@ -49,22 +52,27 @@
       <small
         class="validation-error"
         *ngIf="
-          eventForm.get('eventName')?.invalid &&
-          eventForm.get('eventName')?.touched
+          eventForm.get('eventName')?.touched &&
+          eventForm.get('eventName')?.invalid
         "
       >
         Event name is required.
       </small>
+
     </div>
 
-    <!-- Venue -->
+    <!-- VENUE -->
     <div class="form-group">
-      <label for="venueId">Venue</label>
+
+      <label for="venueId">
+        Venue
+      </label>
 
       <select
         id="venueId"
         formControlName="venueId"
       >
+
         <option [ngValue]="0">
           Select Venue
         </option>
@@ -75,17 +83,33 @@
         >
           {{ venue.venueName }}
         </option>
+
       </select>
+
+      <small
+        class="validation-error"
+        *ngIf="
+          eventForm.get('venueId')?.touched &&
+          eventForm.get('venueId')?.invalid
+        "
+      >
+        Please select a venue.
+      </small>
+
     </div>
 
-    <!-- Category -->
+    <!-- CATEGORY -->
     <div class="form-group">
-      <label for="categoryId">Category</label>
+
+      <label for="categoryId">
+        Category
+      </label>
 
       <select
         id="categoryId"
         formControlName="categoryId"
       >
+
         <option [ngValue]="0">
           Select Category
         </option>
@@ -96,62 +120,239 @@
         >
           {{ category.categoryName }}
         </option>
+
       </select>
+
+      <small
+        class="validation-error"
+        *ngIf="
+          eventForm.get('categoryId')?.touched &&
+          eventForm.get('categoryId')?.invalid
+        "
+      >
+        Please select a category.
+      </small>
+
     </div>
 
-    <!-- Event Date -->
+    <!-- EVENT POSTER IMAGE -->
     <div class="form-group">
-      <label for="eventDate">Event Date</label>
+
+      <label>
+        Event Poster Image
+      </label>
+
+      <div class="event-image-upload">
+
+        <input
+          #eventImageInput
+          type="file"
+          accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+          class="event-image-input"
+          (change)="onEventImageSelected($event)"
+        />
+
+        <button
+          type="button"
+          class="choose-image-btn"
+          (click)="eventImageInput.click()"
+          [disabled]="submitting || imageUploading"
+        >
+          Choose Event Poster
+        </button>
+
+        <span
+          class="selected-file-name"
+          *ngIf="selectedEventImageFile"
+        >
+          {{ selectedEventImageFile.name }}
+        </span>
+
+      </div>
+
+      <small class="price-help-text">
+        Upload JPG, JPEG, PNG or WEBP. Maximum file size: 5 MB.
+      </small>
+
+      <small
+        class="validation-error"
+        *ngIf="imageErrorMessage"
+      >
+        {{ imageErrorMessage }}
+      </small>
+
+      <!-- IMAGE PREVIEW -->
+      <div
+        class="event-image-preview-wrapper"
+        *ngIf="eventImagePreview"
+      >
+
+        <div class="preview-title">
+          Poster Preview
+        </div>
+
+        <img
+          [src]="eventImagePreview"
+          alt="Event poster preview"
+          class="event-image-preview"
+        />
+
+        <button
+          type="button"
+          class="remove-image-btn"
+          (click)="removeEventImage()"
+          [disabled]="submitting || imageUploading"
+        >
+          Remove Image
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- EVENT DATE -->
+    <div class="form-group">
+
+      <label for="eventDate">
+        Event Date
+      </label>
 
       <input
         id="eventDate"
         type="date"
         formControlName="eventDate"
+        [min]="todayDate"
       />
+
+      <small
+        class="validation-error"
+        *ngIf="
+          eventForm.get('eventDate')?.touched &&
+          eventForm.get('eventDate')?.hasError('required')
+        "
+      >
+        Event date is required.
+      </small>
+
+      <small
+        class="validation-error"
+        *ngIf="
+          eventForm.get('eventDate')?.touched &&
+          eventForm.get('eventDate')?.hasError('pastDate')
+        "
+      >
+        Event date cannot be earlier than today.
+      </small>
+
+      <small class="price-help-text">
+        Today or a future date can be selected.
+      </small>
+
     </div>
 
-    <!-- Time -->
+    <!-- START + END TIME -->
     <div class="form-row">
 
       <div class="form-group">
-        <label for="startTime">Start Time</label>
+
+        <label for="startTime">
+          Start Time
+        </label>
 
         <input
           id="startTime"
           type="time"
           formControlName="startTime"
         />
+
+        <small
+          class="validation-error"
+          *ngIf="
+            eventForm.get('startTime')?.touched &&
+            eventForm.get('startTime')?.hasError('required')
+          "
+        >
+          Start time is required.
+        </small>
+
       </div>
 
       <div class="form-group">
-        <label for="endTime">End Time</label>
+
+        <label for="endTime">
+          End Time
+        </label>
 
         <input
           id="endTime"
           type="time"
           formControlName="endTime"
+          [min]="eventForm.get('startTime')?.value || null"
         />
+
+        <small
+          class="validation-error"
+          *ngIf="
+            eventForm.get('endTime')?.touched &&
+            eventForm.get('endTime')?.hasError('required')
+          "
+        >
+          End time is required.
+        </small>
+
       </div>
 
     </div>
 
-    <!-- Price + Capacity -->
+    <small
+      class="validation-error time-error"
+      *ngIf="
+        eventForm.hasError('invalidTimeRange') &&
+        eventForm.get('startTime')?.value &&
+        eventForm.get('endTime')?.value
+      "
+    >
+      End time must be later than start time.
+    </small>
+
+    <!-- PRICE + CAPACITY -->
     <div class="form-row">
 
       <div class="form-group">
+
         <label for="ticketPrice">
-          Ticket Price (LKR)
+          Default Ticket Price (LKR)
         </label>
 
         <input
           id="ticketPrice"
           type="number"
           min="0"
+          step="0.01"
           formControlName="ticketPrice"
+          placeholder="Example: 5000"
         />
+
+        <small
+          class="validation-error"
+          *ngIf="
+            eventForm.get('ticketPrice')?.touched &&
+            eventForm.get('ticketPrice')?.invalid
+          "
+        >
+          Enter a valid ticket price.
+        </small>
+
+        <small class="price-help-text">
+          Used when a seat does not have its own custom price.
+          Different Normal, Premium or VIP prices can be set later
+          in Seat Management.
+        </small>
+
       </div>
 
       <div class="form-group">
+
         <label for="capacity">
           Capacity
         </label>
@@ -162,12 +363,24 @@
           min="1"
           formControlName="capacity"
         />
+
+        <small
+          class="validation-error"
+          *ngIf="
+            eventForm.get('capacity')?.touched &&
+            eventForm.get('capacity')?.invalid
+          "
+        >
+          Capacity must be at least 1.
+        </small>
+
       </div>
 
     </div>
 
-    <!-- Parking Fee -->
+    <!-- PARKING FEE -->
     <div class="form-group">
+
       <label for="parkingFee">
         Parking Fee (LKR)
       </label>
@@ -176,12 +389,25 @@
         id="parkingFee"
         type="number"
         min="0"
+        step="0.01"
         formControlName="parkingFee"
       />
+
+      <small
+        class="validation-error"
+        *ngIf="
+          eventForm.get('parkingFee')?.touched &&
+          eventForm.get('parkingFee')?.invalid
+        "
+      >
+        Enter a valid parking fee.
+      </small>
+
     </div>
 
-    <!-- Seating Layout -->
+    <!-- SEATING LAYOUT -->
     <div class="form-group">
+
       <label for="seatingLayoutImageUrl">
         Seating Layout Image URL
       </label>
@@ -190,11 +416,17 @@
         id="seatingLayoutImageUrl"
         type="text"
         formControlName="seatingLayoutImageUrl"
-        placeholder="Enter image URL (optional)"
+        placeholder="Enter seating layout image URL (optional)"
       />
+
+      <small class="price-help-text">
+        This is separate from the event poster. Use this only for
+        the event seating plan/layout image.
+      </small>
+
     </div>
 
-    <!-- Buttons -->
+    <!-- ACTIONS -->
     <div class="form-actions">
 
       <button
@@ -209,13 +441,23 @@
       <button
         type="submit"
         class="save-btn"
-        [disabled]="eventForm.invalid || submitting"
+        [disabled]="
+          eventForm.invalid ||
+          submitting ||
+          imageUploading
+        "
       >
-        {{
-          submitting
-            ? 'Saving...'
-            : (event ? 'Update Event' : 'Add Event')
-        }}
+        <span *ngIf="imageUploading">
+          Uploading Image...
+        </span>
+
+        <span *ngIf="!imageUploading">
+          {{
+            submitting
+              ? 'Saving...'
+              : (event ? 'Update Event' : 'Add Event')
+          }}
+        </span>
       </button>
 
     </div>

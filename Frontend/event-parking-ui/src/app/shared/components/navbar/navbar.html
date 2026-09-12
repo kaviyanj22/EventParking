@@ -8,8 +8,15 @@
       class="brand"
       (click)="closeMenu()"
     >
-      <span class="brand-icon">P</span>
-      <span class="brand-name">ParkEase</span>
+      <img
+        src="eventix-logo.png"
+        alt="Eventix"
+        class="brand-logo"
+      >
+
+      <span class="brand-name">
+        Eventix
+      </span>
     </a>
 
     <!-- MOBILE MENU BUTTON -->
@@ -114,6 +121,7 @@
             </span>
 
             <span class="user-info">
+
               <span class="user-name">
                 {{ currentUser?.fullName }}
               </span>
@@ -121,6 +129,7 @@
               <span class="user-role">
                 {{ currentUser?.role }}
               </span>
+
             </span>
           </a>
 

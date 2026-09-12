@@ -1,79 +1,172 @@
-.seat-button {
-  width: 48px;
-  height: 48px;
+.seat {
+  min-width: 105px;
+  min-height: 92px;
+
+  padding: 10px 12px;
 
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 
-  border: 2px solid var(--color-border);
+  gap: 4px;
+
+  border: 2px solid #e2e8f0;
   border-radius: 10px;
 
-  background: var(--color-card);
-  color: var(--color-text);
-
-  font-size: 13px;
-  font-weight: 700;
+  background: #ffffff;
+  color: #1e293b;
 
   cursor: pointer;
 
   transition:
-    background 0.2s ease,
-    border-color 0.2s ease,
-    color 0.2s ease,
     transform 0.2s ease,
-    box-shadow 0.2s ease;
+    box-shadow 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
 }
 
-/* AVAILABLE */
+/* =========================================
+   SEAT TEXT
+========================================= */
 
-.seat-button.available {
+.seat-number {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.seat-type {
+  font-size: 11px;
+  font-weight: 600;
+
+  opacity: 0.85;
+}
+
+.seat-price {
+  margin-top: 2px;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.seat-status {
+  margin-top: 3px;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* =========================================
+   AVAILABLE NORMAL
+========================================= */
+
+.seat.normal.available {
   background: #f0fdf4;
-  border-color: var(--color-green);
-  color: var(--color-green);
+  border-color: #16a34a;
+  color: #15803d;
 }
 
-.seat-button.available:hover {
+/* =========================================
+   AVAILABLE PREMIUM
+========================================= */
+
+.seat.premium.available {
+  background: #fff7ed;
+  border-color: #f59e0b;
+  color: #b45309;
+}
+
+/* =========================================
+   AVAILABLE VIP
+========================================= */
+
+.seat.vip.available {
+  background: #faf5ff;
+  border-color: #9333ea;
+  color: #7e22ce;
+}
+
+/* =========================================
+   HOVER
+========================================= */
+
+.seat.available:hover {
+  transform: translateY(-3px);
+
+  box-shadow:
+    0 6px 14px
+    rgba(15, 23, 42, 0.12);
+}
+
+/* =========================================
+   SELECTED
+========================================= */
+
+.seat.selected {
+  background: #2563eb !important;
+  border-color: #2563eb !important;
+  color: #ffffff !important;
+
   transform: translateY(-2px);
 
   box-shadow:
-    0 4px 10px rgba(15, 23, 42, 0.12);
+    0 6px 16px
+    rgba(37, 99, 235, 0.28);
 }
 
-/* SELECTED */
-
-.seat-button.selected {
-  background: var(--color-blue);
-  border-color: var(--color-blue);
-  color: #ffffff;
-
-  box-shadow:
-    0 4px 12px rgba(37, 99, 235, 0.25);
+.selected-text {
+  color: #dbeafe;
 }
 
-/* BOOKED */
+/* =========================================
+   BOOKED
+========================================= */
 
-.seat-button.booked {
-  background: #e2e8f0;
-  border-color: #cbd5e1;
-  color: var(--color-muted);
+.seat.booked {
+  background: #e2e8f0 !important;
+  border-color: #cbd5e1 !important;
+  color: #64748b !important;
 
   cursor: not-allowed;
-  opacity: 0.7;
+
+  opacity: 0.72;
+
+  transform: none;
+  box-shadow: none;
 }
 
-/* DISABLED */
+.seat.booked .seat-price {
+  text-decoration: line-through;
+}
 
-.seat-button:disabled {
+/* =========================================
+   DISABLED
+========================================= */
+
+.seat:disabled {
   cursor: not-allowed;
 }
 
-/* MOBILE */
+/* =========================================
+   MOBILE
+========================================= */
 
 @media (max-width: 600px) {
-  .seat-button {
-    width: 42px;
-    height: 42px;
-    font-size: 12px;
+
+  .seat {
+    min-width: 90px;
+    min-height: 82px;
+
+    padding: 8px;
   }
+
+  .seat-number {
+    font-size: 14px;
+  }
+
+  .seat-type,
+  .seat-price {
+    font-size: 10px;
+  }
+
 }

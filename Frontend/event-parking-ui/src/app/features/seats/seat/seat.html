@@ -2,13 +2,66 @@
   type="button"
   class="seat"
   [ngClass]="{
-    'available': seat.status.toLowerCase() === 'available',
-    'booked': seat.status.toLowerCase() === 'booked',
-    'selected': selected
-  }"
-  [disabled]="seat.status.toLowerCase() === 'booked'"
-  (click)="selectSeat()">
+    'available':
+      seat.status.toLowerCase() === 'available',
 
-  {{ seat.seatNumber }}
+    'booked':
+      seat.status.toLowerCase() === 'booked',
+
+    'selected':
+      selected,
+
+    'normal':
+      (seat.seatType || 'Normal').toLowerCase() === 'normal',
+
+    'premium':
+      seat.seatType?.toLowerCase() === 'premium',
+
+    'vip':
+      seat.seatType?.toLowerCase() === 'vip'
+  }"
+  [disabled]="
+    seat.status.toLowerCase() === 'booked'
+  "
+  (click)="selectSeat()"
+>
+
+  <!-- SEAT NUMBER -->
+  <span class="seat-number">
+    {{ seat.seatNumber }}
+  </span>
+
+  <!-- SEAT TYPE -->
+  <span class="seat-type">
+    {{ seat.seatType || 'Normal' }}
+  </span>
+
+  <!-- EFFECTIVE PRICE -->
+  <span class="seat-price">
+    LKR {{ (seat.price ?? 0) | number:'1.0-2' }}
+  </span>
+
+  <!-- BOOKED TEXT -->
+  @if (
+    seat.status.toLowerCase() === 'booked'
+  ) {
+
+    <span class="seat-status">
+      Booked
+    </span>
+
+  }
+
+  <!-- SELECTED TEXT -->
+  @if (
+    selected &&
+    seat.status.toLowerCase() !== 'booked'
+  ) {
+
+    <span class="seat-status selected-text">
+      Selected
+    </span>
+
+  }
 
 </button>

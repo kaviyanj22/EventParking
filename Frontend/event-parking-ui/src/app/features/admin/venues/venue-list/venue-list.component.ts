@@ -1,16 +1,30 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  OnInit
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 
-import { VenueService } from '../../../../core/services/venue.service';
-import { Venue } from '../../../../core/models/venue.model';
-import { VenueFormComponent } from '../venue-form/venue-form.component';
+import {
+  VenueService
+} from '../../../../core/services/venue.service';
+
+import {
+  Venue
+} from '../../../../core/models/venue.model';
+
+import {
+  VenueFormComponent
+} from '../venue-form/venue-form.component';
+
 @Component({
   selector: 'app-venue-list',
   standalone: true,
   imports: [
-  CommonModule,
-  VenueFormComponent
-],
+    CommonModule,
+    VenueFormComponent
+  ],
   templateUrl: './venue-list.component.html',
   styleUrl: './venue-list.component.css'
 })
@@ -19,13 +33,18 @@ export class VenueListComponent implements OnInit {
   venues: Venue[] = [];
 
   loading = false;
+
   errorMessage = '';
+
   successMessage = '';
+
   showForm = false;
+
   selectedVenue: Venue | null = null;
 
   constructor(
-    private venueService: VenueService
+    private venueService: VenueService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -33,51 +52,85 @@ export class VenueListComponent implements OnInit {
   }
 
   loadVenues(): void {
+
     this.loading = true;
+
     this.errorMessage = '';
 
-    this.venueService.getAll().subscribe({
-      next: (venues) => {
-        this.venues = venues;
-        this.loading = false;
-      },
-      error: () => {
-        this.errorMessage = 'Unable to load venues.';
-        this.loading = false;
-      }
-    });
+    this.venueService
+      .getAll()
+      .subscribe({
+
+        next: (venues) => {
+
+          this.venues = venues;
+
+          this.loading = false;
+
+          this.cdr.markForCheck();
+        },
+
+        error: (error) => {
+
+          this.venues = [];
+
+          this.loading = false;
+
+          this.errorMessage =
+            error?.error?.message ||
+            'Unable to load venues.';
+
+          this.cdr.markForCheck();
+        }
+
+      });
   }
-  
+
   addVenue(): void {
-  this.selectedVenue = null;
-  this.showForm = true;
-}
 
- onVenueSaved(): void {
-  this.showForm = false;
-  this.selectedVenue = null;
-  this.loadVenues();
-}
+    this.selectedVenue = null;
 
-onVenueCancelled(): void {
-  this.showForm = false;
-  this.selectedVenue = null;
-  
-}
-  editVenue(venueId: number): void {
-  const venue = this.venues.find(
-    v => v.venueId === venueId
-  );
-
-  
-
-  if (venue) {
-    this.selectedVenue = venue;
     this.showForm = true;
   }
-}
 
-  deleteVenue(venueId: number): void {
+  onVenueSaved(): void {
+
+    this.showForm = false;
+
+    this.selectedVenue = null;
+
+    this.loadVenues();
+
+    this.cdr.markForCheck();
+  }
+
+  onVenueCancelled(): void {
+
+    this.showForm = false;
+
+    this.selectedVenue = null;
+  }
+
+  editVenue(
+    venueId: number
+  ): void {
+
+    const venue =
+      this.venues.find(
+        v => v.venueId === venueId
+      );
+
+    if (venue) {
+
+      this.selectedVenue = venue;
+
+      this.showForm = true;
+    }
+  }
+
+  deleteVenue(
+    venueId: number
+  ): void {
 
     const confirmed =
       window.confirm(
@@ -89,20 +142,32 @@ onVenueCancelled(): void {
     }
 
     this.errorMessage = '';
+
     this.successMessage = '';
 
-    this.venueService.delete(venueId).subscribe({
-      next: () => {
-        this.successMessage =
-          'Venue deleted successfully.';
+    this.venueService
+      .delete(venueId)
+      .subscribe({
 
-        this.loadVenues();
-      },
-      error: (error) => {
-        this.errorMessage =
-          error?.error?.message ||
-          'Unable to delete venue.';
-      }
-    });
+        next: () => {
+
+          this.successMessage =
+            'Venue deleted successfully.';
+
+          this.loadVenues();
+
+          this.cdr.markForCheck();
+        },
+
+        error: (error) => {
+
+          this.errorMessage =
+            error?.error?.message ||
+            'Unable to delete venue.';
+
+          this.cdr.markForCheck();
+        }
+
+      });
   }
 }

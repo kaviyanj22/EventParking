@@ -153,18 +153,14 @@ public partial class Program
                 options =>
                 {
                     options.SaveToken = true;
-
                     options.RequireHttpsMetadata = false;
 
                     options.TokenValidationParameters =
                         new TokenValidationParameters
                         {
                             ValidateIssuer = true,
-
                             ValidateAudience = true,
-
                             ValidateLifetime = true,
-
                             ValidateIssuerSigningKey = true,
 
                             ValidIssuer =
@@ -183,10 +179,6 @@ public partial class Program
                             ClockSkew =
                                 TimeSpan.Zero
                         };
-
-                    // ==================================
-                    // JWT ERROR DEBUG
-                    // ==================================
 
                     options.Events =
                         new JwtBearerEvents
@@ -235,7 +227,6 @@ public partial class Program
         // REPOSITORIES
         // ======================================
 
-        // Member 1
         builder.Services.AddScoped<
             ICustomerRepository,
             CustomerRepository
@@ -245,10 +236,6 @@ public partial class Program
             IVehicleRepository,
             VehicleRepository
         >();
-
-        // ======================================
-        // THENUSAAN
-        // ======================================
 
         builder.Services.AddScoped<
             ICategoryRepository,
@@ -265,10 +252,6 @@ public partial class Program
             EventRepository
         >();
 
-        // ======================================
-        // MEMBER 3 - CASTRO
-        // ======================================
-
         builder.Services.AddScoped<
             ISeatRepository,
             SeatRepository
@@ -283,10 +266,6 @@ public partial class Program
             IParkingRepository,
             ParkingRepository
         >();
-
-        // ======================================
-        // MEMBER 4
-        // ======================================
 
         builder.Services.AddScoped<
             IBookingRepository,
@@ -303,10 +282,6 @@ public partial class Program
             NotificationRepository
         >();
 
-        // ======================================
-        // ADMIN DASHBOARD
-        // ======================================
-
         builder.Services.AddScoped<
             IAdminDashboardRepository,
             AdminDashboardRepository
@@ -316,7 +291,6 @@ public partial class Program
         // SERVICES
         // ======================================
 
-        // Member 1
         builder.Services.AddScoped<
             IAuthService,
             AuthService
@@ -337,10 +311,6 @@ public partial class Program
             EmailService
         >();
 
-        // ======================================
-        // THENUSAAN
-        // ======================================
-
         builder.Services.AddScoped<
             ICategoryService,
             CategoryService
@@ -355,10 +325,6 @@ public partial class Program
             IEventService,
             EventService
         >();
-
-        // ======================================
-        // MEMBER 3 - CASTRO
-        // ======================================
 
         builder.Services.AddScoped<
             ISeatService,
@@ -375,10 +341,6 @@ public partial class Program
             ParkingService
         >();
 
-        // ======================================
-        // MEMBER 4
-        // ======================================
-
         builder.Services.AddScoped<
             IBookingService,
             BookingService
@@ -393,10 +355,6 @@ public partial class Program
             INotificationService,
             NotificationService
         >();
-
-        // ======================================
-        // ADMIN DASHBOARD SERVICE
-        // ======================================
 
         builder.Services.AddScoped<
             IAdminDashboardService,
@@ -485,6 +443,11 @@ public partial class Program
         // ======================================
 
         app.UseHttpsRedirection();
+
+        // Allows files inside wwwroot to be opened
+        // Example:
+        // https://localhost:7168/uploads/events/image.jpg
+        app.UseStaticFiles();
 
         app.UseCors(
             "FrontendPolicy"

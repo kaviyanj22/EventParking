@@ -5,14 +5,30 @@
   color: var(--color-text);
 }
 
-.seat-management-container h2 {
-  margin: 0 0 24px;
+/* =========================================
+   PAGE HEADER
+========================================= */
+
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-header h2 {
+  margin: 0 0 6px;
   color: var(--color-navy);
   font-size: 28px;
   font-weight: 700;
 }
 
-/* EVENT SEARCH */
+.page-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+/* =========================================
+   EVENT SEARCH
+========================================= */
 
 .event-search {
   display: flex;
@@ -20,7 +36,7 @@
   gap: 12px;
   flex-wrap: wrap;
 
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   padding: 18px;
 
   background: var(--color-card);
@@ -64,7 +80,64 @@
   cursor: pointer;
 }
 
-/* FORM CARD */
+.event-search button:hover {
+  opacity: 0.92;
+}
+
+/* =========================================
+   PRICING INFORMATION
+========================================= */
+
+.pricing-info {
+  margin-bottom: 24px;
+  padding: 20px;
+
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+}
+
+.pricing-info h3 {
+  margin: 0 0 12px;
+  color: #1e3a8a;
+  font-size: 18px;
+}
+
+.pricing-info p {
+  margin: 7px 0;
+  color: #334155;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.pricing-info strong {
+  color: #0f172a;
+}
+
+.pricing-example {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  margin-top: 14px;
+}
+
+.pricing-example span {
+  padding: 7px 11px;
+
+  background: #ffffff;
+  color: #2563eb;
+
+  border: 1px solid #dbeafe;
+  border-radius: 8px;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* =========================================
+   FORM CARD
+========================================= */
 
 .seat-form-section {
   margin-bottom: 30px;
@@ -78,14 +151,32 @@
 }
 
 .seat-form-section h3 {
-  margin: 0 0 20px;
+  margin: 0 0 6px;
+
   color: var(--color-navy);
+
   font-size: 20px;
+  font-weight: 700;
 }
+
+.section-description {
+  margin: 0 0 20px;
+
+  color: #64748b;
+
+  font-size: 13px;
+}
+
+/* =========================================
+   FORM GRID
+========================================= */
 
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
   gap: 18px;
 }
 
@@ -97,6 +188,7 @@
 
 .form-group label {
   color: var(--color-text);
+
   font-size: 14px;
   font-weight: 600;
 }
@@ -104,6 +196,8 @@
 .form-group input,
 .form-group select {
   width: 100%;
+  box-sizing: border-box;
+
   padding: 10px 12px;
 
   background: var(--color-card);
@@ -111,46 +205,104 @@
 
   border: 1px solid var(--color-border);
   border-radius: 8px;
+
+  font-size: 14px;
 }
 
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
+
   border-color: var(--color-blue);
+
+  box-shadow:
+    0 0 0 3px
+    rgba(37, 99, 235, 0.08);
 }
 
-/* MESSAGES */
+.form-group input::placeholder {
+  color: #94a3b8;
+}
 
-.validation-error,
-.error-message {
-  color: var(--color-red);
+/* =========================================
+   PRICE HELP
+========================================= */
+
+.price-help-text {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #64748b;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* =========================================
+   MESSAGES
+========================================= */
+
+.loading-message,
+.success-message,
+.error-message,
+.empty-message {
+  margin: 14px 0;
+  padding: 12px 14px;
+
+  border-radius: 8px;
+
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.loading-message {
+  background: #eff6ff;
+  color: #2563eb;
 }
 
 .success-message {
-  color: var(--color-green);
+  background: #f0fdf4;
+  color: #16a34a;
+
+  border: 1px solid #bbf7d0;
 }
 
-.loading-message,
+.error-message {
+  background: #fef2f2;
+  color: #dc2626;
+
+  border: 1px solid #fecaca;
+}
+
 .empty-message {
-  color: var(--color-muted);
+  background: #f8fafc;
+  color: #64748b;
+
+  border: 1px solid #e2e8f0;
 }
 
-/* FORM ACTIONS */
+/* =========================================
+   FORM ACTIONS
+========================================= */
 
 .form-actions {
   display: flex;
   gap: 10px;
+
   margin-top: 22px;
 }
 
-.form-actions button,
-.action-buttons button {
-  padding: 9px 16px;
+.create-button,
+.update-button,
+.cancel-button {
+  padding: 10px 18px;
 
   border: none;
   border-radius: 8px;
 
   font-weight: 600;
+
   cursor: pointer;
 }
 
@@ -160,41 +312,71 @@
   color: #ffffff;
 }
 
+.create-button:hover,
+.update-button:hover {
+  opacity: 0.92;
+}
+
 .cancel-button {
   background: #f1f5f9;
   color: var(--color-text);
-  border: 1px solid var(--color-border) !important;
+
+  border:
+    1px solid
+    var(--color-border);
 }
 
-/* TABLE */
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   TABLE
+========================================= */
 
 .table-container {
   width: 100%;
+
   overflow-x: auto;
 
   background: var(--color-card);
-  border: 1px solid var(--color-border);
+
+  border:
+    1px solid
+    var(--color-border);
+
   border-radius: 12px;
 
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+  box-shadow:
+    0 4px 14px
+    rgba(15, 23, 42, 0.05);
 }
 
 table {
   width: 100%;
+
   border-collapse: collapse;
+
+  min-width: 900px;
 }
 
 th,
 td {
   padding: 13px 14px;
+
   text-align: left;
+
   white-space: nowrap;
 
-  border-bottom: 1px solid var(--color-border);
+  border-bottom:
+    1px solid
+    var(--color-border);
 }
 
 th {
   background: #f8fafc;
+
   color: var(--color-navy);
 
   font-size: 13px;
@@ -203,16 +385,43 @@ th {
 
 td {
   color: var(--color-text);
+
+  font-size: 14px;
 }
 
 tbody tr:hover {
   background: #f8fafc;
 }
 
-/* STATUS */
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* =========================================
+   DEFAULT PRICE TEXT
+========================================= */
+
+.default-price {
+  display: inline-block;
+
+  padding: 5px 9px;
+
+  background: #f1f5f9;
+  color: #475569;
+
+  border-radius: 6px;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* =========================================
+   STATUS
+========================================= */
 
 .status {
   display: inline-block;
+
   padding: 5px 10px;
 
   border-radius: 20px;
@@ -223,42 +432,70 @@ tbody tr:hover {
 
 .status.available {
   background: #f0fdf4;
-  color: var(--color-green);
+  color: #16a34a;
 }
 
 .status.booked {
   background: #f1f5f9;
-  color: var(--color-muted);
+  color: #64748b;
 }
 
-/* TABLE ACTIONS */
+/* =========================================
+   TABLE ACTIONS
+========================================= */
 
 .action-buttons {
   display: flex;
   gap: 8px;
 }
 
+.action-buttons button {
+  padding: 7px 12px;
+
+  border: none;
+  border-radius: 7px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
 .edit-button {
   background: #eff6ff;
-  color: var(--color-blue);
+  color: #2563eb;
 }
 
 .delete-button {
   background: #fef2f2;
-  color: var(--color-red);
+  color: #dc2626;
 }
 
-/* RESPONSIVE */
+.edit-button:hover,
+.delete-button:hover {
+  opacity: 0.85;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
 
 @media (max-width: 900px) {
+
   .form-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
   }
+
 }
 
 @media (max-width: 600px) {
+
   .seat-management-container {
     padding: 20px 14px;
+  }
+
+  .page-header h2 {
+    font-size: 24px;
   }
 
   .form-grid {
@@ -272,13 +509,27 @@ tbody tr:hover {
 
   .event-search input {
     width: 100%;
+    box-sizing: border-box;
   }
 
   .event-search button {
     width: 100%;
   }
 
+  .pricing-example {
+    flex-direction: column;
+  }
+
+  .pricing-example span {
+    width: fit-content;
+  }
+
   .form-actions {
     flex-direction: column;
   }
+
+  .form-actions button {
+    width: 100%;
+  }
+
 }

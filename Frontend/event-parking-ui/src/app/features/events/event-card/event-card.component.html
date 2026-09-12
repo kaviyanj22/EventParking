@@ -1,14 +1,53 @@
 <div class="event-card">
 
-  <div class="event-card-body">
+  <!-- EVENT POSTER -->
+
+  <div class="event-poster">
+
+    <img
+      *ngIf="
+        eventImageUrl &&
+        !imageLoadFailed
+      "
+      [src]="eventImageUrl"
+      [alt]="event.eventName"
+      class="poster-image"
+      (error)="onImageError()"
+    />
+
+    <div
+      *ngIf="
+        !eventImageUrl ||
+        imageLoadFailed
+      "
+      class="poster-placeholder"
+    >
+      <div class="placeholder-icon">
+        🎫
+      </div>
+
+      <span>
+        Event Poster
+      </span>
+    </div>
 
     <span class="category">
       {{ event.categoryName }}
     </span>
 
+  </div>
+
+  <!-- EVENT CONTENT -->
+
+  <div class="event-card-body">
+
     <h2 class="event-name">
       {{ event.eventName }}
     </h2>
+
+    <div class="event-id">
+      Event ID: {{ event.eventId }}
+    </div>
 
     <div class="event-info">
 
@@ -24,30 +63,45 @@
 
       <p>
         <strong>Time:</strong>
-        {{ event.startTime }} - {{ event.endTime }}
+        {{ event.startTime }}
+        -
+        {{ event.endTime }}
       </p>
 
     </div>
 
-    <div class="event-footer">
+    <!-- PRICE -->
 
-      <div class="price">
-        <span>Ticket Price</span>
+    <div class="price-box">
 
-        <strong>
-          LKR {{ event.ticketPrice | number:'1.2-2' }}
-        </strong>
-      </div>
+      <span class="price-label">
+        Default Ticket Price
+      </span>
 
-      <button
-        type="button"
-        class="details-btn"
-        (click)="onViewDetails()"
-      >
-        View Details
-      </button>
+      <strong class="price-value">
+        LKR
+        {{
+          event.ticketPrice
+            | number:'1.2-2'
+        }}
+      </strong>
+
+      <small class="price-note">
+        Final ticket price may vary depending
+        on the selected seat.
+      </small>
 
     </div>
+
+    <!-- BUTTON -->
+
+    <button
+      type="button"
+      class="details-btn"
+      (click)="onViewDetails()"
+    >
+      View Details
+    </button>
 
   </div>
 

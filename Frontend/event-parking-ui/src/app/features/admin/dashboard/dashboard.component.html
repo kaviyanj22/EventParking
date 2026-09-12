@@ -3,33 +3,46 @@
   <div class="dashboard-header">
     <div>
       <h1>Admin Dashboard</h1>
-      <p>Overview of the Event Parking Reservation System.</p>
+      <p>
+        Overview of the Event Parking Reservation System.
+      </p>
     </div>
   </div>
 
+  <!-- LOADING -->
+
   <div
     class="loading-message"
-    *ngIf="isLoading"
-  >
+    *ngIf="isLoading">
     Loading dashboard...
   </div>
 
+  <!-- ERROR -->
+
   <div
     class="error-message"
-    *ngIf="errorMessage"
-  >
+    *ngIf="errorMessage">
     {{ errorMessage }}
   </div>
 
+  <!-- DASHBOARD -->
+
   <div
     class="dashboard-content"
-    *ngIf="!isLoading && !errorMessage && dashboard"
-  >
+    *ngIf="
+      !isLoading &&
+      !errorMessage &&
+      dashboard
+    ">
+
+    <!-- STATISTICS -->
 
     <div class="stats-grid">
 
       <div class="stat-card">
-        <span class="stat-label">Total Events</span>
+        <span class="stat-label">
+          Total Events
+        </span>
 
         <strong class="stat-value">
           {{ dashboard.totalEvents }}
@@ -37,7 +50,9 @@
       </div>
 
       <div class="stat-card">
-        <span class="stat-label">Total Bookings</span>
+        <span class="stat-label">
+          Total Bookings
+        </span>
 
         <strong class="stat-value">
           {{ dashboard.totalBookings }}
@@ -45,7 +60,9 @@
       </div>
 
       <div class="stat-card">
-        <span class="stat-label">Available Seats</span>
+        <span class="stat-label">
+          Available Seats
+        </span>
 
         <strong class="stat-value">
           {{ dashboard.availableSeats }}
@@ -68,12 +85,15 @@
         </span>
 
         <strong class="stat-value">
-          {{ dashboard.totalRevenueCollected | currency }}
+          LKR
+          {{ dashboard.totalRevenueCollected | number:'1.2-2' }}
         </strong>
       </div>
 
       <div class="stat-card">
-        <span class="stat-label">Total Customers</span>
+        <span class="stat-label">
+          Total Customers
+        </span>
 
         <strong class="stat-value">
           {{ dashboard.totalCustomers }}
@@ -82,32 +102,131 @@
 
     </div>
 
+    <!-- MANAGEMENT -->
+
     <div class="management-section">
 
       <h2>Management</h2>
 
       <div class="management-grid">
 
-        <button
-          type="button"
-          class="management-card"
-          (click)="goToBookings()"
-        >
-          <strong>Manage Bookings</strong>
-          <span>
-            View and manage customer bookings.
-          </span>
-        </button>
+        <!-- EVENTS -->
 
         <button
           type="button"
           class="management-card"
-          (click)="goToPayments()"
-        >
-          <strong>View Payments</strong>
+          (click)="goToEvents()">
+
+          <strong>
+            Manage Events
+          </strong>
+
+          <span>
+            Create, edit and delete events.
+          </span>
+
+        </button>
+
+        <!-- VENUES -->
+
+        <button
+          type="button"
+          class="management-card"
+          (click)="goToVenues()">
+
+          <strong>
+            Manage Venues
+          </strong>
+
+          <span>
+            Create and manage event venues.
+          </span>
+
+        </button>
+
+        <!-- CATEGORIES -->
+
+        <button
+          type="button"
+          class="management-card"
+          (click)="goToCategories()">
+
+          <strong>
+            Manage Categories
+          </strong>
+
+          <span>
+            Create and manage event categories.
+          </span>
+
+        </button>
+
+        <!-- SEATS -->
+
+        <button
+          type="button"
+          class="management-card"
+          (click)="goToSeats()">
+
+          <strong>
+            Manage Seats
+          </strong>
+
+          <span>
+            Create and manage seats for events.
+          </span>
+
+        </button>
+
+        <!-- PARKING -->
+
+        <button
+          type="button"
+          class="management-card"
+          (click)="goToParking()">
+
+          <strong>
+            Manage Parking
+          </strong>
+
+          <span>
+            Create and manage parking slots.
+          </span>
+
+        </button>
+
+        <!-- BOOKINGS -->
+
+        <button
+          type="button"
+          class="management-card"
+          (click)="goToBookings()">
+
+          <strong>
+            Manage Bookings
+          </strong>
+
+          <span>
+            View and manage customer bookings.
+          </span>
+
+        </button>
+
+        <!-- PAYMENTS -->
+
+        <button
+          type="button"
+          class="management-card"
+          (click)="goToPayments()">
+
+          <strong>
+            View Payments
+          </strong>
+
           <span>
             View payment transactions and history.
           </span>
+
         </button>
 
       </div>

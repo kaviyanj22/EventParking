@@ -1,134 +1,443 @@
-<div class="payment-container">
+<div class="payment-page">
 
+  <!-- Loading -->
   <div
-    class="loading-message"
+    class="loading-state"
     *ngIf="isLoading"
   >
-    Loading payment summary...
+    Loading payment details...
   </div>
 
+  <!-- Main Payment UI -->
   <div
-    class="error-message"
-    *ngIf="errorMessage"
-  >
-    {{ errorMessage }}
-  </div>
-
-  <div
-    class="payment-card"
+    class="payment-wrapper"
     *ngIf="!isLoading && paymentSummary"
   >
 
-    <div class="payment-header">
-      <h1>Payment Summary</h1>
-      <p>
-        Review your booking amount before completing payment.
-      </p>
-    </div>
+    <!-- PAGE HEADER -->
+    <div class="page-header">
 
-    <div class="booking-section">
+      <div>
+        <h1>Complete Your Payment</h1>
 
-      <div class="detail-row">
-        <span>Booking Number</span>
-        <strong>
-          {{ paymentSummary.bookingNumber }}
-        </strong>
+        <p>
+          Enter your ATM / Debit Card details to complete
+          your event booking.
+        </p>
       </div>
 
-      <div class="detail-row">
-        <span>Event</span>
-        <strong>
-          {{ paymentSummary.eventName }}
-        </strong>
-      </div>
-
-      <div class="detail-row">
-        <span>Booking Status</span>
-        <strong>
-          {{ paymentSummary.bookingStatus }}
-        </strong>
-      </div>
-
-      <div class="detail-row">
-        <span>Payment Status</span>
-        <strong>
-          {{ paymentSummary.paymentStatus }}
-        </strong>
+      <div class="secure-badge">
+        🔒 Demo Secure Payment
       </div>
 
     </div>
 
-    <div class="amount-section">
-
-      <h2>Amount Details</h2>
-
-      <div class="detail-row">
-        <span>Seat Total</span>
-        <strong>
-          {{ paymentSummary.seatTotal | currency }}
-        </strong>
-      </div>
-
-      <div class="detail-row">
-        <span>Parking Fee</span>
-        <strong>
-          {{ paymentSummary.parkingFee | currency }}
-        </strong>
-      </div>
-
-      <div class="detail-row total-row">
-        <span>Total Amount</span>
-        <strong>
-          {{ paymentSummary.totalAmount | currency }}
-        </strong>
-      </div>
-
-    </div>
-
+    <!-- ERROR -->
     <div
-      class="hold-warning"
-      *ngIf="!paymentSummary.isExpired"
+      class="error-message"
+      *ngIf="errorMessage"
     >
-      <strong>Booking Hold Active</strong>
-
-      <p>
-        Complete the payment before your reservation expires.
-      </p>
+      {{ errorMessage }}
     </div>
 
-    <div
-      class="expired-warning"
-      *ngIf="paymentSummary.isExpired"
-    >
-      <strong>Booking Hold Expired</strong>
+    <!-- TWO COLUMN LAYOUT -->
+    <div class="payment-layout">
 
-      <p>
-        This booking can no longer be paid.
-      </p>
+      <!-- ================================= -->
+      <!-- LEFT : BOOKING SUMMARY -->
+      <!-- ================================= -->
+
+      <section class="summary-card">
+
+        <div class="section-title">
+
+          <div>
+            <span class="section-label">
+              Booking Summary
+            </span>
+
+            <h2>
+              {{ paymentSummary.eventName }}
+            </h2>
+          </div>
+
+          <div class="booking-icon">
+            🎟
+          </div>
+
+        </div>
+
+        <div class="summary-details">
+
+          <div class="summary-row">
+            <span>Booking Number</span>
+
+            <strong>
+              {{ paymentSummary.bookingNumber }}
+            </strong>
+          </div>
+
+          <div class="summary-row">
+            <span>Booking Status</span>
+
+            <strong class="status-pending">
+              {{ paymentSummary.bookingStatus }}
+            </strong>
+          </div>
+
+          <div class="summary-row">
+            <span>Payment Status</span>
+
+            <strong>
+              {{ paymentSummary.paymentStatus }}
+            </strong>
+          </div>
+
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="amount-details">
+
+          <div class="amount-row">
+            <span>Seat Total</span>
+
+            <strong>
+              LKR
+              {{
+                paymentSummary.seatTotal
+                  | number:'1.2-2'
+              }}
+            </strong>
+          </div>
+
+          <div class="amount-row">
+            <span>Parking Fee</span>
+
+            <strong>
+              LKR
+              {{
+                paymentSummary.parkingFee
+                  | number:'1.2-2'
+              }}
+            </strong>
+          </div>
+
+          <div class="total-row">
+
+            <div>
+              <span>Total Amount</span>
+
+              <small>
+                Amount to be paid
+              </small>
+            </div>
+
+            <strong>
+              LKR
+              {{
+                paymentSummary.totalAmount
+                  | number:'1.2-2'
+              }}
+            </strong>
+
+          </div>
+
+        </div>
+
+        <!-- HOLD TIMER -->
+        <div
+          class="hold-card"
+          *ngIf="!paymentSummary.isExpired"
+        >
+
+          <div class="hold-icon">
+            ⏱
+          </div>
+
+          <div class="hold-content">
+
+            <span>
+              Booking Reserved – Pending Payment
+            </span>
+
+            <strong>
+              {{ formattedRemainingTime }}
+            </strong>
+
+            <small>
+              Complete payment before the reservation expires.
+            </small>
+
+          </div>
+
+        </div>
+
+        <!-- EXPIRED -->
+        <div
+          class="expired-card"
+          *ngIf="paymentSummary.isExpired"
+        >
+
+          <div class="hold-icon">
+            ⚠
+          </div>
+
+          <div>
+            <strong>
+              Booking Hold Expired
+            </strong>
+
+            <p>
+              This reservation can no longer be paid.
+            </p>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ================================= -->
+      <!-- RIGHT : ATM / DEBIT CARD -->
+      <!-- ================================= -->
+
+      <section class="card-payment-card">
+
+        <div class="payment-method-header">
+
+          <div>
+
+            <span class="section-label">
+              Payment Method
+            </span>
+
+            <h2>
+              ATM / Debit Card
+            </h2>
+
+            <p>
+              Enter demo card details below.
+              No real money will be charged.
+            </p>
+
+          </div>
+
+          <div class="payment-card-icon">
+            💳
+          </div>
+
+        </div>
+
+        <!-- CARD TYPE DISPLAY -->
+        <div class="card-types">
+
+          <div class="card-type active">
+            <span class="card-symbol">💳</span>
+
+            <div>
+              <strong>ATM / Debit Card</strong>
+              <small>Demo Payment</small>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- FORM -->
+        <form
+          class="card-form"
+          [formGroup]="paymentForm"
+          (ngSubmit)="payNow()"
+        >
+
+          <!-- CARD NUMBER -->
+          <div class="form-group">
+
+            <label for="cardNumber">
+              Card Number
+            </label>
+
+            <div class="input-wrapper">
+
+              <input
+                id="cardNumber"
+                type="text"
+                inputmode="numeric"
+                maxlength="19"
+                placeholder="1234 5678 9012 3456"
+                formControlName="cardNumber"
+                (input)="onCardNumberInput($event)"
+              />
+
+              <span class="input-icon">
+                💳
+              </span>
+
+            </div>
+
+            <small
+              class="field-error"
+              *ngIf="
+                paymentForm.controls.cardNumber.touched &&
+                paymentForm.controls.cardNumber.invalid
+              "
+            >
+              Enter a valid 16-digit card number.
+            </small>
+
+          </div>
+
+          <!-- CARDHOLDER -->
+          <div class="form-group">
+
+            <label for="cardholderName">
+              Cardholder Name
+            </label>
+
+            <input
+              id="cardholderName"
+              type="text"
+              maxlength="100"
+              placeholder="Name on card"
+              formControlName="cardholderName"
+            />
+
+            <small
+              class="field-error"
+              *ngIf="
+                paymentForm.controls.cardholderName.touched &&
+                paymentForm.controls.cardholderName.invalid
+              "
+            >
+              Enter the cardholder name.
+            </small>
+
+          </div>
+
+          <!-- EXPIRY + CVV -->
+          <div class="form-row">
+
+            <div class="form-group">
+
+              <label for="expiryDate">
+                Expiry Date
+              </label>
+
+              <input
+                id="expiryDate"
+                type="text"
+                inputmode="numeric"
+                maxlength="5"
+                placeholder="MM/YY"
+                formControlName="expiryDate"
+                (input)="onExpiryInput($event)"
+              />
+
+              <small
+                class="field-error"
+                *ngIf="
+                  paymentForm.controls.expiryDate.touched &&
+                  paymentForm.controls.expiryDate.invalid
+                "
+              >
+                Enter a valid future expiry date.
+              </small>
+
+            </div>
+
+            <div class="form-group">
+
+              <label for="cvv">
+                CVV
+              </label>
+
+              <input
+                id="cvv"
+                type="password"
+                inputmode="numeric"
+                maxlength="3"
+                placeholder="•••"
+                formControlName="cvv"
+                (input)="onCvvInput($event)"
+              />
+
+              <small
+                class="field-error"
+                *ngIf="
+                  paymentForm.controls.cvv.touched &&
+                  paymentForm.controls.cvv.invalid
+                "
+              >
+                Enter a valid 3-digit CVV.
+              </small>
+
+            </div>
+
+          </div>
+
+          <!-- DEMO NOTICE -->
+          <div class="demo-notice">
+
+            <div class="demo-icon">
+              ℹ
+            </div>
+
+            <div>
+
+              <strong>
+                Demo Payment
+              </strong>
+
+              <p>
+                This is a fake ATM / Debit Card payment interface.
+                Card details are used only for UI validation and
+                are not stored or sent to the backend.
+              </p>
+
+            </div>
+
+          </div>
+
+          <!-- PAY BUTTON -->
+          <button
+            type="submit"
+            class="pay-button"
+            [disabled]="!canPay"
+          >
+
+            <span *ngIf="!isPaying">
+              🔒 Pay LKR
+              {{
+                paymentSummary.totalAmount
+                  | number:'1.2-2'
+              }}
+            </span>
+
+            <span *ngIf="isPaying">
+              Processing Payment...
+            </span>
+
+          </button>
+
+          <div class="security-text">
+            🔒 Demo payment details are not saved.
+          </div>
+
+        </form>
+
+      </section>
+
     </div>
 
-    <div class="payment-actions">
+    <!-- BOTTOM ACTION -->
+    <div class="bottom-actions">
 
       <button
         type="button"
-        class="back-btn"
+        class="back-button"
         [disabled]="isPaying"
         (click)="goBack()"
       >
-        Back
-      </button>
-
-      <button
-        type="button"
-        class="pay-btn"
-        [disabled]="!canPay"
-        (click)="payNow()"
-      >
-        {{
-          isPaying
-            ? 'Processing Payment...'
-            : 'Pay Now'
-        }}
+        ← Back to Booking
       </button>
 
     </div>

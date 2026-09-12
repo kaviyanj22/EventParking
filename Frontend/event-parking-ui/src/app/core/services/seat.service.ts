@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+import { environment } from '../../../environments/environment';
+
 import {
   Seat,
   SeatCreate,
@@ -14,17 +16,27 @@ import {
 })
 export class SeatService {
 
-  private readonly apiUrl = 'https://localhost:5001/api/events';
+  private readonly apiUrl =
+    `${environment.apiUrl}/events`;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient
+  ) { }
 
-  getSeats(eventId: number): Observable<Seat[]> {
+  getSeats(
+    eventId: number
+  ): Observable<Seat[]> {
+
     return this.http.get<Seat[]>(
       `${this.apiUrl}/${eventId}/seats`
     );
   }
 
-  getSeat(eventId: number, seatId: number): Observable<Seat> {
+  getSeat(
+    eventId: number,
+    seatId: number
+  ): Observable<Seat> {
+
     return this.http.get<Seat>(
       `${this.apiUrl}/${eventId}/seats/${seatId}`
     );
@@ -34,6 +46,7 @@ export class SeatService {
     eventId: number,
     seat: SeatCreate
   ): Observable<any> {
+
     return this.http.post(
       `${this.apiUrl}/${eventId}/seats/single`,
       seat
@@ -44,6 +57,7 @@ export class SeatService {
     eventId: number,
     seatMap: SeatMapCreate
   ): Observable<any> {
+
     return this.http.post(
       `${this.apiUrl}/${eventId}/seats`,
       seatMap
@@ -55,6 +69,7 @@ export class SeatService {
     seatId: number,
     seat: SeatUpdate
   ): Observable<any> {
+
     return this.http.put(
       `${this.apiUrl}/${eventId}/seats/${seatId}`,
       seat
@@ -65,6 +80,7 @@ export class SeatService {
     eventId: number,
     seatId: number
   ): Observable<any> {
+
     return this.http.delete(
       `${this.apiUrl}/${eventId}/seats/${seatId}`
     );
