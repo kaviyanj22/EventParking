@@ -75,6 +75,7 @@
 
       <thead>
         <tr>
+          <th>Event ID</th>
           <th>Event</th>
           <th>Venue</th>
           <th>Category</th>
@@ -89,6 +90,10 @@
       <tbody>
 
         <tr *ngFor="let event of events">
+
+<td>
+  {{ event.eventId }}
+</td>
 
           <td>
             {{ event.eventName }}

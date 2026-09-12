@@ -1,4 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  OnInit
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -23,7 +28,8 @@ export class AdminDashboardComponent implements OnInit {
 
   constructor(
     private dashboardService: DashboardService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -43,7 +49,10 @@ export class AdminDashboardComponent implements OnInit {
 
           this.isLoading = false;
 
-          if (response.success && response.data) {
+          if (
+            response.success &&
+            response.data
+          ) {
             this.dashboard = response.data;
           } else {
             this.dashboard = null;
@@ -52,6 +61,8 @@ export class AdminDashboardComponent implements OnInit {
               response.message ||
               'Unable to load admin dashboard.';
           }
+
+          this.cdr.markForCheck();
         },
 
         error: (error) => {
@@ -60,10 +71,33 @@ export class AdminDashboardComponent implements OnInit {
           this.dashboard = null;
 
           this.errorMessage =
-            error.error?.message ||
+            error?.error?.message ||
             'Unable to load admin dashboard.';
+
+          this.cdr.markForCheck();
         }
+
       });
+  }
+
+  goToEvents(): void {
+    this.router.navigate(['/admin/events']);
+  }
+
+  goToVenues(): void {
+    this.router.navigate(['/admin/venues']);
+  }
+
+  goToCategories(): void {
+    this.router.navigate(['/admin/categories']);
+  }
+
+  goToSeats(): void {
+    this.router.navigate(['/admin/seat-management']);
+  }
+
+  goToParking(): void {
+    this.router.navigate(['/admin/parking-management']);
   }
 
   goToBookings(): void {

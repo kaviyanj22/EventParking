@@ -143,6 +143,16 @@ namespace Event_parking.Services.Implementations
                 ParkingFee =
                     createDto.ParkingFee,
 
+                // Event poster / banner
+                EventImageUrl =
+                    string.IsNullOrWhiteSpace(
+                        createDto.EventImageUrl)
+                        ? null
+                        : createDto
+                            .EventImageUrl
+                            .Trim(),
+
+                // Seating layout image
                 SeatingLayoutImageUrl =
                     string.IsNullOrWhiteSpace(
                         createDto.SeatingLayoutImageUrl)
@@ -259,6 +269,14 @@ namespace Event_parking.Services.Implementations
                 );
             }
 
+            string? newEventImageUrl =
+                string.IsNullOrWhiteSpace(
+                    updateDto.EventImageUrl)
+                    ? null
+                    : updateDto
+                        .EventImageUrl
+                        .Trim();
+
             string? newLayoutImageUrl =
                 string.IsNullOrWhiteSpace(
                     updateDto.SeatingLayoutImageUrl)
@@ -301,10 +319,14 @@ namespace Event_parking.Services.Implementations
                     updateDto.ParkingFee
                 ||
                 !string.Equals(
+                    eventEntity.EventImageUrl,
+                    newEventImageUrl,
+                    StringComparison.Ordinal)
+                ||
+                !string.Equals(
                     eventEntity.SeatingLayoutImageUrl,
                     newLayoutImageUrl,
-                    StringComparison.Ordinal
-                );
+                    StringComparison.Ordinal);
 
             // ======================================
             // UPDATE VALUES
@@ -335,6 +357,9 @@ namespace Event_parking.Services.Implementations
 
             eventEntity.ParkingFee =
                 updateDto.ParkingFee;
+
+            eventEntity.EventImageUrl =
+                newEventImageUrl;
 
             eventEntity.SeatingLayoutImageUrl =
                 newLayoutImageUrl;
@@ -517,6 +542,9 @@ namespace Event_parking.Services.Implementations
 
                 ParkingFee =
                     eventEntity.ParkingFee,
+
+                EventImageUrl =
+                    eventEntity.EventImageUrl,
 
                 SeatingLayoutImageUrl =
                     eventEntity.SeatingLayoutImageUrl,

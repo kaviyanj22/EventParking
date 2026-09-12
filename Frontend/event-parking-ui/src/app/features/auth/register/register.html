@@ -8,13 +8,20 @@
       <div class="visual-content">
 
         <div class="visual-logo">
-          <span>P</span>
-          ParkEase
+
+          <img
+            src="eventix-logo.png"
+            alt="Eventix"
+            class="visual-logo-image"
+          >
+
+          <span>Eventix</span>
+
         </div>
 
         <h1>
           Create your
-          ParkEase account.
+          Eventix account.
         </h1>
 
         <p>
@@ -52,23 +59,29 @@
       <div class="register-card">
 
         <div class="register-header">
+
           <h2>Create account</h2>
 
           <p>
             Enter your details to get started
           </p>
+
         </div>
 
         @if (errorMessage) {
+
           <div class="error-alert">
             {{ errorMessage }}
           </div>
+
         }
 
         @if (successMessage) {
+
           <div class="success-alert">
             {{ successMessage }}
           </div>
+
         }
 
         <form
@@ -92,21 +105,31 @@
               autocomplete="name"
             />
 
-            @if (fullName.invalid && fullName.touched) {
+            @if (
+              fullName.invalid &&
+              fullName.touched
+            ) {
 
               <div class="validation-message">
 
-                @if (fullName.hasError('required')) {
-                  <span>Full name is required.</span>
+                @if (
+                  fullName.hasError('required')
+                ) {
+                  <span>
+                    Full name is required.
+                  </span>
                 }
 
-                @if (fullName.hasError('minlength')) {
+                @if (
+                  fullName.hasError('minlength')
+                ) {
                   <span>
                     Full name must contain at least 2 characters.
                   </span>
                 }
 
               </div>
+
             }
 
           </div>
@@ -126,19 +149,31 @@
               autocomplete="email"
             />
 
-            @if (email.invalid && email.touched) {
+            @if (
+              email.invalid &&
+              email.touched
+            ) {
 
               <div class="validation-message">
 
-                @if (email.hasError('required')) {
-                  <span>Email is required.</span>
+                @if (
+                  email.hasError('required')
+                ) {
+                  <span>
+                    Email is required.
+                  </span>
                 }
 
-                @if (email.hasError('email')) {
-                  <span>Enter a valid email address.</span>
+                @if (
+                  email.hasError('email')
+                ) {
+                  <span>
+                    Enter a valid email address.
+                  </span>
                 }
 
               </div>
+
             }
 
           </div>
@@ -158,10 +193,17 @@
               autocomplete="tel"
             />
 
-            @if (phone.invalid && phone.touched) {
+            @if (
+              phone.invalid &&
+              phone.touched
+            ) {
+
               <div class="validation-message">
-                <span>Phone number is required.</span>
+                <span>
+                  Phone number is required.
+                </span>
               </div>
+
             }
 
           </div>
@@ -193,21 +235,31 @@
 
             </div>
 
-            @if (password.invalid && password.touched) {
+            @if (
+              password.invalid &&
+              password.touched
+            ) {
 
               <div class="validation-message">
 
-                @if (password.hasError('required')) {
-                  <span>Password is required.</span>
+                @if (
+                  password.hasError('required')
+                ) {
+                  <span>
+                    Password is required.
+                  </span>
                 }
 
-                @if (password.hasError('minlength')) {
+                @if (
+                  password.hasError('minlength')
+                ) {
                   <span>
                     Password must contain at least 8 characters.
                   </span>
                 }
 
               </div>
+
             }
 
           </div>
@@ -234,7 +286,11 @@
                 class="password-toggle"
                 (click)="toggleConfirmPassword()"
               >
-                {{ showConfirmPassword ? 'Hide' : 'Show' }}
+                {{
+                  showConfirmPassword
+                    ? 'Hide'
+                    : 'Show'
+                }}
               </button>
 
             </div>
@@ -243,11 +299,15 @@
               confirmPassword.invalid &&
               confirmPassword.touched
             ) {
+
               <div class="validation-message">
+
                 <span>
                   Please confirm your password.
                 </span>
+
               </div>
+
             }
 
           </div>
@@ -270,11 +330,15 @@
         </form>
 
         <div class="login-text">
-          <span>Already have an account?</span>
+
+          <span>
+            Already have an account?
+          </span>
 
           <a routerLink="/login">
             Sign in
           </a>
+
         </div>
 
       </div>

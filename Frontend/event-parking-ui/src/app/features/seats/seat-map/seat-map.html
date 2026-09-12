@@ -1,11 +1,47 @@
 <div class="seat-map-container">
 
+  <!-- HEADER -->
   <div class="seat-map-header">
-    <h2>Select Your Seats</h2>
-    <p>Choose one or more available seats</p>
+
+    <h2>
+      Select Your Seats
+    </h2>
+
+    <p>
+      Choose one or more available seats.
+      The exact ticket price is shown for each seat.
+    </p>
+
   </div>
 
+  <!-- EVENT PRICE INFO -->
+  @if (event) {
+
+    <div class="event-price-info">
+
+      <div>
+        <span>
+          Default Ticket Price
+        </span>
+
+        <strong>
+          LKR {{ event.ticketPrice | number:'1.2-2' }}
+        </strong>
+      </div>
+
+      <p>
+        Seats without a custom price use the default
+        event ticket price. Premium or VIP seats may
+        have different prices.
+      </p>
+
+    </div>
+
+  }
+
+  <!-- LEGEND -->
   <div class="legend">
+
     <div>
       <span class="legend-box available"></span>
       Available
@@ -20,66 +56,144 @@
       <span class="legend-box booked"></span>
       Booked
     </div>
+
   </div>
 
+  <!-- LOADING -->
   @if (loading) {
-    <p class="message">Loading seats...</p>
+
+    <p class="message">
+      Loading seats...
+    </p>
+
   }
 
+  <!-- ERROR -->
   @if (errorMessage) {
+
     <p class="error-message">
       {{ errorMessage }}
     </p>
+
   }
 
-  @if (!loading && !errorMessage && seats.length === 0) {
-    <p class="message">No seats available for this event.</p>
+  <!-- EMPTY -->
+  @if (
+    !loading &&
+    !errorMessage &&
+    seats.length === 0
+  ) {
+
+    <p class="message">
+      No seats available for this event.
+    </p>
+
   }
 
-  @if (!loading && seats.length > 0) {
+  <!-- SEAT MAP -->
+  @if (
+    !loading &&
+    !errorMessage &&
+    seats.length > 0
+  ) {
 
     <div class="screen">
       EVENT STAGE
     </div>
 
     <div class="seat-grid">
-      @for (seat of seats; track seat.seatId) {
+
+      @for (
+        seat of seats;
+        track seat.seatId
+      ) {
 
         <app-seat
           [seat]="seat"
           [selected]="isSelected(seat)"
-          (seatSelected)="toggleSeat($event)">
+          (seatSelected)="toggleSeat($event)"
+        >
         </app-seat>
 
       }
+
     </div>
 
+    <!-- SELECTION SUMMARY -->
     <div class="selection-summary">
-      <h3>Your Selection</h3>
+
+      <h3>
+        Your Selection
+      </h3>
 
       @if (selectedSeats.length === 0) {
-        <p>No seats selected.</p>
+
+        <p class="no-selection">
+          No seats selected.
+        </p>
+
       }
 
       @if (selectedSeats.length > 0) {
-        <p>
-          <strong>Seats:</strong>
 
-          @for (seat of selectedSeats; track seat.seatId; let last = $last) {
-            {{ seat.seatNumber }}@if (!last) {, }
+        <div class="selected-seat-list">
+
+          @for (
+            seat of selectedSeats;
+            track seat.seatId
+          ) {
+
+            <div class="selected-seat-row">
+
+              <div class="selected-seat-details">
+
+                <strong>
+                  {{ seat.seatNumber }}
+                </strong>
+
+                <span>
+                  {{ seat.seatType || 'Normal' }}
+                </span>
+
+              </div>
+
+              <strong class="selected-seat-price">
+                LKR {{ (seat.price ?? 0) | number:'1.2-2' }}
+              </strong>
+
+            </div>
+
           }
+
+        </div>
+
+        <!-- TOTAL -->
+        <div class="selection-total">
+
+          <span>
+            Seat Total
+          </span>
+
+          <strong>
+            LKR {{ totalPrice | number:'1.2-2' }}
+          </strong>
+
+        </div>
+
+        <p class="total-note">
+          Parking fee, if selected, will be added
+          separately during checkout.
         </p>
 
-        <p>
-          <strong>Total:</strong>
-          LKR {{ totalPrice | number:'1.2-2' }}
-        </p>
-
+        <!-- CONTINUE -->
         <button
           type="button"
-          class="continue-button">
-          Continue
+          class="continue-button"
+          (click)="continueBooking()"
+        >
+          Continue to Parking
         </button>
+
       }
 
     </div>

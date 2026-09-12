@@ -1,7 +1,13 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpParams
+} from '@angular/common/http';
+
 import { Observable } from 'rxjs';
+
 import { environment } from '../../../environments/environment';
+
 import {
   Event,
   EventCreate,
@@ -9,65 +15,131 @@ import {
   EventFilter
 } from '../models/event.model';
 
+export interface EventImageUploadResponse {
+  message: string;
+  imageUrl: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class EventService {
 
- private readonly apiUrl =
-  `${environment.apiUrl}/events`;
+  private readonly apiUrl =
+    `${environment.apiUrl}/events`;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient
+  ) {}
 
-  // Get all events + optional search/filter
-  getAll(filter?: EventFilter): Observable<Event[]> {
+  // =========================================
+  // GET ALL EVENTS
+  // =========================================
 
-    let params = new HttpParams();
+  getAll(
+    filter?: EventFilter
+  ): Observable<Event[]> {
+
+    let params =
+      new HttpParams();
 
     if (filter?.name) {
-      params = params.set('name', filter.name);
+      params =
+        params.set(
+          'name',
+          filter.name
+        );
     }
 
     if (filter?.date) {
-      params = params.set('date', filter.date);
+      params =
+        params.set(
+          'date',
+          filter.date
+        );
     }
 
-    if (filter?.venueId !== undefined) {
-      params = params.set(
-        'venueId',
-        filter.venueId.toString()
-      );
+    if (
+      filter?.venueId !== undefined
+    ) {
+      params =
+        params.set(
+          'venueId',
+          filter.venueId.toString()
+        );
     }
 
-    if (filter?.categoryId !== undefined) {
-      params = params.set(
-        'categoryId',
-        filter.categoryId.toString()
-      );
+    if (
+      filter?.categoryId !== undefined
+    ) {
+      params =
+        params.set(
+          'categoryId',
+          filter.categoryId.toString()
+        );
     }
 
     return this.http.get<Event[]>(
       this.apiUrl,
-      { params }
+      {
+        params
+      }
     );
   }
 
-  // Get one event
-  getById(id: number): Observable<Event> {
+  // =========================================
+  // GET EVENT BY ID
+  // =========================================
+
+  getById(
+    id: number
+  ): Observable<Event> {
+
     return this.http.get<Event>(
       `${this.apiUrl}/${id}`
     );
   }
 
-  // Admin - create event
-  create(data: EventCreate): Observable<Event> {
+  // =========================================
+  // ADMIN - UPLOAD EVENT POSTER IMAGE
+  // =========================================
+
+  uploadEventImage(
+    file: File
+  ): Observable<EventImageUploadResponse> {
+
+    const formData =
+      new FormData();
+
+    formData.append(
+      'file',
+      file
+    );
+
+    return this.http.post<EventImageUploadResponse>(
+      `${this.apiUrl}/upload-image`,
+      formData
+    );
+  }
+
+  // =========================================
+  // ADMIN - CREATE EVENT
+  // =========================================
+
+  create(
+    data: EventCreate
+  ): Observable<Event> {
+
     return this.http.post<Event>(
       this.apiUrl,
       data
     );
   }
 
-  // Admin - update event
+  // =========================================
+  // ADMIN - UPDATE EVENT
+  // =========================================
+
   update(
     id: number,
     data: EventUpdate
@@ -79,8 +151,14 @@ export class EventService {
     );
   }
 
-  // Admin - delete event
-  delete(id: number): Observable<void> {
+  // =========================================
+  // ADMIN - DELETE EVENT
+  // =========================================
+
+  delete(
+    id: number
+  ): Observable<void> {
+
     return this.http.delete<void>(
       `${this.apiUrl}/${id}`
     );

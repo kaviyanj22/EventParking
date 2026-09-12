@@ -1,9 +1,22 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import {
+  ChangeDetectorRef,
+  Component,
+  OnInit
+} from '@angular/core';
 
-import { Booking } from '../../../core/models/booking.model';
-import { BookingService } from '../../../core/services/booking.service';
+import { CommonModule } from '@angular/common';
+import {
+  ActivatedRoute,
+  Router
+} from '@angular/router';
+
+import {
+  Booking
+} from '../../../core/models/booking.model';
+
+import {
+  BookingService
+} from '../../../core/services/booking.service';
 
 @Component({
   selector: 'app-booking-details',
@@ -12,7 +25,8 @@ import { BookingService } from '../../../core/services/booking.service';
   templateUrl: './booking-details.component.html',
   styleUrl: './booking-details.component.css'
 })
-export class BookingDetailsComponent implements OnInit {
+export class BookingDetailsComponent
+  implements OnInit {
 
   bookingId = 0;
 
@@ -27,17 +41,26 @@ export class BookingDetailsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private bookingService: BookingService
+    private bookingService: BookingService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
 
     this.bookingId =
-      Number(this.route.snapshot.paramMap.get('id'));
+      Number(
+        this.route.snapshot.paramMap.get('id')
+      );
 
     if (!this.bookingId) {
+
       this.isLoading = false;
-      this.errorMessage = 'Invalid booking.';
+
+      this.errorMessage =
+        'Invalid booking.';
+
+      this.cdr.detectChanges();
+
       return;
     }
 
@@ -47,36 +70,52 @@ export class BookingDetailsComponent implements OnInit {
   loadBooking(): void {
 
     this.isLoading = true;
+
     this.errorMessage = '';
 
     this.bookingService
-      .getBookingById(this.bookingId)
+      .getBookingById(
+        this.bookingId
+      )
       .subscribe({
 
         next: (response) => {
 
           this.isLoading = false;
 
-          if (response.success && response.data) {
+          if (
+            response.success &&
+            response.data
+          ) {
 
-            this.booking = response.data;
+            this.booking =
+              response.data;
 
           } else {
+
+            this.booking = null;
 
             this.errorMessage =
               response.message ||
               'Unable to load booking details.';
           }
+
+          this.cdr.detectChanges();
         },
 
         error: (error) => {
 
           this.isLoading = false;
 
+          this.booking = null;
+
           this.errorMessage =
-            error.error?.message ||
+            error?.error?.message ||
             'Unable to load booking details.';
+
+          this.cdr.detectChanges();
         }
+
       });
   }
 
@@ -87,7 +126,8 @@ export class BookingDetailsComponent implements OnInit {
     }
 
     const status =
-      this.booking.status.toLowerCase();
+      this.booking.status
+        .toLowerCase();
 
     return (
       status === 'pending' ||
@@ -115,11 +155,16 @@ export class BookingDetailsComponent implements OnInit {
     }
 
     this.isCancelling = true;
+
     this.errorMessage = '';
     this.successMessage = '';
 
+    this.cdr.detectChanges();
+
     this.bookingService
-      .cancelBooking(this.bookingId)
+      .cancelBooking(
+        this.bookingId
+      )
       .subscribe({
 
         next: (response) => {
@@ -132,6 +177,8 @@ export class BookingDetailsComponent implements OnInit {
               response.message ||
               'Booking cancelled successfully.';
 
+            this.cdr.detectChanges();
+
             this.loadBooking();
 
           } else {
@@ -139,7 +186,10 @@ export class BookingDetailsComponent implements OnInit {
             this.errorMessage =
               response.message ||
               'Unable to cancel booking.';
+
+            this.cdr.detectChanges();
           }
+
         },
 
         error: (error) => {
@@ -147,13 +197,19 @@ export class BookingDetailsComponent implements OnInit {
           this.isCancelling = false;
 
           this.errorMessage =
-            error.error?.message ||
+            error?.error?.message ||
             'Unable to cancel booking.';
+
+          this.cdr.detectChanges();
         }
+
       });
   }
 
   goBack(): void {
-    this.router.navigate(['/my-bookings']);
+
+    this.router.navigate([
+      '/my-bookings'
+    ]);
   }
 }

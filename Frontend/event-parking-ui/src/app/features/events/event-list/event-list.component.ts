@@ -1,11 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  OnInit
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { EventService } from '../../../core/services/event.service';
 import { VenueService } from '../../../core/services/venue.service';
 import { CategoryService } from '../../../core/services/category.service';
+
 import { EventDetailsComponent } from '../event-details/event-details.component';
+import { EventCardComponent } from '../event-card/event-card.component';
+
 import {
   Event,
   EventFilter
@@ -13,16 +22,15 @@ import {
 
 import { Venue } from '../../../core/models/venue.model';
 import { Category } from '../../../core/models/category.model';
-import { EventCardComponent } from '../event-card/event-card.component';
 
 @Component({
   selector: 'app-event-list',
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,  
-     EventCardComponent,
-     EventDetailsComponent
+    FormsModule,
+    EventCardComponent,
+    EventDetailsComponent
   ],
   templateUrl: './event-list.component.html',
   styleUrl: './event-list.component.css'
@@ -48,8 +56,10 @@ export class EventListComponent implements OnInit {
   constructor(
     private eventService: EventService,
     private venueService: VenueService,
-    private categoryService: CategoryService
-  ) {}
+    private categoryService: CategoryService,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
     this.loadEvents();
@@ -58,41 +68,83 @@ export class EventListComponent implements OnInit {
   }
 
   loadEvents(): void {
+
     this.loading = true;
     this.errorMessage = '';
 
-    this.eventService.getAll(this.filter).subscribe({
-      next: (events) => {
-        this.events = events;
-        this.loading = false;
-      },
-      error: () => {
-        this.errorMessage = 'Unable to load events.';
-        this.loading = false;
-      }
-    });
+    this.eventService
+      .getAll(this.filter)
+      .subscribe({
+
+        next: (events) => {
+
+          this.events = events;
+          this.loading = false;
+
+          this.cdr.markForCheck();
+        },
+
+        error: () => {
+
+          this.events = [];
+
+          this.errorMessage =
+            'Unable to load events.';
+
+          this.loading = false;
+
+          this.cdr.markForCheck();
+        }
+
+      });
   }
 
   loadVenues(): void {
-    this.venueService.getAll().subscribe({
-      next: (venues) => {
-        this.venues = venues;
-      },
-      error: () => {
-        this.errorMessage = 'Unable to load venues.';
-      }
-    });
+
+    this.venueService
+      .getAll()
+      .subscribe({
+
+        next: (venues) => {
+
+          this.venues = venues;
+
+          this.cdr.markForCheck();
+        },
+
+        error: () => {
+
+          this.errorMessage =
+            'Unable to load venues.';
+
+          this.cdr.markForCheck();
+        }
+
+      });
   }
 
   loadCategories(): void {
-    this.categoryService.getAll().subscribe({
-      next: (categories) => {
-        this.categories = categories;
-      },
-      error: () => {
-        this.errorMessage = 'Unable to load categories.';
-      }
-    });
+
+    this.categoryService
+      .getAll()
+      .subscribe({
+
+        next: (categories) => {
+
+          this.categories = categories;
+
+          this.cdr.markForCheck();
+        },
+
+        error: () => {
+
+          this.errorMessage =
+            'Unable to load categories.';
+
+          this.cdr.markForCheck();
+        }
+
+      });
   }
 
   search(): void {
@@ -100,6 +152,7 @@ export class EventListComponent implements OnInit {
   }
 
   clearFilters(): void {
+
     this.filter = {
       name: '',
       date: undefined,
@@ -109,14 +162,21 @@ export class EventListComponent implements OnInit {
 
     this.loadEvents();
   }
+
   onViewDetails(eventId: number): void {
-  this.selectedEventId = eventId;
-}
+    this.selectedEventId = eventId;
+  }
 
   closeEventDetails(): void {
-  this.selectedEventId = null;
-}
-onBookNow(eventId: number): void {
-  console.log('Book Now Event ID:', eventId);
-}
+    this.selectedEventId = null;
+  }
+
+  onBookNow(eventId: number): void {
+
+    this.router.navigate([
+      '/events',
+      eventId,
+      'seats'
+    ]);
+  }
 }

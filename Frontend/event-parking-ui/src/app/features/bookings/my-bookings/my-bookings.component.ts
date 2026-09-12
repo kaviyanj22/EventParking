@@ -1,60 +1,88 @@
 import {
+  ChangeDetectorRef,
   Component,
-  Input,
-  OnChanges,
-  SimpleChanges
+  OnInit
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
-import { Booking } from '../../../core/models/booking.model';
-import { BookingService } from '../../../core/services/booking.service';
+import {
+  Booking
+} from '../../../core/models/booking.model';
+
+import {
+  BookingService
+} from '../../../core/services/booking.service';
+
+import {
+  AuthService
+} from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-my-bookings',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule
+  ],
   templateUrl: './my-bookings.component.html',
   styleUrl: './my-bookings.component.css'
 })
-export class MyBookingsComponent implements OnChanges {
+export class MyBookingsComponent implements OnInit {
 
-  @Input() customerId: number | null = null;
+  customerId = 0;
 
   bookings: Booking[] = [];
 
   isLoading = false;
+
   errorMessage = '';
 
   constructor(
     private bookingService: BookingService,
-    private router: Router
-  ) {}
+    private authService: AuthService,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) { }
 
-  ngOnChanges(changes: SimpleChanges): void {
+  ngOnInit(): void {
 
-    if (
-      changes['customerId'] &&
-      this.customerId
-    ) {
-      this.loadBookings();
+    const currentUser =
+      this.authService.getCurrentUser();
+
+    if (!currentUser) {
+
+      this.router.navigate([
+        '/login'
+      ]);
+
+      return;
     }
+
+    this.customerId =
+      currentUser.customerId;
+
+    this.loadBookings();
   }
 
   loadBookings(): void {
 
     if (!this.customerId) {
+
       this.errorMessage =
         'Customer information is not available.';
+
       return;
     }
 
     this.isLoading = true;
+
     this.errorMessage = '';
 
     this.bookingService
-      .getCustomerBookings(this.customerId)
+      .getCustomerBookings(
+        this.customerId
+      )
       .subscribe({
 
         next: (response) => {
@@ -74,21 +102,29 @@ export class MyBookingsComponent implements OnChanges {
               response.message ||
               'Unable to load bookings.';
           }
+
+          this.cdr.markForCheck();
         },
 
         error: (error) => {
 
           this.isLoading = false;
+
           this.bookings = [];
 
           this.errorMessage =
-            error.error?.message ||
+            error?.error?.message ||
             'Unable to load bookings.';
+
+          this.cdr.markForCheck();
         }
+
       });
   }
 
-  viewBooking(bookingId: number): void {
+  viewBooking(
+    bookingId: number
+  ): void {
 
     this.router.navigate([
       '/bookings',
@@ -96,7 +132,9 @@ export class MyBookingsComponent implements OnChanges {
     ]);
   }
 
-  getStatusClass(status: string): string {
+  getStatusClass(
+    status: string
+  ): string {
 
     return status
       .toLowerCase()

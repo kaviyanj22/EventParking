@@ -1,8 +1,14 @@
 <div class="seat-management-container">
 
-  <h2>Seat Management</h2>
+  <div class="page-header">
+    <h2>Seat Management</h2>
+    <p>
+      Create and manage seats for an event.
+    </p>
+  </div>
 
   <!-- EVENT ID -->
+
   <div class="event-search">
 
     <label for="eventId">
@@ -26,34 +32,219 @@
 
   </div>
 
+  <!-- PRICING INFORMATION -->
+
+  <div class="pricing-info">
+
+    <h3>Seat Pricing</h3>
+
+    <p>
+      <strong>Same price for all seats:</strong>
+      leave Custom Seat Price blank.
+      The event's Default Ticket Price will be used.
+    </p>
+
+    <p>
+      <strong>Different prices:</strong>
+      enter a Custom Seat Price for Normal,
+      Premium or VIP seats.
+    </p>
+
+    <div class="pricing-example">
+
+      <span>
+        Normal → Default Event Price
+      </span>
+
+      <span>
+        Premium → Custom Price
+      </span>
+
+      <span>
+        VIP → Custom Price
+      </span>
+
+    </div>
+
+  </div>
 
   <!-- MESSAGES -->
 
   @if (loading) {
+
     <p class="loading-message">
-      Loading seats...
+      Processing...
     </p>
+
   }
 
   @if (successMessage) {
+
     <p class="success-message">
       {{ successMessage }}
     </p>
+
   }
 
   @if (errorMessage) {
+
     <p class="error-message">
       {{ errorMessage }}
     </p>
+
   }
 
-
-  <!-- CREATE / EDIT FORM -->
+  <!-- ====================================== -->
+  <!-- BULK CREATE SEATS -->
+  <!-- ====================================== -->
 
   <div class="seat-form-section">
 
     <h3>
-      {{ selectedSeatId ? 'Edit Seat' : 'Create Seat' }}
+      Bulk Create Seats
+    </h3>
+
+    <p class="section-description">
+      Create multiple seats at once.
+    </p>
+
+    <form
+      [formGroup]="bulkSeatForm"
+      (ngSubmit)="createBulkSeats()">
+
+      <div class="form-grid">
+
+        <!-- SEAT TYPE -->
+
+        <div class="form-group">
+
+          <label for="bulkSeatType">
+            Seat Type
+          </label>
+
+          <select
+            id="bulkSeatType"
+            formControlName="seatType">
+
+            <option value="Normal">
+              Normal
+            </option>
+
+            <option value="Premium">
+              Premium
+            </option>
+
+            <option value="VIP">
+              VIP
+            </option>
+
+          </select>
+
+        </div>
+
+        <!-- ROW -->
+
+        <div class="form-group">
+
+          <label for="bulkRowName">
+            Row
+          </label>
+
+          <input
+            id="bulkRowName"
+            type="text"
+            formControlName="rowName"
+            placeholder="Example: A"
+          />
+
+        </div>
+
+        <!-- START NUMBER -->
+
+        <div class="form-group">
+
+          <label for="bulkStartNumber">
+            Start Seat Number
+          </label>
+
+          <input
+            id="bulkStartNumber"
+            type="number"
+            min="1"
+            formControlName="startNumber"
+          />
+
+        </div>
+
+        <!-- COUNT -->
+
+        <div class="form-group">
+
+          <label for="bulkSeatCount">
+            Number of Seats
+          </label>
+
+          <input
+            id="bulkSeatCount"
+            type="number"
+            min="1"
+            max="500"
+            formControlName="seatCount"
+          />
+
+        </div>
+
+        <!-- CUSTOM PRICE -->
+
+        <div class="form-group">
+
+          <label for="bulkPrice">
+            Custom Seat Price (LKR)
+          </label>
+
+          <input
+            id="bulkPrice"
+            type="number"
+            min="0"
+            step="0.01"
+            formControlName="price"
+            placeholder="Optional"
+          />
+
+          <small class="price-help-text">
+            Leave blank to use the event's
+            Default Ticket Price.
+          </small>
+
+        </div>
+
+      </div>
+
+      <button
+        type="submit"
+        class="create-button"
+        [disabled]="loading">
+
+        Create Bulk Seats
+
+      </button>
+
+    </form>
+
+  </div>
+
+  <!-- ====================================== -->
+  <!-- SINGLE CREATE / EDIT -->
+  <!-- ====================================== -->
+
+  <div class="seat-form-section">
+
+    <h3>
+      {{
+        selectedSeatId
+          ? 'Edit Seat'
+          : 'Create Single Seat'
+      }}
     </h3>
 
     <form [formGroup]="seatForm">
@@ -64,54 +255,46 @@
 
         <div class="form-group">
 
-          <label>
+          <label for="seatNumber">
             Seat Number *
           </label>
 
           <input
+            id="seatNumber"
             type="text"
             formControlName="seatNumber"
             placeholder="Example: A1"
           />
 
-          @if (
-            seatForm.controls.seatNumber.touched &&
-            seatForm.controls.seatNumber.invalid
-          ) {
-            <small class="validation-error">
-              Seat number is required.
-            </small>
-          }
-
         </div>
-
 
         <!-- SECTION ID -->
 
         <div class="form-group">
 
-          <label>
+          <label for="seatSectionId">
             Seat Section ID
           </label>
 
           <input
+            id="seatSectionId"
             type="number"
             formControlName="seatSectionId"
-            placeholder="Section ID"
+            placeholder="Optional"
           />
 
         </div>
-
 
         <!-- ROW -->
 
         <div class="form-group">
 
-          <label>
+          <label for="rowName">
             Row Name
           </label>
 
           <input
+            id="rowName"
             type="text"
             formControlName="rowName"
             placeholder="Example: A"
@@ -119,95 +302,109 @@
 
         </div>
 
-
         <!-- COLUMN -->
 
         <div class="form-group">
 
-          <label>
+          <label for="columnNumber">
             Column Number
           </label>
 
           <input
+            id="columnNumber"
             type="number"
             formControlName="columnNumber"
-            placeholder="Example: 1"
           />
 
         </div>
-
 
         <!-- SEAT TYPE -->
 
         <div class="form-group">
 
-          <label>
+          <label for="seatType">
             Seat Type
           </label>
 
-          <input
-            type="text"
-            formControlName="seatType"
-            placeholder="Example: Regular"
-          />
+          <select
+            id="seatType"
+            formControlName="seatType">
+
+            <option [ngValue]="null">
+              Select Type
+            </option>
+
+            <option value="Normal">
+              Normal
+            </option>
+
+            <option value="Premium">
+              Premium
+            </option>
+
+            <option value="VIP">
+              VIP
+            </option>
+
+          </select>
 
         </div>
 
-
-        <!-- PRICE -->
+        <!-- CUSTOM PRICE -->
 
         <div class="form-group">
 
-          <label>
-            Price
+          <label for="price">
+            Custom Seat Price (LKR)
           </label>
 
           <input
+            id="price"
             type="number"
             min="0"
             step="0.01"
             formControlName="price"
-            placeholder="0.00"
+            placeholder="Optional"
           />
 
-        </div>
+          <small class="price-help-text">
+            Leave blank to use the event's
+            Default Ticket Price.
+          </small>
 
+        </div>
 
         <!-- POSITION X -->
 
         <div class="form-group">
 
-          <label>
+          <label for="positionX">
             Position X
           </label>
 
           <input
+            id="positionX"
             type="number"
-            step="0.01"
             formControlName="positionX"
-            placeholder="X position"
           />
 
         </div>
-
 
         <!-- POSITION Y -->
 
         <div class="form-group">
 
-          <label>
+          <label for="positionY">
             Position Y
           </label>
 
           <input
+            id="positionY"
             type="number"
-            step="0.01"
             formControlName="positionY"
-            placeholder="Y position"
           />
 
         </div>
-
 
         <!-- STATUS -->
 
@@ -215,11 +412,13 @@
 
           <div class="form-group">
 
-            <label>
+            <label for="status">
               Status
             </label>
 
-            <select formControlName="status">
+            <select
+              id="status"
+              formControlName="status">
 
               <option value="Available">
                 Available
@@ -237,9 +436,6 @@
 
       </div>
 
-
-      <!-- FORM BUTTONS -->
-
       <div class="form-actions">
 
         @if (!selectedSeatId) {
@@ -247,6 +443,7 @@
           <button
             type="button"
             class="create-button"
+            [disabled]="loading"
             (click)="createSeat()">
 
             Create Seat
@@ -258,6 +455,7 @@
           <button
             type="button"
             class="update-button"
+            [disabled]="loading"
             (click)="updateSeat()">
 
             Update Seat
@@ -267,6 +465,7 @@
           <button
             type="button"
             class="cancel-button"
+            [disabled]="loading"
             (click)="resetForm()">
 
             Cancel
@@ -281,10 +480,14 @@
 
   </div>
 
-
+  <!-- ====================================== -->
   <!-- SEAT TABLE -->
+  <!-- ====================================== -->
 
-  @if (!loading && seats.length > 0) {
+  @if (
+    !loading &&
+    seats.length > 0
+  ) {
 
     <div class="table-container">
 
@@ -293,21 +496,49 @@
         <thead>
 
           <tr>
-            <th>Seat</th>
-            <th>Section</th>
-            <th>Row</th>
-            <th>Column</th>
-            <th>Type</th>
-            <th>Price</th>
-            <th>Status</th>
-            <th>Action</th>
+
+            <th>
+              Seat
+            </th>
+
+            <th>
+              Section
+            </th>
+
+            <th>
+              Row
+            </th>
+
+            <th>
+              Column
+            </th>
+
+            <th>
+              Type
+            </th>
+
+            <th>
+              Custom Price
+            </th>
+
+            <th>
+              Status
+            </th>
+
+            <th>
+              Action
+            </th>
+
           </tr>
 
         </thead>
 
         <tbody>
 
-          @for (seat of seats; track seat.seatId) {
+          @for (
+            seat of seats;
+            track seat.seatId
+          ) {
 
             <tr>
 
@@ -328,19 +559,41 @@
               </td>
 
               <td>
-                {{ seat.seatType || '-' }}
+                {{ seat.seatType || 'Normal' }}
               </td>
 
               <td>
-                {{ (seat.price ?? 0) | number:'1.2-2' }}
+
+                @if (
+                  seat.price !== null &&
+                  seat.price !== undefined
+                ) {
+
+                  LKR
+                  {{ seat.price | number:'1.2-2' }}
+
+                } @else {
+
+                  <span class="default-price">
+                    Event Default Price
+                  </span>
+
+                }
+
               </td>
 
               <td>
 
                 <span
                   class="status"
-                  [class.available]="seat.status.toLowerCase() === 'available'"
-                  [class.booked]="seat.status.toLowerCase() === 'booked'">
+                  [class.available]="
+                    seat.status.toLowerCase()
+                    === 'available'
+                  "
+                  [class.booked]="
+                    seat.status.toLowerCase()
+                    === 'booked'
+                  ">
 
                   {{ seat.status }}
 
@@ -382,8 +635,7 @@
 
   }
 
-
-  <!-- EMPTY STATE -->
+  <!-- EMPTY -->
 
   @if (
     !loading &&

@@ -2,12 +2,16 @@
 
   <div class="page-header">
     <h2>Parking Management</h2>
-    <p>View and manage parking slots for an event</p>
+    <p>Create and manage parking slots for an event</p>
   </div>
+
+  <!-- EVENT SEARCH -->
 
   <div class="event-search">
 
-    <label for="eventId">Event ID</label>
+    <label for="eventId">
+      Event ID
+    </label>
 
     <input
       id="eventId"
@@ -26,9 +30,11 @@
 
   </div>
 
+  <!-- MESSAGES -->
+
   @if (loading) {
     <p class="message">
-      Loading parking slots...
+      Processing...
     </p>
   }
 
@@ -44,25 +50,290 @@
     </p>
   }
 
-  @if (!loading && parkingSlots.length > 0) {
+  <!-- BULK CREATE PARKING -->
+
+  <div class="form-card">
+
+    <h3>Bulk Create Parking Slots</h3>
+
+    <form
+      [formGroup]="bulkParkingForm"
+      (ngSubmit)="createBulkParkingSlots()">
+
+      <div class="form-grid">
+
+        <div class="form-group">
+
+          <label>
+            Zone
+          </label>
+
+          <input
+            type="text"
+            formControlName="zone"
+            placeholder="Example: A"
+          />
+
+        </div>
+
+        <div class="form-group">
+
+          <label>
+            Slot Prefix
+          </label>
+
+          <input
+            type="text"
+            formControlName="slotPrefix"
+            placeholder="Example: P"
+          />
+
+        </div>
+
+        <div class="form-group">
+
+          <label>
+            Start Slot Number
+          </label>
+
+          <input
+            type="number"
+            min="1"
+            formControlName="startNumber"
+          />
+
+        </div>
+
+        <div class="form-group">
+
+          <label>
+            Number of Slots
+          </label>
+
+          <input
+            type="number"
+            min="1"
+            max="500"
+            formControlName="slotCount"
+          />
+
+        </div>
+
+        <div class="form-group">
+
+          <label>
+            Fee Per Slot
+          </label>
+
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            formControlName="fee"
+          />
+
+        </div>
+
+      </div>
+
+      <div class="form-actions">
+
+        <button
+          type="submit"
+          [disabled]="loading">
+
+          Create Parking Slots
+
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+  <!-- SINGLE CREATE / EDIT -->
+
+  <div class="form-card">
+
+    <h3>
+      {{
+        selectedParkingSlotId
+          ? 'Edit Parking Slot'
+          : 'Create Single Parking Slot'
+      }}
+    </h3>
+
+    <form
+      [formGroup]="parkingForm"
+      (ngSubmit)="
+        selectedParkingSlotId
+          ? updateParkingSlot()
+          : createParkingSlot()
+      ">
+
+      <div class="form-grid">
+
+        <div class="form-group">
+
+          <label>
+            Slot Number
+          </label>
+
+          <input
+            type="text"
+            formControlName="slotNumber"
+            placeholder="Example: P1"
+          />
+
+        </div>
+
+        <div class="form-group">
+
+          <label>
+            Zone
+          </label>
+
+          <input
+            type="text"
+            formControlName="zone"
+            placeholder="Example: A"
+          />
+
+        </div>
+
+        <div class="form-group">
+
+          <label>
+            Fee
+          </label>
+
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            formControlName="fee"
+          />
+
+        </div>
+
+        @if (selectedParkingSlotId) {
+
+          <div class="form-group">
+
+            <label>
+              Status
+            </label>
+
+            <select
+              formControlName="status">
+
+              <option value="Available">
+                Available
+              </option>
+
+              <option value="Reserved">
+                Reserved
+              </option>
+
+              <option value="Occupied">
+                Occupied
+              </option>
+
+            </select>
+
+          </div>
+
+        }
+
+      </div>
+
+      <div class="form-actions">
+
+        @if (!selectedParkingSlotId) {
+
+          <button
+            type="submit"
+            [disabled]="loading">
+
+            Create Parking Slot
+
+          </button>
+
+        }
+
+        @if (selectedParkingSlotId) {
+
+          <button
+            type="submit"
+            [disabled]="loading">
+
+            Update Parking Slot
+
+          </button>
+
+          <button
+            type="button"
+            class="cancel-button"
+            (click)="resetForm()">
+
+            Cancel
+
+          </button>
+
+        }
+
+      </div>
+
+    </form>
+
+  </div>
+
+  <!-- PARKING TABLE -->
+
+  @if (
+    !loading &&
+    parkingSlots.length > 0
+  ) {
 
     <div class="table-wrapper">
 
       <table>
 
         <thead>
+
           <tr>
-            <th>Slot Number</th>
-            <th>Zone</th>
-            <th>Fee</th>
-            <th>Status</th>
-            <th>Action</th>
+
+            <th>
+              Slot Number
+            </th>
+
+            <th>
+              Zone
+            </th>
+
+            <th>
+              Fee
+            </th>
+
+            <th>
+              Status
+            </th>
+
+            <th>
+              Action
+            </th>
+
           </tr>
+
         </thead>
 
         <tbody>
 
-          @for (slot of parkingSlots; track slot.parkingSlotId) {
+          @for (
+            slot of parkingSlots;
+            track slot.parkingSlotId
+          ) {
 
             <tr>
 
@@ -79,24 +350,45 @@
               </td>
 
               <td>
+
                 <span
                   class="status"
-                  [class.available]="slot.status.toLowerCase() === 'available'"
-                  [class.reserved]="slot.status.toLowerCase() === 'reserved'"
-                  [class.occupied]="slot.status.toLowerCase() === 'occupied'">
+                  [class.available]="
+                    slot.status.toLowerCase() === 'available'
+                  "
+                  [class.reserved]="
+                    slot.status.toLowerCase() === 'reserved'
+                  "
+                  [class.occupied]="
+                    slot.status.toLowerCase() === 'occupied'
+                  ">
 
                   {{ slot.status }}
 
                 </span>
+
               </td>
 
               <td>
+
+                <button
+                  type="button"
+                  class="edit-button"
+                  (click)="editParkingSlot(slot)">
+
+                  Edit
+
+                </button>
+
                 <button
                   type="button"
                   class="delete-button"
                   (click)="deleteParkingSlot(slot)">
+
                   Delete
+
                 </button>
+
               </td>
 
             </tr>
@@ -111,10 +403,19 @@
 
   }
 
-  @if (!loading && !errorMessage && eventId && parkingSlots.length === 0) {
+  @if (
+    !loading &&
+    !errorMessage &&
+    eventId &&
+    parkingSlots.length === 0
+  ) {
+
     <p class="message">
+
       No parking slots found for this event.
+
     </p>
+
   }
 
 </div>

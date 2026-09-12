@@ -40,7 +40,11 @@ namespace Event_parking.Models
         [Range(0, double.MaxValue)]
         public decimal ParkingFee { get; set; }
 
-        // Main seating plan image for the event
+        // Customer-facing event poster/banner image
+        [MaxLength(500)]
+        public string? EventImageUrl { get; set; }
+
+        // Seating layout / seating plan image
         [MaxLength(500)]
         public string? SeatingLayoutImageUrl { get; set; }
 

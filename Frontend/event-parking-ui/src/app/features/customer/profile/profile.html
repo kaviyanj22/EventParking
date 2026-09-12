@@ -3,11 +3,15 @@
   <div class="profile-container">
 
     <div class="page-header">
+
       <div>
+
         <h1>My Profile</h1>
+
         <p>
-          View and manage your ParkEase account information.
+          View and manage your Eventix account information.
         </p>
+
       </div>
 
       <a
@@ -16,27 +20,37 @@
       >
         ← Back to Events
       </a>
+
     </div>
 
     @if (isLoading) {
 
       <div class="state-card">
+
         <div class="spinner"></div>
-        <p>Loading your profile...</p>
+
+        <p>
+          Loading your profile...
+        </p>
+
       </div>
 
     } @else {
 
       @if (errorMessage) {
+
         <div class="error-alert">
           {{ errorMessage }}
         </div>
+
       }
 
       @if (successMessage) {
+
         <div class="success-alert">
           ✓ {{ successMessage }}
         </div>
+
       }
 
       @if (customer) {
@@ -69,7 +83,10 @@
             <div class="summary-divider"></div>
 
             <div class="summary-row">
-              <span>Account Status</span>
+
+              <span>
+                Account Status
+              </span>
 
               <strong
                 class="status"
@@ -77,28 +94,41 @@
               >
                 {{ customer.status }}
               </strong>
+
             </div>
 
             <div class="summary-row">
-              <span>Email Verification</span>
+
+              <span>
+                Email Verification
+              </span>
 
               @if (customer.emailVerified) {
+
                 <strong class="verified">
                   ✓ Verified
                 </strong>
+
               } @else {
+
                 <strong class="not-verified">
                   Not Verified
                 </strong>
+
               }
+
             </div>
 
             <div class="summary-row">
-              <span>Member Since</span>
+
+              <span>
+                Member Since
+              </span>
 
               <strong>
                 {{ customer.createdAt | date:'mediumDate' }}
               </strong>
+
             </div>
 
           </section>
@@ -108,11 +138,15 @@
           <section class="profile-form-card">
 
             <div class="form-header">
-              <h2>Personal Information</h2>
+
+              <h2>
+                Personal Information
+              </h2>
 
               <p>
                 Update your name and phone number.
               </p>
+
             </div>
 
             <form
@@ -136,17 +170,24 @@
                   autocomplete="name"
                 />
 
-                @if (fullName.invalid && fullName.touched) {
+                @if (
+                  fullName.invalid &&
+                  fullName.touched
+                ) {
 
                   <div class="validation-message">
 
-                    @if (fullName.hasError('required')) {
+                    @if (
+                      fullName.hasError('required')
+                    ) {
                       <span>
                         Full name is required.
                       </span>
                     }
 
-                    @if (fullName.hasError('minlength')) {
+                    @if (
+                      fullName.hasError('minlength')
+                    ) {
                       <span>
                         Full name must contain at least 2 characters.
                       </span>
@@ -158,7 +199,7 @@
 
               </div>
 
-              <!-- EMAIL READ ONLY -->
+              <!-- EMAIL -->
 
               <div class="form-group">
 
@@ -195,15 +236,20 @@
                   autocomplete="tel"
                 />
 
-                @if (phone.invalid && phone.touched) {
+                @if (
+                  phone.invalid &&
+                  phone.touched
+                ) {
+
                   <div class="validation-message">
                     Phone number is required.
                   </div>
+
                 }
 
               </div>
 
-              <!-- ROLE READ ONLY -->
+              <!-- ROLE -->
 
               <div class="form-group">
 
@@ -220,8 +266,6 @@
                 />
 
               </div>
-
-              <!-- BUTTONS -->
 
               <div class="form-actions">
 

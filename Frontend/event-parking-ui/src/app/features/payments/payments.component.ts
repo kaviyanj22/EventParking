@@ -1,9 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  OnInit
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
-import { PaymentHistory } from '../../core/models/payment.model';
-import { PaymentService } from '../../core/services/payment.service';
+import {
+  PaymentHistory
+} from '../../core/models/payment.model';
+
+import {
+  PaymentService
+} from '../../core/services/payment.service';
 
 @Component({
   selector: 'app-admin-payments',
@@ -21,7 +31,8 @@ export class AdminPaymentsComponent implements OnInit {
 
   constructor(
     private paymentService: PaymentService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -43,7 +54,8 @@ export class AdminPaymentsComponent implements OnInit {
 
           if (response.success) {
 
-            this.payments = response.data ?? [];
+            this.payments =
+              response.data ?? [];
 
           } else {
 
@@ -53,6 +65,8 @@ export class AdminPaymentsComponent implements OnInit {
               response.message ||
               'Unable to load payments.';
           }
+
+          this.cdr.detectChanges();
         },
 
         error: (error) => {
@@ -61,13 +75,19 @@ export class AdminPaymentsComponent implements OnInit {
           this.payments = [];
 
           this.errorMessage =
-            error.error?.message ||
+            error?.error?.message ||
             'Unable to load payments.';
+
+          this.cdr.detectChanges();
         }
+
       });
   }
 
-  viewReceipt(paymentId: number): void {
+  viewReceipt(
+    paymentId: number
+  ): void {
+
     this.router.navigate([
       '/payments',
       paymentId,
@@ -75,13 +95,17 @@ export class AdminPaymentsComponent implements OnInit {
     ]);
   }
 
-  getStatusClass(status: string): string {
+  getStatusClass(
+    status: string
+  ): string {
+
     return status
       .toLowerCase()
       .replace(/\s+/g, '-');
   }
 
   get totalRevenue(): number {
+
     return this.payments.reduce(
       (total, payment) =>
         total + payment.amount,

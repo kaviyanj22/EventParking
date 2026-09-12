@@ -1,6 +1,6 @@
 <div class="event-details-page">
 
-  <!-- Loading -->
+  <!-- LOADING -->
   <div
     class="state-message"
     *ngIf="loading"
@@ -8,7 +8,7 @@
     Loading event details...
   </div>
 
-  <!-- Error -->
+  <!-- ERROR -->
   <div
     class="state-message error-message"
     *ngIf="!loading && errorMessage"
@@ -16,12 +16,13 @@
     {{ errorMessage }}
   </div>
 
-  <!-- Event Details -->
+  <!-- EVENT DETAILS -->
   <div
     class="details-card"
     *ngIf="!loading && !errorMessage && event"
   >
 
+    <!-- HEADER -->
     <div class="details-header">
 
       <span class="category">
@@ -32,16 +33,22 @@
         {{ event.eventName }}
       </h1>
 
+      <p class="event-id">
+        Event ID: {{ event.eventId }}
+      </p>
+
       <p class="venue">
         {{ event.venueName }}
       </p>
 
     </div>
 
+    <!-- BASIC DETAILS -->
     <div class="details-grid">
 
       <div class="detail-item">
         <span>Date</span>
+
         <strong>
           {{ event.eventDate | date:'fullDate' }}
         </strong>
@@ -49,6 +56,7 @@
 
       <div class="detail-item">
         <span>Time</span>
+
         <strong>
           {{ event.startTime }} - {{ event.endTime }}
         </strong>
@@ -56,6 +64,7 @@
 
       <div class="detail-item">
         <span>Venue</span>
+
         <strong>
           {{ event.venueName }}
         </strong>
@@ -63,20 +72,15 @@
 
       <div class="detail-item">
         <span>Category</span>
+
         <strong>
           {{ event.categoryName }}
         </strong>
       </div>
 
       <div class="detail-item">
-        <span>Ticket Price</span>
-        <strong>
-          LKR {{ event.ticketPrice | number:'1.2-2' }}
-        </strong>
-      </div>
-
-      <div class="detail-item">
         <span>Capacity</span>
+
         <strong>
           {{ event.capacity }}
         </strong>
@@ -84,6 +88,7 @@
 
       <div class="detail-item">
         <span>Parking Fee</span>
+
         <strong>
           LKR {{ event.parkingFee | number:'1.2-2' }}
         </strong>
@@ -91,13 +96,66 @@
 
     </div>
 
-    <div class="booking-section">
+    <!-- PRICING -->
+    <div class="pricing-section">
+
+      <div class="pricing-header">
+
+        <div>
+          <span class="pricing-title">
+            Default Ticket Price
+          </span>
+
+          <strong class="pricing-value">
+            LKR {{ event.ticketPrice | number:'1.2-2' }}
+          </strong>
+        </div>
+
+      </div>
+
+      <div class="pricing-message">
+
+        <strong>
+          How ticket pricing works
+        </strong>
+
+        <p>
+          This is the default ticket price for this event.
+        </p>
+
+        <p>
+          Some seats may have different prices depending
+          on the seat type, such as Normal, Premium or VIP.
+        </p>
+
+        <p class="final-price-note">
+          The exact price will be clearly shown on each seat
+          before you make your selection.
+        </p>
+
+      </div>
+
+    </div>
+
+    <!-- CUSTOMER BOOKING ONLY -->
+    <div
+      class="booking-section"
+      *ngIf="!isAdmin"
+    >
+
       <button
         type="button"
         class="book-btn"
-        (click)="onBookNow()">
-        Book Now
+        (click)="onBookNow()"
+      >
+        Select Seats
       </button>
+
+      <small class="booking-help">
+        Seat type and exact ticket price will be shown
+        on the next page.
+      </small>
+
     </div>
 
   </div>

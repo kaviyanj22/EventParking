@@ -1,10 +1,27 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import {
+  ChangeDetectorRef,
+  Component,
+  OnInit
+} from '@angular/core';
 
-import { Booking } from '../../../core/models/booking.model';
-import { BookingService } from '../../../core/services/booking.service';
-import { BookingStateService } from '../../../core/services/booking-state.service';
+import { CommonModule } from '@angular/common';
+
+import {
+  ActivatedRoute,
+  Router
+} from '@angular/router';
+
+import {
+  Booking
+} from '../../../core/models/booking.model';
+
+import {
+  BookingService
+} from '../../../core/services/booking.service';
+
+import {
+  BookingStateService
+} from '../../../core/services/booking-state.service';
 
 @Component({
   selector: 'app-booking-confirmation',
@@ -20,23 +37,33 @@ export class BookingConfirmationComponent implements OnInit {
   booking: Booking | null = null;
 
   isLoading = true;
+
   errorMessage = '';
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private bookingService: BookingService,
-    private bookingStateService: BookingStateService
+    private bookingStateService: BookingStateService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
 
     this.bookingId =
-      Number(this.route.snapshot.paramMap.get('id'));
+      Number(
+        this.route.snapshot.paramMap.get('id')
+      );
 
     if (!this.bookingId) {
+
       this.isLoading = false;
-      this.errorMessage = 'Invalid booking.';
+
+      this.errorMessage =
+        'Invalid booking.';
+
+      this.cdr.detectChanges();
+
       return;
     }
 
@@ -46,6 +73,7 @@ export class BookingConfirmationComponent implements OnInit {
   loadBooking(): void {
 
     this.isLoading = true;
+
     this.errorMessage = '';
 
     this.bookingService
@@ -56,17 +84,22 @@ export class BookingConfirmationComponent implements OnInit {
 
           this.isLoading = false;
 
-          if (response.success && response.data) {
+          if (
+            response.success &&
+            response.data
+          ) {
 
-            this.booking = response.data;
+            this.booking =
+              response.data;
 
-            // Booking flow is finished.
-            // Clear temporary seat/parking selection.
             if (
               response.data.status
-                .toLowerCase() === 'confirmed'
+                ?.toLowerCase() ===
+              'confirmed'
             ) {
-              this.bookingStateService.clearBooking();
+
+              this.bookingStateService
+                .clearBooking();
             }
 
           } else {
@@ -75,6 +108,8 @@ export class BookingConfirmationComponent implements OnInit {
               response.message ||
               'Unable to load booking details.';
           }
+
+          this.cdr.detectChanges();
         },
 
         error: (error) => {
@@ -82,17 +117,26 @@ export class BookingConfirmationComponent implements OnInit {
           this.isLoading = false;
 
           this.errorMessage =
-            error.error?.message ||
+            error?.error?.message ||
             'Unable to load booking details.';
+
+          this.cdr.detectChanges();
         }
+
       });
   }
 
   goToMyBookings(): void {
-    this.router.navigate(['/my-bookings']);
+
+    this.router.navigate([
+      '/my-bookings'
+    ]);
   }
 
   goToEvents(): void {
-    this.router.navigate(['/events']);
+
+    this.router.navigate([
+      '/events'
+    ]);
   }
 }

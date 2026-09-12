@@ -1,49 +1,88 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  ChangeDetectorRef,
+  Component,
+  OnInit
+} from '@angular/core';
 
-import { Notification } from '../../../core/models/notification.model';
-import { NotificationService } from '../../../core/services/notification.service';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+
+import {
+  Notification
+} from '../../../core/models/notification.model';
+
+import {
+  NotificationService
+} from '../../../core/services/notification.service';
+
+import {
+  AuthService
+} from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-notification-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule
+  ],
   templateUrl: './notification-list.component.html',
   styleUrl: './notification-list.component.css'
 })
-export class NotificationListComponent implements OnChanges {
+export class NotificationListComponent implements OnInit {
 
-  @Input() customerId: number | null = null;
+  customerId = 0;
 
   notifications: Notification[] = [];
 
   isLoading = false;
+
   errorMessage = '';
 
   constructor(
-    private notificationService: NotificationService
-  ) {}
+    private notificationService: NotificationService,
+    private authService: AuthService,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) { }
 
-  ngOnChanges(changes: SimpleChanges): void {
+  ngOnInit(): void {
 
-    if (changes['customerId'] && this.customerId) {
-      this.loadNotifications();
+    const currentUser =
+      this.authService.getCurrentUser();
+
+    if (!currentUser) {
+
+      this.router.navigate([
+        '/login'
+      ]);
+
+      return;
     }
+
+    this.customerId =
+      currentUser.customerId;
+
+    this.loadNotifications();
   }
 
   loadNotifications(): void {
 
     if (!this.customerId) {
+
       this.errorMessage =
         'Customer information is not available.';
+
       return;
     }
 
     this.isLoading = true;
+
     this.errorMessage = '';
 
     this.notificationService
-      .getCustomerNotifications(this.customerId)
+      .getCustomerNotifications(
+        this.customerId
+      )
       .subscribe({
 
         next: (response) => {
@@ -63,45 +102,55 @@ export class NotificationListComponent implements OnChanges {
               response.message ||
               'Unable to load notifications.';
           }
+
+          this.cdr.markForCheck();
         },
 
         error: (error) => {
 
           this.isLoading = false;
+
           this.notifications = [];
 
           this.errorMessage =
-            error.error?.message ||
+            error?.error?.message ||
             'Unable to load notifications.';
+
+          this.cdr.markForCheck();
         }
+
       });
   }
 
-  markAsRead(notification: Notification): void {
+  markAsRead(
+    notification: Notification
+  ): void {
 
     if (notification.isRead) {
       return;
     }
 
     this.notificationService
-      .markAsRead(notification.notificationId)
+      .markAsRead(
+        notification.notificationId
+      )
       .subscribe({
 
         next: (response) => {
 
-          if (response.success && response.data) {
+          if (
+            response.success &&
+            response.data
+          ) {
 
-            const index =
-              this.notifications.findIndex(
+            this.notifications =
+              this.notifications.map(
                 item =>
                   item.notificationId ===
-                  notification.notificationId
+                    notification.notificationId
+                    ? response.data!
+                    : item
               );
-
-            if (index !== -1) {
-              this.notifications[index] =
-                response.data;
-            }
 
           } else {
 
@@ -109,14 +158,19 @@ export class NotificationListComponent implements OnChanges {
               response.message ||
               'Unable to update notification.';
           }
+
+          this.cdr.markForCheck();
         },
 
         error: (error) => {
 
           this.errorMessage =
-            error.error?.message ||
+            error?.error?.message ||
             'Unable to update notification.';
+
+          this.cdr.markForCheck();
         }
+
       });
   }
 }
